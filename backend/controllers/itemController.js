@@ -21,7 +21,16 @@ exports.getItems = async (req, res) => {
     }
 };
 
-
+// Read a single item
+exports.getItem = async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+        res.status(200).json(item);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 
