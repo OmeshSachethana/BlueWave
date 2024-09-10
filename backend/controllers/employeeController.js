@@ -52,3 +52,27 @@ exports.getEmployeeById = async (req, res) => {
   }
 };
 
+// Update an employee by ID
+exports.updateEmployee = async (req, res) => {
+  try {
+    const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // return the updated document
+      runValidators: true, // run schema validators
+    });
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    res.status(200).json({
+      message: 'Employee updated successfully',
+      employee: updatedEmployee,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: 'Error updating employee',
+      error: error.message,
+    });
+  }
+};
+
