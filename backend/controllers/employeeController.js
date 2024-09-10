@@ -33,3 +33,22 @@ exports.getAllEmployees = async (req, res) => {
   }
 };
 
+// Get a single employee by ID
+exports.getEmployeeById = async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(200).json({
+      message: 'Employee retrieved successfully',
+      employee,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error retrieving employee',
+      error: error.message,
+    });
+  }
+};
+
