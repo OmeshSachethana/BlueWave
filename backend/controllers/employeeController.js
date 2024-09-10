@@ -17,3 +17,19 @@ exports.createEmployee = async (req, res) => {
   }
 };
 
+// Get all employees
+exports.getAllEmployees = async (req, res) => {
+  try {
+    const employees = await Employee.find();
+    res.status(200).json({
+      message: 'Employees retrieved successfully',
+      employees,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error retrieving employees',
+      error: error.message,
+    });
+  }
+};
+
