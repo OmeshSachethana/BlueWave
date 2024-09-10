@@ -1,16 +1,24 @@
-// Import the Express module
 const express = require('express');
+const mongoose = require('mongoose');
+const itemRoutes = require('./routes/itemRoutes');
+require('dotenv').config();
 
-// Initialize the app
 const app = express();
 
-// Define a route
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/api', itemRoutes);
 
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI;
+
+mongoose.connect(MONGODB_URI)
+    .then(() => {
+        console.log('Connected to MongoDB');
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('Database connection error:', err);
+    });
