@@ -17,6 +17,21 @@ exports.createSchedule = async (req, res) => {
   }
 };
 
+// Get all schedules
+exports.getAllSchedules = async (req, res) => {
+  try {
+    const schedules = await Schedule.find();
+    res.status(200).json({
+      message: 'Schedules fetched successfully',
+      data: schedules
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error fetching schedules',
+      error: error.message
+    });
+  }
+};
 
 
 
