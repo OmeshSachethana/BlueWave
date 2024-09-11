@@ -61,4 +61,17 @@ exports.updateEmployeeSalary = async (req, res) => {
   }
 };
 
+// Delete an employee's salary record
+exports.deleteEmployeeSalary = async (req, res) => {
+  try {
+    const deletedSalary = await EmployeeSalary.findOneAndDelete({ employeeID: req.params.employeeID });
 
+    if (!deletedSalary) {
+      return res.status(404).json({ message: `No salary record found for Employee ID ${req.params.employeeID}` });
+    }
+
+    res.status(200).json({ message: 'Salary record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
