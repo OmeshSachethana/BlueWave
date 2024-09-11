@@ -38,6 +38,27 @@ exports.getEmployeeSalary = async (req, res) => {
   }
 };
 
+// Update an employee's salary record
+exports.updateEmployeeSalary = async (req, res) => {
+  try {
+    // Find and update the salary record by employeeID
+    const updatedSalary = await EmployeeSalary.findOneAndUpdate(
+      { employeeID: req.params.employeeID },
+      req.body,
+      { new: true, runValidators: true }
+    );
 
+    if (!updatedSalary) {
+      return res.status(404).json({ message: `No salary record found for Employee ID ${req.params.employeeID}` });
+    }
+
+    res.status(200).json({
+      message: 'Salary record updated successfully',
+      salary: updatedSalary
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
