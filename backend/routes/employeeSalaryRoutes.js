@@ -3,9 +3,8 @@ const router = express.Router();
 const employeeSalaryController = require('../controllers/employeeSalaryController');
 
 router.post('/', employeeSalaryController.createEmployeeSalary);
-// router.get('/', employeeSalaryController.getAllEmployees);
-// router.get('/:id', employeeSalaryController.getEmployeeById);
-// router.put('/:id', employeeSalaryController.updateEmployee);
-// router.delete('/:id', employeeSalaryController.deleteEmployee);
+router.get('/:employeeID', employeeSalaryController.getEmployeeSalary);
+router.put('/:employeeID', employeeSalaryController.updateEmployeeSalary);
+router.delete('/:employeeID', employeeSalaryController.deleteEmployeeSalary);
 
 module.exports = router;
