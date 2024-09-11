@@ -1,21 +1,35 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const SubscriptionPlan = require("../models/SubscriptionPlan");
 
 // User places an order
 exports.placeOrder = async (req, res) => {
   try {
-    const { user, orderDetails, paymentMethod, delivery } = req.body;
+    const { user, orderDetails, paymentMethod, delivery, subscriptionPlanId } = req.body;
 
-    // Calculate total price
     let totalPrice = 0;
     const orderItems = [];
-    for (const item of orderDetails) {
-      const product = await Product.findById(item.product);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+
+    // Check if the order is for products
+    if (orderDetails && orderDetails.length > 0) {
+      for (const item of orderDetails) {
+        const product = await Product.findById(item.product);
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+        totalPrice += product.price * item.quantity;
+        orderItems.push({ product: product._id, quantity: item.quantity });
       }
-      totalPrice += product.price * item.quantity;
-      orderItems.push({ product: product._id, quantity: item.quantity });
+    }
+
+    // Check if the order is a subscription package
+    let subscriptionPlan;
+    if (subscriptionPlanId) {
+      subscriptionPlan = await SubscriptionPlan.findById(subscriptionPlanId);
+      if (!subscriptionPlan) {
+        return res.status(404).json({ message: "Subscription plan not found" });
+      }
+      totalPrice += subscriptionPlan.pricing;
     }
 
     const newOrder = new Order({
@@ -25,6 +39,7 @@ exports.placeOrder = async (req, res) => {
       paymentMethod,
       delivery,
       approvalStatus: "Pending",
+      subscriptionPlan: subscriptionPlan ? subscriptionPlan._id : null, // Attach subscription plan if applicable
     });
 
     const savedOrder = await newOrder.save();

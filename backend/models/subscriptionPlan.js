@@ -8,4 +8,5 @@ const subscriptionPlanSchema = new mongoose.Schema({
   deliveryFrequency: { type: String, required: true },  // e.g., once a week
 }, { timestamps: true });
 
-module.exports = mongoose.model('SubscriptionPlan', subscriptionPlanSchema);
+// Check if model exists before defining it
+module.exports = mongoose.models.SubscriptionPlan || mongoose.model('SubscriptionPlan', subscriptionPlanSchema);
