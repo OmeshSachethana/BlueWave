@@ -5,6 +5,12 @@ const employeeRoutes = require('./routes/employeeRoutes.js');
 const employeeSalaryRoutes = require('./routes/employeeSalaryRoutes.js');
 const scheduleRoutes = require('./routes/scheduleRoutes.js');
 const maintenanceRoutes = require('./routes/maintenanceRoutes.js');
+const orderRoutes = require('./routes/orderRoutes.js');
+const productRoutes = require('./routes/productRoutes.js');
+const promotionRoutes = require('./routes/promotionRoutes.js');
+const subscriptionPlanRoutes = require('./routes/subscriptionPlanRoutes.js');
+const discountRoutes = require('./routes/discountRoutes.js');
+const packageRoutes = require('./routes/packageRoutes.js');
 require('dotenv').config();
 
 const app = express();
@@ -17,7 +23,12 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/employeesSalary', employeeSalaryRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
-
+app.use('/api/orders', orderRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/promotions', promotionRoutes);
+app.use('/api/subscriptionPlans', subscriptionPlanRoutes); 
+app.use('/api/discounts', discountRoutes); 
+app.use('/api/packages', packageRoutes);
 
 
 const PORT = process.env.PORT || 5002;
