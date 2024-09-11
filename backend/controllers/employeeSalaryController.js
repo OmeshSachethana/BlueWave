@@ -23,7 +23,20 @@ exports.createEmployeeSalary = async (req, res) => {
   }
 };
 
+// Get salary details of an employee by employeeID
+exports.getEmployeeSalary = async (req, res) => {
+  try {
+    // Find the salary record by employeeID
+    const salary = await EmployeeSalary.findOne({ employeeID: req.params.employeeID });
+    if (!salary) {
+      return res.status(404).json({ message: `No salary record found for Employee ID ${req.params.employeeID}` });
+    }
 
+    res.status(200).json(salary);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
