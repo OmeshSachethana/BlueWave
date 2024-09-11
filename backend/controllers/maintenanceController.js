@@ -75,4 +75,22 @@ exports.updateMaintenance = async (req, res) => {
   }
 };
 
-
+// Delete a maintenance record by ID
+exports.deleteMaintenance = async (req, res) => {
+  try {
+    const maintenance = await Maintenance.findByIdAndDelete(req.params.id);
+    if (!maintenance) {
+      return res.status(404).json({
+        message: 'Maintenance record not found'
+      });
+    }
+    res.status(200).json({
+      message: 'Maintenance record deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error deleting maintenance record',
+      error: error.message
+    });
+  }
+};
