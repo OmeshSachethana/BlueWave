@@ -33,6 +33,26 @@ exports.getAllMaintenanceRecords = async (req, res) => {
   }
 };
 
+// Get a single maintenance record by ID
+exports.getMaintenanceById = async (req, res) => {
+  try {
+    const maintenance = await Maintenance.findById(req.params.id);
+    if (!maintenance) {
+      return res.status(404).json({
+        message: 'Maintenance record not found'
+      });
+    }
+    res.status(200).json({
+      message: 'Maintenance record fetched successfully',
+      data: maintenance
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error fetching maintenance record',
+      error: error.message
+    });
+  }
+};
 
 
 

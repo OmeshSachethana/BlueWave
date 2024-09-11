@@ -4,6 +4,7 @@ const itemRoutes = require('./routes/itemRoutes.js');
 const employeeRoutes = require('./routes/employeeRoutes.js');
 const employeeSalaryRoutes = require('./routes/employeeSalaryRoutes.js');
 const scheduleRoutes = require('./routes/scheduleRoutes.js');
+const maintenanceRoutes = require('./routes/maintenanceRoutes.js');
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +16,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/employeesSalary', employeeSalaryRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 
 
 
