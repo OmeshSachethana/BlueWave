@@ -11,6 +11,7 @@ const promotionRoutes = require('./routes/promotionRoutes.js');
 const subscriptionPlanRoutes = require('./routes/subscriptionPlanRoutes.js');
 const discountRoutes = require('./routes/discountRoutes.js');
 const packageRoutes = require('./routes/packageRoutes.js');
+const paymentRoutes = require('./routes/paymentRoutes.js');
 require('dotenv').config();
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/promotions', promotionRoutes);
 app.use('/api/subscriptionPlans', subscriptionPlanRoutes); 
 app.use('/api/discounts', discountRoutes); 
 app.use('/api/packages', packageRoutes);
+app.use('/api/payments', paymentRoutes);
 
 
 const PORT = process.env.PORT || 5002;
