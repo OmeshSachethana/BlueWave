@@ -1,6 +1,10 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart } from '../../features/products/cartSlice';
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+} from "../../features/products/cartSlice"; // Import the actions
 
 const CartView = ({ toggleCart }) => {
   const dispatch = useDispatch();
@@ -11,14 +15,32 @@ const CartView = ({ toggleCart }) => {
     dispatch(removeFromCart(productId));
   };
 
+  const handleIncreaseQuantity = (productId) => {
+    dispatch(increaseQuantity(productId));
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    dispatch(decreaseQuantity(productId));
+  };
+
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+    return cartItems
+      .reduce((total, item) => total + item.price * item.quantity, 0)
+      .toFixed(2);
   };
 
   return (
-    <div className="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div
+      className="relative z-10"
+      aria-labelledby="slide-over-title"
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Background backdrop */}
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <div
+        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        aria-hidden="true"
+      ></div>
 
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
@@ -27,7 +49,10 @@ const CartView = ({ toggleCart }) => {
               <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                 <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                   <div className="flex items-start justify-between">
-                    <h2 className="text-lg font-medium text-gray-900" id="slide-over-title">
+                    <h2
+                      className="text-lg font-medium text-gray-900"
+                      id="slide-over-title"
+                    >
                       Shopping cart
                     </h2>
                     <div className="ml-3 flex h-7 items-center">
@@ -45,7 +70,11 @@ const CartView = ({ toggleCart }) => {
                           stroke="currentColor"
                           aria-hidden="true"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -53,7 +82,10 @@ const CartView = ({ toggleCart }) => {
 
                   <div className="mt-8">
                     <div className="flow-root">
-                      <ul role="list" className="-my-6 divide-y divide-gray-200">
+                      <ul
+                        role="list"
+                        className="-my-6 divide-y divide-gray-200"
+                      >
                         {cartItems.map((item) => (
                           <li key={item.id} className="flex py-6">
                             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
@@ -68,17 +100,45 @@ const CartView = ({ toggleCart }) => {
                                 <h3>
                                   <a href="#">{item.name}</a>
                                 </h3>
-                                <p className="ml-4">Rs: {(item.price * item.quantity).toFixed(2)}</p>
+                                <p className="ml-4">
+                                  Rs: {(item.price * item.quantity).toFixed(2)}
+                                </p>
                               </div>
-                              <p className="mt-1 text-sm text-gray-500">{item.category}</p>
+                              <p className="mt-1 text-sm text-gray-500">
+                                {item.category}
+                              </p>
                               <div className="flex flex-1 items-end justify-between text-sm">
-                                <p className="text-gray-500">Qty {item.quantity}</p>
+                                <div className="flex items-center space-x-2">
+                                  <button
+                                    type="button"
+                                    className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
+                                    onClick={() =>
+                                      handleDecreaseQuantity(item._id)
+                                    }
+                                  >
+                                    -
+                                  </button>
+                                  <p className="text-gray-500">
+                                    Qty {item.quantity}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
+                                    onClick={() =>
+                                      handleIncreaseQuantity(item._id)
+                                    }
+                                  >
+                                    +
+                                  </button>
+                                </div>
 
                                 <div className="flex">
                                   <button
                                     type="button"
                                     className="font-medium text-indigo-600 hover:text-indigo-500"
-                                    onClick={() => handleRemoveFromCart(item.id)}
+                                    onClick={() =>
+                                      handleRemoveFromCart(item._id)
+                                    }
                                   >
                                     Remove
                                   </button>
@@ -97,7 +157,9 @@ const CartView = ({ toggleCart }) => {
                     <p>Subtotal</p>
                     <p>Rs: {calculateSubtotal()}</p>
                   </div>
-                  <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+                  <p className="mt-0.5 text-sm text-gray-500">
+                    Shipping and taxes calculated at checkout.
+                  </p>
                   <div className="mt-6">
                     <a
                       href="#"
