@@ -1,9 +1,25 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProducts } from "../../services/productService";
+import { setProducts } from "../../features/products/productsSlice";
 import ProductCard from "./ProductCard";
 
 const ProductList = () => {
+  const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsData = await getAllProducts();
+        dispatch(setProducts(productsData));
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [dispatch]);
 
   return (
     <div className="container mx-auto p-4">

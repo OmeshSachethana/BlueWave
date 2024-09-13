@@ -30,7 +30,7 @@ function App() {
         </main>
 
         <footer className="mt-8">
-          <p className="text-center text-gray-500">© 2023 BlueWave</p>
+          <p className="text-center text-gray-500">© 2024 BlueWave</p>
         </footer>
       </div>
     </Router>
