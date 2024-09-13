@@ -62,12 +62,10 @@ const Navbar = () => {
             </Link>
           </div>
 
-          
-
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
             {/* Conditionally render the Add Product image on the home page */}
-          {location.pathname === "/" && (
+          {location.pathname === "/products" && (
               <button onClick={toggleModal}>
                 <img
                   src={add_product_image}

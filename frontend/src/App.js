@@ -13,7 +13,7 @@ function App() {
         <main>
           <Routes>
             <Route
-              path="/"
+              path="/products"
               element={
                 <>
                   <section>
