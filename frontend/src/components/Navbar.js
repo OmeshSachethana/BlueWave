@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import CartView from "./products/CartView"; // Ensure CartView is imported
+import { Link } from "react-router-dom";
+import CartView from "./products/CartView";
 
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -15,35 +16,41 @@ const Navbar = () => {
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo Section */}
           <div className="text-white font-bold text-lg">
-            <a href="/">BlueWave</a>
+            <Link to="/">BlueWave</Link>
           </div>
 
           {/* Buttons Section */}
           <div className="flex space-x-4">
-            <a
-              href="#"
+            <Link
+              to="/"
               className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
             >
               Home
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/products"
               className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
             >
               Products
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/special-offers"
               className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
             >
               Special Offers
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/contact-us"
               className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
             >
               Contact Us
-            </a>
+            </Link>
+            <Link
+              to="/employee"
+              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+            >
+              Employee
+            </Link>
           </div>
 
           {/* Cart Button Section */}
@@ -51,7 +58,7 @@ const Navbar = () => {
             <button
               type="button"
               className="text-white bg-blue-500 px-4 py-2 rounded-full hover:bg-blue-400 focus:outline-none"
-              onClick={toggleCart} // Toggle cart visibility
+              onClick={toggleCart}
             >
               <svg
                 className="h-6 w-6 inline-block"

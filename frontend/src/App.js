@@ -1,29 +1,26 @@
 import React from "react";
-import EmployeeList from "./components/employee/EmployeeList";
-import EmployeeForm from "./components/employee/EmployeeForm";
-import ProductList from "./components/products/ProductList";
-import SpecialPromotions from "./components/products/SpecialPromotions";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+// import Home from "./pages/Home";
+// import Products from "./pages/Products";
+// import SpecialOffers from "./pages/SpecialOffers";
+// import ContactUs from "./pages/ContactUs";
+import Employee from "./pages/Employee";
+// import CartView from "./products/CartView";
 
 function App() {
   return (
-    <>
-    <Navbar />
-      <div className="container mx-auto p-4">
-        <main>
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Products</h2>
-            <ProductList />
-          </section>
-
-          <SpecialPromotions />
-        </main>
-
-        <footer className="mt-8">
-          <p className="text-center text-gray-500">&copy; 2024 BlueWave</p>
-        </footer>
-      </div>
-    </>
+    <Router>
+      <Navbar />
+      <Routes>
+        {/* <Route path="/" element={<Home />} /> */}
+        {/* <Route path="/products" element={<Products />} /> */}
+        {/* <Route path="/special-offers" element={<SpecialOffers />} /> */}
+        {/* <Route path="/contact-us" element={<ContactUs />} /> */}
+        <Route path="/employee" element={<Employee />} />
+        {/* Other routes */}
+      </Routes>
+    </Router>
   );
 }
 

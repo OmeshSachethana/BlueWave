@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addEmployee } from '../../features/employee/employeeSlice';
+import { addEmployee, updateEmployee } from '../../features/employee/employeeSlice';
 
-const EmployeeForm = () => {
+const EmployeeForm = ({ employeeToEdit }) => {
   const dispatch = useDispatch();
+  
+  // Form state
   const [formData, setFormData] = useState({
-    employeeId: '',
+    employeeID: '',
     firstName: '',
     lastName: '',
     position: '',
@@ -15,15 +17,40 @@ const EmployeeForm = () => {
     email: '',
   });
 
+  // Load employee data into the form if editing
+  useEffect(() => {
+    if (employeeToEdit) {
+      setFormData({
+        employeeID: employeeToEdit.employeeID || '',
+        firstName: employeeToEdit.firstName || '',
+        lastName: employeeToEdit.lastName || '',
+        position: employeeToEdit.position || '',
+        department: employeeToEdit.department || '',
+        gender: employeeToEdit.gender || '',
+        nic: employeeToEdit.nic || '',
+        email: employeeToEdit.email || '',
+      });
+    }
+  }, [employeeToEdit]);
+
+  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addEmployee(formData));
+    if (employeeToEdit) {
+      // If editing, update the employee
+      dispatch(updateEmployee({ id: employeeToEdit._id, updatedEmployee: formData }));
+    } else {
+      // Otherwise, add a new employee
+      dispatch(addEmployee(formData));
+    }
+    // Reset the form after submission
     setFormData({
-      employeeId: '',
+      employeeID: '',
       firstName: '',
       lastName: '',
       position: '',
@@ -36,19 +63,22 @@ const EmployeeForm = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto bg-blue-100 p-6 rounded-lg">
-      <h2 className="text-center text-2xl font-bold mb-4">Add New Employee</h2>
+      <h2 className="text-center text-2xl font-bold mb-4">
+        {employeeToEdit ? 'Edit Employee' : 'Add New Employee'}
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="block text-gray-700">Employee ID:</label>
           <input
             type="text"
-            name="employeeID"
+            name="employeeId"
             className="w-full px-2 py-1 border rounded-md"
             value={formData.employeeID}
             onChange={handleChange}
             required
           />
         </div>
+
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <label className="block text-gray-700">First Name:</label>
@@ -73,6 +103,7 @@ const EmployeeForm = () => {
             />
           </div>
         </div>
+
         <div className="mb-3">
           <label className="block text-gray-700">Position:</label>
           <input
@@ -84,6 +115,7 @@ const EmployeeForm = () => {
             required
           />
         </div>
+
         <div className="mb-3">
           <label className="block text-gray-700">Department:</label>
           <select
@@ -99,6 +131,7 @@ const EmployeeForm = () => {
             <option value="Sales">Sales</option>
           </select>
         </div>
+
         <div className="mb-3">
           <label className="block text-gray-700">Gender:</label>
           <select
@@ -114,6 +147,7 @@ const EmployeeForm = () => {
             <option value="Other">Other</option>
           </select>
         </div>
+
         <div className="mb-3">
           <label className="block text-gray-700">NIC:</label>
           <input
@@ -125,6 +159,7 @@ const EmployeeForm = () => {
             required
           />
         </div>
+
         <div className="mb-3">
           <label className="block text-gray-700">Email:</label>
           <input
@@ -136,8 +171,9 @@ const EmployeeForm = () => {
             required
           />
         </div>
+
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
-          Submit
+          {employeeToEdit ? 'Update' : 'Submit'}
         </button>
       </form>
     </div>

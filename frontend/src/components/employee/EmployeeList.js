@@ -1,9 +1,10 @@
+// src/components/employee/EmployeeList.js
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEmployees, deleteEmployee } from '../../features/employee/employeeSlice';
+import { fetchEmployees } from '../../features/employee/employeeSlice';
 import EmployeeItem from './EmployeeItem';
 
-const EmployeeList = () => {
+const EmployeeList = ({ onEdit }) => {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employees.employees);
   const status = useSelector((state) => state.employees.status);
@@ -33,7 +34,7 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {employees.map((employee) => (
-            <EmployeeItem key={employee._id} employee={employee} />
+            <EmployeeItem key={employee._id} employee={employee} onEdit={onEdit} />
           ))}
         </tbody>
       </table>
