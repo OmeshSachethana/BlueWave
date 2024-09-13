@@ -62,8 +62,20 @@ const Navbar = () => {
             </Link>
           </div>
 
+          
+
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
+            {/* Conditionally render the Add Product image on the home page */}
+          {location.pathname === "/" && (
+              <button onClick={toggleModal}>
+                <img
+                  src={add_product_image}
+                  alt="Add Product"
+                  className="h-8 w-8 cursor-pointer"
+                />
+              </button>
+            )}
             <div className="relative">
               <button
                 type="button"
@@ -92,17 +104,6 @@ const Navbar = () => {
                 3
               </span>
             </div>
-
-            {/* Conditionally render the Add Product image on the home page */}
-            {location.pathname === "/" && (
-              <button onClick={toggleModal}>
-                <img
-                  src={add_product_image}
-                  alt="Add Product"
-                  className="h-8 w-8 cursor-pointer"
-                />
-              </button>
-            )}
           </div>
         </div>
       </nav>
