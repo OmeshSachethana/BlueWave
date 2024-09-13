@@ -7,7 +7,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
   
   // Form state
   const [formData, setFormData] = useState({
-    employeeId: '',
+    employeeID: '',
     firstName: '',
     lastName: '',
     position: '',
@@ -21,7 +21,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
   useEffect(() => {
     if (employeeToEdit) {
       setFormData({
-        employeeId: employeeToEdit.employeeId || '',
+        employeeID: employeeToEdit.employeeID || '',
         firstName: employeeToEdit.firstName || '',
         lastName: employeeToEdit.lastName || '',
         position: employeeToEdit.position || '',
@@ -50,7 +50,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
     }
     // Reset the form after submission
     setFormData({
-      employeeId: '',
+      employeeID: '',
       firstName: '',
       lastName: '',
       position: '',
@@ -73,7 +73,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
             type="text"
             name="employeeId"
             className="w-full px-2 py-1 border rounded-md"
-            value={formData.employeeId}
+            value={formData.employeeID}
             onChange={handleChange}
             required
           />
