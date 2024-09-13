@@ -4,6 +4,7 @@ import { removeFromCart } from '../../features/products/cartSlice';
 
 const CartView = ({ toggleCart }) => {
   const dispatch = useDispatch();
+  // @ts-ignore
   const cartItems = useSelector((state) => state.cart.items);
 
   const handleRemoveFromCart = (productId) => {
