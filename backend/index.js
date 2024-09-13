@@ -25,7 +25,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.get('/', (req, res) => res.status(200).json({ message: 'Server Up and Running' }))
-app.use("/api/items", itemRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/employeesSalary", employeeSalaryRoutes);
 app.use("/api/schedule", scheduleRoutes);

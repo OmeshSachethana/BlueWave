@@ -5,7 +5,7 @@ import add_product_image from "../assets/add-product.png";
 import AddProductModal from "./modals/AddProductModal";
 import { getAllProducts } from "../services/productService";
 import { setProducts } from "../features/products/productsSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -13,6 +13,12 @@ const Navbar = () => {
   const dispatch = useDispatch(); // Use dispatch here
 
   const location = useLocation();
+
+  // Use useSelector to access the cart state
+  const cartItems = useSelector((state) => state.cart.items);
+
+  // Calculate the total number of items in the cart
+  const totalItemsInCart = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
@@ -27,7 +33,7 @@ const Navbar = () => {
       const productsData = await getAllProducts();
       dispatch(setProducts(productsData)); // Dispatch the products to the store
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error('Error fetching products:', error);
     }
   };
 
@@ -78,7 +84,7 @@ const Navbar = () => {
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
             {/* Conditionally render the Add Product image on the home page */}
-          {location.pathname === "/products" && (
+            {location.pathname === "/products" && (
               <button onClick={toggleModal}>
                 <img
                   src={add_product_image}
@@ -111,16 +117,22 @@ const Navbar = () => {
               </button>
 
               {/* Notification Badge */}
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs px-2 py-1">
-                3
-              </span>
+              {totalItemsInCart > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs px-2 py-1">
+                  {totalItemsInCart}
+                </span>
+              )}
             </div>
           </div>
         </div>
       </nav>
 
       {/* Add Product Modal */}
-      <AddProductModal isOpen={isModalOpen} toggleModal={toggleModal} fetchProducts={fetchProducts} />
+      <AddProductModal
+        isOpen={isModalOpen}
+        toggleModal={toggleModal}
+        fetchProducts={fetchProducts}
+      />
 
       {/* Conditionally render the CartView if isCartOpen is true */}
       {isCartOpen && <CartView toggleCart={toggleCart} />}
@@ -129,7 +141,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
-function dispatch(arg0) {
-  throw new Error("Function not implemented.");
-}
 
