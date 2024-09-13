@@ -1,36 +1,42 @@
-// src/components/EmployeeList.js
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEmployees, deleteEmployee } from '../../features/employee/employeeSlice';
+import EmployeeItem from './EmployeeItem';
 
 const EmployeeList = () => {
   const dispatch = useDispatch();
-  const { employees, status, error } = useSelector(state => state.employees);
+  const employees = useSelector((state) => state.employees.employees);
+  const status = useSelector((state) => state.employees.status);
 
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchEmployees());
     }
-  }, [dispatch, status]);
-
-  const handleDelete = (id) => {
-    dispatch(deleteEmployee(id));
-  };
-
-  if (status === 'loading') return <p>Loading...</p>;
-  if (status === 'failed') return <p>Error: {error}</p>;
+  }, [status, dispatch]);
 
   return (
-    <div>
-      <h2>Employees List</h2>
-      <ul>
-        {employees.map((employee) => (
-          <li key={employee._id}>
-            {employee.firstName} {employee.lastName} - {employee.position}
-            <button onClick={() => handleDelete(employee._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div className="p-6">
+      <h2 className="text-lg font-semibold mb-4">View Employees</h2>
+      <table className="table-auto w-full border-collapse bg-gray-50 shadow-lg">
+        <thead>
+          <tr>
+            <th className="px-4 py-2">EID</th>
+            <th className="px-4 py-2">First Name</th>
+            <th className="px-4 py-2">Last Name</th>
+            <th className="px-4 py-2">Position</th>
+            <th className="px-4 py-2">Department</th>
+            <th className="px-4 py-2">Gender</th>
+            <th className="px-4 py-2">NIC</th>
+            <th className="px-4 py-2">Email</th>
+            <th className="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map((employee) => (
+            <EmployeeItem key={employee._id} employee={employee} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
