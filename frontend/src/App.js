@@ -1,17 +1,19 @@
-// src/App.js
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import Employee from './pages/Employee';  // Import the Employee page
+import EmployeeList from './components/employee/EmployeeList';
+import EmployeeForm from './components/employee/EmployeeForm';
+import ProductList from './components/products/ProductList';
+import SpecialPromotions from './components/products/SpecialPromotions';
 
 function App() {
   return (
     <Provider store={store}>
       <div className="App">
-        <Employee /> {/* Render Employee page */}
+        <EmployeeForm />
+        <EmployeeList />
       </div>
     </Provider>
   );
 }
 
 export default App;
+
