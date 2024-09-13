@@ -1,4 +1,3 @@
-// src/features/employee/employeeSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -31,9 +30,14 @@ const employeeSlice = createSlice({
     status: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // Fetch Employees
       .addCase(fetchEmployees.pending, (state) => {
         state.status = 'loading';
       })
@@ -45,17 +49,52 @@ const employeeSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
+      
+      // Add Employee
+      .addCase(addEmployee.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(addEmployee.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.employees.push(action.payload);
       })
+      .addCase(addEmployee.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      
+      // Update Employee
+      .addCase(updateEmployee.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(updateEmployee.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         const index = state.employees.findIndex(employee => employee._id === action.payload._id);
-        state.employees[index] = action.payload;
+        if (index !== -1) {
+          state.employees[index] = action.payload;
+        }
+      })
+      .addCase(updateEmployee.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      
+      // Delete Employee
+      .addCase(deleteEmployee.pending, (state) => {
+        state.status = 'loading';
       })
       .addCase(deleteEmployee.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.employees = state.employees.filter(employee => employee._id !== action.payload);
+      })
+      .addCase(deleteEmployee.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
       });
   },
 });
+
+// Export clearError action to allow error clearing in components
+export const { clearError } = employeeSlice.actions;
 
 export default employeeSlice.reducer;
