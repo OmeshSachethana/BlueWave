@@ -5,7 +5,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 // Create a new product
 export const createProduct = async (productData) => {
   try {
-    const response = await axios.post(`${API_URL}/products`, productData);
+    const response = await axios.post(`${API_URL}/api/products`, productData);
     return response.data;
   } catch (error) {
     console.error("Error creating product:", error);
@@ -16,7 +16,7 @@ export const createProduct = async (productData) => {
 // Get all products
 export const getAllProducts = async () => {
   try {
-    const response = await axios.get(`${API_URL}/products`);
+    const response = await axios.get(`${API_URL}/api/products`);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -27,7 +27,7 @@ export const getAllProducts = async () => {
 // Get a product by ID
 export const getProductById = async (productId) => {
   try {
-    const response = await axios.get(`${API_URL}/products/${productId}`);
+    const response = await axios.get(`${API_URL}/api/products/${productId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -38,7 +38,7 @@ export const getProductById = async (productId) => {
 // Update a product by ID
 export const updateProduct = async (productId, productData) => {
   try {
-    const response = await axios.put(`${API_URL}/products/${productId}`, productData);
+    const response = await axios.put(`${API_URL}/api/products/${productId}`, productData);
     return response.data;
   } catch (error) {
     console.error("Error updating product:", error);
@@ -49,7 +49,7 @@ export const updateProduct = async (productId, productData) => {
 // Delete a product by ID
 export const deleteProduct = async (productId) => {
   try {
-    const response = await axios.delete(`${API_URL}/products/${productId}`);
+    const response = await axios.delete(`${API_URL}/api/products/${productId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting product:", error);
