@@ -38,6 +38,16 @@ exports.getEmployeeSalary = async (req, res) => {
   }
 };
 
+exports.getAllEmployeeSalaries = async (req, res) => {
+  try {
+    const salaries = await EmployeeSalary.find({});
+    res.json(salaries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Update an employee's salary record
 exports.updateEmployeeSalary = async (req, res) => {
   try {
