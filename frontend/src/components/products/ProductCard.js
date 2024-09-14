@@ -16,7 +16,7 @@ const ProductCard = ({ product }) => {
     >
       <img
         className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-        src={product.image} // Ensure product object has an imageUrl field
+        src={`http://localhost:5000${product.image}`} // Ensure product object has an imageUrl field
         alt={product.name}
       />
       <div className="flex flex-col justify-between p-4 leading-normal">
