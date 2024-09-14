@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import employeeReducer from '../features/employee/employeeSlice';
 import productsReducer from '../features/products/productsSlice';
-import cartReducer from '../features/products/cartSlice';
 
 // Load cart state from localStorage
 const loadState = () => {
@@ -34,7 +33,6 @@ const store = configureStore({
   reducer: {
     employees: employeeReducer,
     products: productsReducer,
-    cart: cartReducer,
   },
   preloadedState,
 });

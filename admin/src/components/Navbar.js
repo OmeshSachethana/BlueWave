@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import CartView from "./products/CartView";
 import add_product_image from "../assets/add-product.png";
 import AddProductModal from "./modals/AddProductModal";
 import { getAllProducts } from "../services/productService";
@@ -134,9 +133,6 @@ const Navbar = () => {
         toggleModal={toggleModal}
         fetchProducts={fetchProducts}
       />
-
-      {/* Conditionally render the CartView if isCartOpen is true */}
-      {isCartOpen && <CartView toggleCart={toggleCart} />}
     </div>
   );
 };
