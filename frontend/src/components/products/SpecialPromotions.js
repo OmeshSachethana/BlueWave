@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import ProductCard from './ProductCard';
 
 const SpecialPromotions = () => {
+  // @ts-ignore
   const products = useSelector((state) => state.products.products);
 
   return (
