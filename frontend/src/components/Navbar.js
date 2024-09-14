@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import CartView from "./products/CartView";
-import add_product_image from "../assets/add-product.png";
 import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-
-  const location = useLocation();
 
   // Use useSelector to access the cart state
   const cartItems = useSelector((state) => state.cart.items);
@@ -18,10 +14,6 @@ const Navbar = () => {
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -70,16 +62,6 @@ const Navbar = () => {
 
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
-            {/* Conditionally render the Add Product image on the home page */}
-            {location.pathname === "/products" && (
-              <button onClick={toggleModal}>
-                <img
-                  src={add_product_image}
-                  alt="Add Product"
-                  className="h-8 w-8 cursor-pointer"
-                />
-              </button>
-            )}
             <div className="relative">
               <button
                 type="button"
