@@ -17,7 +17,7 @@ const EmployeeList = ({ onEdit }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-lg font-semibold mb-4">View Employees</h2>
+      <h2 className="text-lg font-semibold text-center mb-4">View Employees</h2>
       <table className="table-auto w-full border-collapse bg-gray-50 shadow-lg">
         <thead>
           <tr className="bg-blue-500 text-white">
