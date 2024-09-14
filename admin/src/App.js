@@ -2,8 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Employee from "./pages/Employee";
-import ProductList from "./components/products/ProductList";
-import SpecialPromotions from "./components/products/SpecialPromotions";
 
 function App() {
   return (
@@ -12,7 +10,7 @@ function App() {
       <div className="container mx-auto p-4">
         <main>
           <Routes>
-            <Route
+            {/* <Route
               path="/"
               element={
                 <>
@@ -23,7 +21,7 @@ function App() {
                   <SpecialPromotions />
                 </>
               }
-            />
+            /> */}
             <Route path="/employee" element={<Employee />} />
             {/* Add other routes here as needed */}
           </Routes>
