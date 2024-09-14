@@ -19,7 +19,6 @@ const store = configureStore({
     products: productsReducer,
     salary: salaryReducer,
   },
-  preloadedState,
 });
 
 // Subscribe to store updates to save cart to localStorage
