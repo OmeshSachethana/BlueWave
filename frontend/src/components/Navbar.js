@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import CartView from "./products/CartView";
 import add_product_image from "../assets/add-product.png";
-import AddProductModal from "./modals/AddProductModal";
-import { getAllProducts } from "../services/productService";
-import { setProducts } from "../features/products/productsSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const dispatch = useDispatch(); // Use dispatch here
 
   const location = useLocation();
 
@@ -26,15 +22,6 @@ const Navbar = () => {
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const productsData = await getAllProducts();
-      dispatch(setProducts(productsData)); // Dispatch the products to the store
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
   };
 
   return (
@@ -126,13 +113,6 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
-      {/* Add Product Modal */}
-      <AddProductModal
-        isOpen={isModalOpen}
-        toggleModal={toggleModal}
-        fetchProducts={fetchProducts}
-      />
 
       {/* Conditionally render the CartView if isCartOpen is true */}
       {isCartOpen && <CartView toggleCart={toggleCart} />}
