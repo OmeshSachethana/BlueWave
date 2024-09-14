@@ -33,5 +33,15 @@ const preloadedState = {
 const store = configureStore({
   reducer: {
     employees: employeeReducer,
+    products: productsReducer,
+    salary: salaryReducer,
   },
+  preloadedState,
 });
+
+// Subscribe to store updates to save cart to localStorage
+store.subscribe(() => {
+  saveState(store.getState());
+});
+
+export default store;
