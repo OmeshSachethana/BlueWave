@@ -4,7 +4,7 @@ import { createEmployeeSalary } from '../features/employee/salarySlice';
 
 const EmployeeSalaryForm = () => {
   const dispatch = useDispatch();
-  const { status, error, salaryDetails } = useSelector((state) => state.salary);
+  const { status, error } = useSelector((state) => state.salary);
 
   const [formData, setFormData] = useState({
     employeeID: '',
@@ -26,6 +26,7 @@ const EmployeeSalaryForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const netSalary = calculateNetSalary();
     const salaryData = {
       employeeID: formData.employeeID,
       basicSalary: parseFloat(formData.basicSalary),
@@ -34,6 +35,7 @@ const EmployeeSalaryForm = () => {
       overtimeRate: parseFloat(formData.overtimeRate),
       deductions: parseFloat(formData.deductions),
       epfRate: parseFloat(formData.epfRate),
+      netSalary,
     };
     dispatch(createEmployeeSalary(salaryData));
   };
@@ -55,6 +57,12 @@ const EmployeeSalaryForm = () => {
   const calculateTotalDeductions = () => {
     const deductions = parseFloat(formData.deductions) || 0;
     return deductions + calculateEPFContribution();
+  };
+
+  const calculateNetSalary = () => {
+    const grossSalary = calculateGrossSalary();
+    const totalDeductions = calculateTotalDeductions();
+    return grossSalary - totalDeductions;
   };
 
   return (
@@ -92,6 +100,7 @@ const EmployeeSalaryForm = () => {
             <p><strong>Gross Salary:</strong> ${calculateGrossSalary().toFixed(2)}</p>
             <p><strong>EPF Contribution:</strong> ${calculateEPFContribution().toFixed(2)}</p>
             <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
+            <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
           </div>
         )}
       </div>
