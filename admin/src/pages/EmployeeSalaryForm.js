@@ -151,7 +151,7 @@ const EmployeeSalaryForm = () => {
       <div className="mt-12">
         <h2 className="text-xl font-semibold text-center mb-6">Employee Salary Records</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-300">
+          <table className="table-auto w-full border-collapse bg-gray-50 shadow-lg">
             <thead>
               <tr className="bg-blue-500 text-white">
                 <th className="p-2 border border-gray-300">EID</th>
