@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Employee from "./pages/Employee";
+import EmployeeSalaryForm from './pages/EmployeeSalaryForm';
 import ProductList from "./components/products/ProductList";
 import SpecialPromotions from "./components/products/SpecialPromotions";
 
@@ -25,6 +26,7 @@ function App() {
               }
             />
             <Route path="/employee" element={<Employee />} />
+            <Route path="/payroll" element={<EmployeeSalaryForm />} />
             {/* Add other routes here as needed */}
           </Routes>
         </main>
