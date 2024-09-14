@@ -8,9 +8,12 @@ export const fetchEmployees = createAsyncThunk('employees/fetchEmployees', async
 });
 
 export const addEmployee = createAsyncThunk('employees/addEmployee', async (newEmployee) => {
-  const response = await axios.post('/api/employees', newEmployee);
-  return response.data.employee;
-});
+    console.log('Adding employee:', newEmployee);
+    const response = await axios.post('/api/employees', newEmployee);
+    console.log('Response:', response);
+    return response.data.employee;
+  });
+  
 
 export const updateEmployee = createAsyncThunk('employees/updateEmployee', async ({ id, updatedEmployee }) => {
   const response = await axios.put(`/api/employees/${id}`, updatedEmployee);

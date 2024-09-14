@@ -71,7 +71,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
           <label className="block text-gray-700">Employee ID:</label>
           <input
             type="text"
-            name="employeeId"
+            name="employeeID"
             className="w-full px-2 py-1 border rounded-md"
             value={formData.employeeID}
             onChange={handleChange}
