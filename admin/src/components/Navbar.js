@@ -34,17 +34,18 @@ const Navbar = () => {
               Special Offers
             </Link> */}
             <Link
-              to="/contact-us"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
-            >
-              Contact Us
-            </Link>
-            <Link
               to="/employee"
               className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
             >
               Employee
             </Link>
+            <Link
+              to="/payroll"
+              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+            >
+              Payroll
+            </Link>
+            
           </div>
 
          
