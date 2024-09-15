@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { FaEdit, FaCheck, FaSave } from "react-icons/fa"; // Import icons
-import { updateProduct } from '../../services/productService'; // Make sure to import the update service
+import { useState } from "react"; 
+import { FaEdit, FaCheck, FaSave, FaTrash } from "react-icons/fa";
+import { deleteProduct, updateProduct } from "../../services/productService"; 
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isSaved, setIsSaved] = useState(false); // New state to track save status
+  const [isSaved, setIsSaved] = useState(false);
   const [editedProduct, setEditedProduct] = useState({
     name: product.name,
     price: product.price,
@@ -13,21 +13,19 @@ const ProductCard = ({ product }) => {
     category: product.category,
     quantity: product.quantity,
   });
-  
-  const [selectedFile, setSelectedFile] = useState(null); // New state for handling the selected file
-  const [initialProduct, setInitialProduct] = useState(editedProduct); // Track initial product state
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [initialProduct, setInitialProduct] = useState(editedProduct);
 
   const handleEditClick = () => {
     if (isEditMode) {
-      // If exiting edit mode without saving, reset to original product values
       setEditedProduct(initialProduct);
-      setSelectedFile(null); // Reset the selected file if edit mode is canceled
+      setSelectedFile(null);
     } else {
-      // Save current state as initialProduct when entering edit mode
       setInitialProduct(editedProduct);
     }
     setIsEditMode(!isEditMode);
-    setIsSaved(false); // Reset save status when re-editing
+    setIsSaved(false);
   };
 
   const handleInputChange = (e) => {
@@ -41,13 +39,12 @@ const ProductCard = ({ product }) => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedFile(file); // Store the file in state to send it in the request
-
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         setEditedProduct((prevProduct) => ({
           ...prevProduct,
-          image: reader.result, // Update the image preview
+          image: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -56,13 +53,23 @@ const ProductCard = ({ product }) => {
 
   const handleSaveClick = async () => {
     try {
-      await updateProduct(product._id, editedProduct, selectedFile); // Pass the selected file
-      setIsSaved(true); // Show the green tick after successful save
-      setIsEditMode(false); // Exit edit mode after saving
-      setInitialProduct(editedProduct); // Update initial state after save
-      setSelectedFile(null); // Reset selected file after save
+      await updateProduct(product._id, editedProduct, selectedFile);
+      setIsSaved(true);
+      setIsEditMode(false);
+      setInitialProduct(editedProduct);
+      setSelectedFile(null);
     } catch (error) {
       console.error("Error updating product:", error);
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      await deleteProduct(product._id);
+      fetchProducts(); // Fetch updated products list after deletion
+      setDeleteSuccess(true); // Trigger global success message
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -70,7 +77,8 @@ const ProductCard = ({ product }) => {
     <div className="relative w-full max-w-lg mx-auto">
       <div
         className={`flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-2xl ${
-          !isEditMode && "hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+          !isEditMode &&
+          "hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
         }`}
       >
         <div className="w-full h-80 md:w-72 md:h-auto md:rounded-none md:rounded-l-lg flex items-center justify-center">
@@ -133,39 +141,27 @@ const ProductCard = ({ product }) => {
                 name="name"
                 value={editedProduct.name}
                 onChange={handleInputChange}
-                className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
-                placeholder="Product Name"
-              />
-              <input
-                type="text"
-                name="category"
-                value={editedProduct.category}
-                onChange={handleInputChange}
-                className="mb-2 text-lg text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
-                placeholder="Category"
+                className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
               />
               <textarea
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
-                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
-                placeholder="Product Description"
+                className="mb-3 font-normal text-gray-700 dark:text-gray-400"
               />
               <input
                 type="number"
                 name="quantity"
                 value={editedProduct.quantity}
                 onChange={handleInputChange}
-                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
-                placeholder="Quantity"
+                className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-300"
               />
               <input
                 type="number"
                 name="price"
                 value={editedProduct.price}
                 onChange={handleInputChange}
-                className="mb-3 font-normal text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
-                placeholder="Product Price"
+                className="mb-3 font-normal text-gray-700 dark:text-gray-400"
               />
             </>
           ) : (
@@ -188,7 +184,6 @@ const ProductCard = ({ product }) => {
             </>
           )}
 
-          {/* Save Button */}
           {isEditMode && (
             <button
               onClick={handleSaveClick}
@@ -198,16 +193,22 @@ const ProductCard = ({ product }) => {
             </button>
           )}
 
-          {/* Edit Button */}
           <button
             onClick={handleEditClick}
             className="absolute bottom-2 right-2 p-2 bg-yellow-200 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-300 flex items-center"
           >
-            {isSaved && (
-              <FaCheck className="text-green-500 mr-2" /> // Green tick icon before the edit icon
-            )}
+            {isSaved && <FaCheck className="text-green-500 mr-2" />}
             <FaEdit />
           </button>
+
+          {!isEditMode && (
+            <button
+              onClick={handleDeleteClick}
+              className="absolute bottom-2 right-12 p-2 bg-red-400 rounded-full text-white hover:bg-red-600"
+            >
+              <FaTrash />
+            </button>
+          )}
           &nbsp;
         </div>
       </div>

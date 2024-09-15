@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../services/productService";
 import { setProducts } from "../../features/products/productsSlice";
@@ -7,7 +7,7 @@ import ProductCard from "./ProductCard";
 const ProductList = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
-  
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -20,18 +20,53 @@ const ProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [dispatch]);
+    if (deleteSuccess) {
+      const timer = setTimeout(() => {
+        setDeleteSuccess(false);
+      }, 2000); // Hide the success message after 2 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }
+  }, [dispatch, deleteSuccess]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.slice(0, 6).map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <>
+      {/* Success Alert at the Top of the Page */}
+      {deleteSuccess && (
+        <div
+          className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-4 text-center"
+          role="alert"
+        >
+          <div className="flex justify-center">
+            <div className="py-1">
+              <svg
+                className="fill-current h-6 w-6 text-teal-500 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold">Product Deleted Successfully</p>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="container mx-auto p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {products.slice(0, 6).map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              fetchProducts={fetchProducts}
+              setDeleteSuccess={setDeleteSuccess}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
 export default ProductList;
-
