@@ -7,15 +7,9 @@ import { setProducts } from "../features/products/productsSlice";
 import { useDispatch } from "react-redux";
 
 const Navbar = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const dispatch = useDispatch(); // Use dispatch here
-
-  const location = useLocation();
-
-  const toggleCart = () => {
-    setIsCartOpen(!isCartOpen);
-  };
+  const location = useLocation(); // Get the current location
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -29,6 +23,9 @@ const Navbar = () => {
       console.error('Error fetching products:', error);
     }
   };
+
+  // Function to check if the link is active
+  const isActive = (path) => location.pathname === path;
 
   return (
     <div>
@@ -44,40 +41,49 @@ const Navbar = () => {
           <div className="flex space-x-4">
             <Link
               to="/"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Home
             </Link>
             <Link
               to="/products"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/products") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Products
             </Link>
             <Link
               to="/special-offers"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/special-offers") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Special Offers
             </Link>
             <Link
               to="/employee"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/employee") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Employee
             </Link>
             <Link
               to="/payroll"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/payroll") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Payroll
             </Link>
-            
           </div>
 
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
-            {/* Conditionally render the Add Product image on the home page */}
+            {/* Conditionally render the Add Product image on the products page */}
             {location.pathname === "/products" && (
               <button onClick={toggleModal}>
                 <img
@@ -102,4 +108,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
