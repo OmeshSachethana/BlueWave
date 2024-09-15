@@ -1,27 +1,25 @@
-import { useState } from "react"; 
+import { useState, useEffect } from "react";
 import { FaEdit, FaCheck, FaSave, FaTrash } from "react-icons/fa";
-import { deleteProduct, updateProduct } from "../../services/productService"; 
+import { deleteProduct, updateProduct } from "../../services/productService";
 
 const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [editedProduct, setEditedProduct] = useState({
-    name: product.name,
-    price: product.price,
-    image: product.image,
-    description: product.description,
-    category: product.category,
-    quantity: product.quantity,
-  });
-
+  const [editedProduct, setEditedProduct] = useState(product);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [initialProduct, setInitialProduct] = useState(editedProduct);
-  // const [deleteSuccess, setDeleteSuccess] = useState(false); // Success message state
+  const [initialProduct, setInitialProduct] = useState(product);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  useEffect(() => {
+    setEditedProduct(product);
+    setInitialProduct(product);
+  }, [product]);
 
   const handleEditClick = () => {
     if (isEditMode) {
       setEditedProduct(initialProduct);
       setSelectedFile(null);
+      setImagePreview(null);
     } else {
       setInitialProduct(editedProduct);
     }
@@ -31,9 +29,14 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Convert price and quantity to numbers
+    const updatedValue =
+      name === "price" || name === "quantity" ? parseFloat(value) : value;
+
     setEditedProduct((prevProduct) => ({
       ...prevProduct,
-      [name]: value,
+      [name]: updatedValue,
     }));
   };
 
@@ -41,24 +44,32 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setEditedProduct((prevProduct) => ({
-          ...prevProduct,
-          image: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSaveClick = async () => {
     try {
-      await updateProduct(product._id, editedProduct, selectedFile);
+      const updatedProduct = await updateProduct(
+        product._id,
+        editedProduct,
+        selectedFile
+      );
+
+      setEditedProduct((prevProduct) => ({
+        ...prevProduct,
+        ...updatedProduct,
+        price: updatedProduct.price ?? prevProduct.price,
+        quantity: updatedProduct.quantity ?? prevProduct.quantity,
+        image: updatedProduct.image ?? prevProduct.image, // Ensure updated image URL
+      }));
+
       setIsSaved(true);
       setIsEditMode(false);
-      setInitialProduct(editedProduct);
       setSelectedFile(null);
+      setImagePreview(null);
+
+      fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
     }
@@ -68,7 +79,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     try {
       await deleteProduct(product._id);
       fetchProducts();
-      setDeleteSuccess(true); // Show success message
+      setDeleteSuccess(true);
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -88,7 +99,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               htmlFor="dropzone-file"
               className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 text-center"
               style={{
-                backgroundImage: `url(${editedProduct.image})`,
+                backgroundImage: `url(${imagePreview || editedProduct.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -127,6 +138,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
             </label>
           ) : (
             <img
+              key={editedProduct.image} // Use image URL as key to force re-render
               className="object-cover w-full h-full md:w-72 md:h-auto rounded-t-lg md:rounded-none"
               src={editedProduct.image}
               alt={editedProduct.name}
@@ -196,7 +208,6 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               </p>
             </>
           )}
-
           {isEditMode && (
             <button
               onClick={handleSaveClick}
@@ -205,21 +216,19 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               <FaSave />
             </button>
           )}
-
           <button
             onClick={handleEditClick}
             className="absolute bottom-2 right-2 p-2 bg-yellow-200 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-300 flex items-center"
           >
-            {isSaved && (
-              <FaCheck className="text-green-500 mr-2" />
-            )}
+            {isSaved && <FaCheck className="text-green-500 mr-2" />}
             <FaEdit />
           </button>
-
           {!isEditMode && (
             <button
               onClick={handleDeleteClick}
-              className="absolute bottom-2 right-12 p-2 bg-red-400 rounded-full text-white hover:bg-red-600"
+              className={`absolute bottom-2 ${
+                isSaved ? "right-20" : "right-12"
+              } p-2 bg-red-400 rounded-full text-white hover:bg-red-600 transition-all duration-300`}
             >
               <FaTrash />
             </button>
@@ -232,3 +241,4 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
 };
 
 export default ProductCard;
+

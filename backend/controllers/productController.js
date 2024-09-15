@@ -95,31 +95,29 @@ exports.updateProduct = [
       const productId = req.params.id;
       let updatedData = req.body;
 
-      // Find the product first to check for existing image
+      // Find the product first to check for the existing image
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).json({ error: "Product not found" });
       }
 
-      // If a new image is uploaded, overwrite the existing image
+      // If a new image is uploaded
       if (req.file) {
-        // Use the same image file name to replace the old one
         const existingImagePath = path.join(__dirname, "../", product.image);
+        const newImageName = `${Date.now()}_${req.file.originalname}`;
+        const newImagePath = `/uploads/${newImageName}`;
 
-        // Check if the existing image file exists
+        // Check if the existing image file exists and remove it
         if (fs.existsSync(existingImagePath)) {
-          // Overwrite the existing image file with the new one
-          fs.writeFileSync(existingImagePath, fs.readFileSync(req.file.path));
-
-          // Remove the uploaded file (since we're reusing the existing file name)
-          fs.unlinkSync(req.file.path);
-        } else {
-          // If no existing file, just update the image with the new one
-          updatedData.image = `/uploads/${req.file.filename}`;
+          fs.unlinkSync(existingImagePath);
         }
+
+        // Move the new image to the correct location
+        fs.renameSync(req.file.path, path.join(__dirname, "../", newImagePath));
+        updatedData.image = newImagePath;
       }
 
-      // Update the product with the new data (excluding image if it's not updated)
+      // Update the product with the new data
       const updatedProduct = await Product.findByIdAndUpdate(
         productId,
         updatedData,
