@@ -16,6 +16,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [initialProduct, setInitialProduct] = useState(editedProduct);
+  // const [deleteSuccess, setDeleteSuccess] = useState(false); // Success message state
 
   const handleEditClick = () => {
     if (isEditMode) {
@@ -66,8 +67,8 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const handleDeleteClick = async () => {
     try {
       await deleteProduct(product._id);
-      fetchProducts(); // Fetch updated products list after deletion
-      setDeleteSuccess(true); // Trigger global success message
+      fetchProducts();
+      setDeleteSuccess(true); // Show success message
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -141,27 +142,39 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 name="name"
                 value={editedProduct.name}
                 onChange={handleInputChange}
-                className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                placeholder="Product Name"
+              />
+              <input
+                type="text"
+                name="category"
+                value={editedProduct.category}
+                onChange={handleInputChange}
+                className="mb-2 text-lg text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                placeholder="Category"
               />
               <textarea
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
-                className="mb-3 font-normal text-gray-700 dark:text-gray-400"
+                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                placeholder="Product Description"
               />
               <input
                 type="number"
                 name="quantity"
                 value={editedProduct.quantity}
                 onChange={handleInputChange}
-                className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-300"
+                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                placeholder="Quantity"
               />
               <input
                 type="number"
                 name="price"
                 value={editedProduct.price}
                 onChange={handleInputChange}
-                className="mb-3 font-normal text-gray-700 dark:text-gray-400"
+                className="mb-3 font-normal text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                placeholder="Product Price"
               />
             </>
           ) : (
@@ -197,7 +210,9 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
             onClick={handleEditClick}
             className="absolute bottom-2 right-2 p-2 bg-yellow-200 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-300 flex items-center"
           >
-            {isSaved && <FaCheck className="text-green-500 mr-2" />}
+            {isSaved && (
+              <FaCheck className="text-green-500 mr-2" />
+            )}
             <FaEdit />
           </button>
 
