@@ -172,7 +172,7 @@ const PaymentPage = () => {
                       Original price
                     </dt>
                     <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      ${orderAmount}
+                      Rs.{orderAmount}
                     </dd>
                   </dl>
                 </div>
@@ -181,7 +181,7 @@ const PaymentPage = () => {
                     Total
                   </dt>
                   <dd className="text-base font-bold text-gray-900 dark:text-white">
-                    ${orderAmount}
+                    Rs.{orderAmount}
                   </dd>
                 </dl>
               </div>

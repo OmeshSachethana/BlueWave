@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAllOrders, deleteOrder } from "../../services/orderService";
 
 const OrderList = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -36,7 +34,7 @@ const OrderList = () => {
       setFilteredOrders(orders);
     } else {
       setFilteredOrders(
-        orders.filter((order) => order.paymentStatus === filter)
+        orders.filter((order) => order.approvalStatus === filter)
       );
     }
   }, [filter, orders]);
@@ -67,8 +65,9 @@ const OrderList = () => {
     setModalOpen(false);
   };
 
-  const handlePaymentClick = (orderId, orderAmount) => {
-    navigate("/payment", { state: { orderId, orderAmount } });
+  const handleRejectClick = (orderId) => {
+    // Implement the reject functionality here
+    console.log(`Reject order with ID: ${orderId}`);
   };
 
   if (loading) return <p>Loading orders...</p>;
@@ -78,7 +77,7 @@ const OrderList = () => {
     <div className="container mx-auto flex min-h-screen">
       {/* Sidebar for filters */}
       <aside className="w-1/4 p-4 bg-gray-50">
-        <h3 className="font-bold text-xl mb-4">Filter by Payment Status</h3>
+        <h3 className="font-bold text-xl mb-4">Filter by Approval Status</h3>
         <ul>
           <li>
             <button
@@ -102,12 +101,22 @@ const OrderList = () => {
           </li>
           <li>
             <button
-              onClick={() => setFilter("Completed")}
+              onClick={() => setFilter("Approved")}
               className={`block w-full text-left py-2 px-4 rounded ${
-                filter === "Completed" ? "bg-blue-200" : "bg-white"
+                filter === "Approved" ? "bg-blue-200" : "bg-white"
               }`}
             >
-              Completed
+              Approved
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setFilter("Rejected")}
+              className={`block w-full text-left py-2 px-4 rounded ${
+                filter === "Rejected" ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              Rejected
             </button>
           </li>
         </ul>
@@ -116,12 +125,9 @@ const OrderList = () => {
       {/* Main content */}
       <section className="w-3/4 p-4">
         <div className="w-full max-w-7xl mx-auto">
-          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
-            Your Orders
+          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mb-11">
+            Customer Orders
           </h2>
-          <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
-            Thanks for placing an order. You can check your order summary below.
-          </p>
 
           {filteredOrders.length === 0 ? (
             <p className="mt-4 font-normal text-lg leading-8 text-gray-600 mb-11 text-center">
@@ -133,20 +139,17 @@ const OrderList = () => {
                 key={order._id}
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
-                {/* Conditionally rendered "Pay Now" button */}
-                {order.paymentStatus !== "Completed" &&
-                  order.approvalStatus === "Approved" && (
-                    <button
-                      className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
-                      onClick={() =>
-                        handlePaymentClick(order._id, order.totalPrice)
-                      }
-                    >
-                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                        Pay Now
-                      </span>
-                    </button>
-                  )}
+                {/* Conditionally rendered "Reject" button */}
+                {order.paymentStatus !== "Completed" && (
+                  <button
+                    className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                    onClick={() => handleRejectClick(order._id)}
+                  >
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                      Reject
+                    </span>
+                  </button>
+                )}
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
                   <div className="data">
@@ -259,41 +262,6 @@ const OrderList = () => {
 
                 <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between">
                   <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
-                    <button
-                      onClick={() => {
-                        if (order.paymentStatus !== "Completed") {
-                          openModal(order._id); // Open modal with order ID
-                        }
-                      }}
-                      className={`flex outline-0 py-6 sm:pr-6 sm:border-r border-gray-200 whitespace-nowrap gap-2 items-center justify-center font-semibold text-lg text-black bg-white transition-all duration-500 ${
-                        order.paymentStatus === "Completed"
-                          ? "cursor-not-allowed opacity-50"
-                          : "group hover:text-indigo-600"
-                      }`}
-                      disabled={order.paymentStatus === "Completed"}
-                    >
-                      <svg
-                        className={`stroke-black transition-all duration-500 ${
-                          order.paymentStatus === "Completed"
-                            ? ""
-                            : "group-hover:stroke-indigo-600"
-                        }`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                      >
-                        <path
-                          d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5"
-                          stroke=""
-                          strokeWidth="1.6"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      Cancel Order
-                    </button>
-
                     <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center flex-grow">
                       {order.paymentStatus === "Pending" ? (
                         order.paymentMethod === "Cash on Delivery" ? (
@@ -351,3 +319,4 @@ const OrderList = () => {
 };
 
 export default OrderList;
+

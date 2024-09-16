@@ -20,7 +20,7 @@ const Navbar = () => {
       const productsData = await getAllProducts();
       dispatch(setProducts(productsData)); // Dispatch the products to the store
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -42,7 +42,9 @@ const Navbar = () => {
             <Link
               to="/"
               className={`px-4 py-2 rounded ${
-                isActive("/") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Home
@@ -50,7 +52,9 @@ const Navbar = () => {
             <Link
               to="/products"
               className={`px-4 py-2 rounded ${
-                isActive("/products") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/products")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Products
@@ -58,7 +62,9 @@ const Navbar = () => {
             <Link
               to="/special-offers"
               className={`px-4 py-2 rounded ${
-                isActive("/special-offers") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/special-offers")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Special Offers
@@ -66,7 +72,9 @@ const Navbar = () => {
             <Link
               to="/employee"
               className={`px-4 py-2 rounded ${
-                isActive("/employee") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/employee")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Employee
@@ -74,10 +82,22 @@ const Navbar = () => {
             <Link
               to="/payroll"
               className={`px-4 py-2 rounded ${
-                isActive("/payroll") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/payroll")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Payroll
+            </Link>
+            <Link
+              to="/orders"
+              className={`px-4 py-2 rounded ${
+                isActive("/orders")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Customer Orders
             </Link>
           </div>
 
