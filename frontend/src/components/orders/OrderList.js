@@ -79,7 +79,7 @@ const OrderList = () => {
       {/* Sidebar for filters with sticky positioning */}
       <aside
         id="filter-sidebar"
-        className="fixed z-50 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
+        className="fixed z-10 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
       >
         <div className="flex flex-col items-start mb-3 md:items-start md:mb-0">
           <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">Filter by Payment Status</h3>
