@@ -99,6 +99,16 @@ const Navbar = () => {
             >
               Customer Orders
             </Link>
+            <Link
+              to="/inventory"
+              className={`px-4 py-2 rounded ${
+                isActive("/inventory")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Inventory
+            </Link>
           </div>
 
           {/* Cart Button Section */}

@@ -29,6 +29,7 @@ function App() {
             <Route path="/employee" element={<Employee />} />
             <Route path="/payroll" element={<EmployeeSalaryForm />} />
             <Route path="/orders" element={<OrderList />} />
+            {/* <Route path="/inventory" element={<Inventory />} /> */}
             {/* Add other routes here as needed */}
           </Routes>
         </main>
