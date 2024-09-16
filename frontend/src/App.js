@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Employee from "./pages/Employee";
 import ProductList from "./components/products/ProductList";
-import SpecialPromotions from "./components/products/SpecialPromotions";
+import OrderList from "./components/orders/OrderList";
 
 function App() {
   return (
@@ -20,11 +20,11 @@ function App() {
                     <h2 className="text-2xl font-bold mb-4">Products</h2>
                     <ProductList />
                   </section>
-                  <SpecialPromotions />
                 </>
               }
             />
             <Route path="/employee" element={<Employee />} />
+            <Route path="/orders" element={<OrderList />} />
             {/* Add other routes here as needed */}
           </Routes>
         </main>

@@ -51,12 +51,12 @@ const Navbar = () => {
               Products
             </Link>
             <Link
-              to="/special-offers"
+              to="/subscription-plans"
               className={`px-4 py-2 rounded ${
-                isActive("/special-offers") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/subscription-plans") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
-              Special Offers
+              Subscription Plans
             </Link>
             <Link
               to="/contact-us"
@@ -73,6 +73,14 @@ const Navbar = () => {
               }`}
             >
               Employee
+            </Link>
+            <Link
+              to="/orders"
+              className={`px-4 py-2 rounded ${
+                isActive("/orders") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Your Orders
             </Link>
           </div>
 
