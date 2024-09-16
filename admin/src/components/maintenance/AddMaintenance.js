@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addMaintenance } from '../../features/maintenance/maintenanceSlice';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const AddMaintenance = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const AddMaintenance = () => {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();  // Initialize useNavigate
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,6 +21,17 @@ const AddMaintenance = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(addMaintenance(formData));
+    setFormData({
+      name: '',
+      date: '',
+      description: '',
+      status: 'Pending',
+    });
+  };
+
+  // Function to handle navigation to Maintenance List
+  const goToMaintenanceList = () => {
+    navigate('/maintenancelist');  // Adjust the path based on your route
   };
 
   return (
@@ -77,6 +90,14 @@ const AddMaintenance = () => {
           Add Maintenance
         </button>
       </form>
+
+      {/* Button to navigate to Maintenance List */}
+      <button
+        onClick={goToMaintenanceList}
+        className="w-full py-2 px-4 mt-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+      >
+        Go to Maintenance List
+      </button>
     </div>
   );
 };

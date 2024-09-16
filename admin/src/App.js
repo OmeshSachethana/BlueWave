@@ -7,6 +7,7 @@ import ProductList from "./components/products/ProductList";
 import SpecialPromotions from "./components/products/SpecialPromotions";
 import OrderList from "./components/orders/OrderList";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
+import MaintenanceList from "./features/maintenance/maintenanceList";
 
 function App() {
   return (
@@ -30,7 +31,9 @@ function App() {
             <Route path="/employee" element={<Employee />} />
             <Route path="/payroll" element={<EmployeeSalaryForm />} />
             <Route path="/orders" element={<OrderList />} />
-            <Route path="/inventory" element={<AddMaintenance />} />
+            <Route path="/maintenance" element={<AddMaintenance />} />
+            <Route path="/maintenancelist" element={<MaintenanceList />} />
+            
             {/* Add other routes here as needed */}
           </Routes>
         </main>
