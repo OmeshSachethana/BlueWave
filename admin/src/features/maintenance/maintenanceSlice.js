@@ -14,28 +14,78 @@ export const addMaintenance = createAsyncThunk(
   }
 );
 
-const maintenanceSlice = createSlice({
-  name: 'maintenance',
-  initialState: {
-    maintenanceList: [],
-    status: null,
-    error: null,
-  },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(addMaintenance.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(addMaintenance.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.maintenanceList.push(action.payload);
-      })
-      .addCase(addMaintenance.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      });
-  }
-});
+// Add this in your Redux slice
+export const fetchAllMaintenance = createAsyncThunk(
+    'maintenance/fetchAllMaintenance',
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await axios.get('/api/maintenance');
+        return response.data.data;
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
 
-export default maintenanceSlice.reducer;
+// Async thunk for deleting a maintenance record
+export const deleteMaintenance = createAsyncThunk(
+    'maintenance/deleteMaintenance',
+    async (id, { rejectWithValue }) => {
+      try {
+        await axios.delete(`/api/maintenance/${id}`);
+        return id;
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
+  
+  // Async thunk to update the maintenance status
+export const updateMaintenanceStatus = createAsyncThunk(
+    'maintenance/updateMaintenanceStatus',
+    async ({ id, status }, { rejectWithValue }) => {
+      try {
+        const response = await axios.put(`/api/maintenance/${id}`, { status });
+        return response.data.data; // Assuming the response contains the updated record
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
+  
+  
+  const maintenanceSlice = createSlice({
+    name: 'maintenance',
+    initialState: {
+      maintenanceList: [],
+      status: null,
+      error: null,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+      builder
+        // Fetch all maintenance records
+        .addCase(fetchAllMaintenance.fulfilled, (state, action) => {
+          state.maintenanceList = action.payload;
+        })
+        .addCase(fetchAllMaintenance.rejected, (state, action) => {
+          state.error = action.payload;
+        })
+        .addCase(deleteMaintenance.fulfilled, (state, action) => {
+          state.maintenanceList = state.maintenanceList.filter(
+            (maintenance) => maintenance._id !== action.payload
+          );
+        })
+        // Update the maintenance record status
+        .addCase(updateMaintenanceStatus.fulfilled, (state, action) => {
+        const index = state.maintenanceList.findIndex(
+          (maintenance) => maintenance._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.maintenanceList[index] = action.payload; // Update the status
+        }
+      });
+    },
+  });
+  
+  export default maintenanceSlice.reducer;
