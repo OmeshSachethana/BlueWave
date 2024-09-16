@@ -103,63 +103,75 @@ const OrderList = () => {
 
   return (
     <div className="container mx-auto flex min-h-screen">
-      <aside className="w-1/4 p-4 bg-gray-50">
-        <h3 className="font-bold text-xl mb-4">Filter by Status</h3>
-        <ul>
-          <li>
-            <button
-              onClick={() => setFilter("All")}
-              className={`block w-full text-left py-2 px-4 rounded ${
-                filter === "All" ? "bg-blue-200" : "bg-white"
-              }`}
-            >
-              All
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setFilter("Pending")}
-              className={`block w-full text-left py-2 px-4 rounded ${
-                filter === "Pending" ? "bg-blue-200" : "bg-white"
-              }`}
-            >
-              Pending
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setFilter("Approved")}
-              className={`block w-full text-left py-2 px-4 rounded ${
-                filter === "Approved" ? "bg-blue-200" : "bg-white"
-              }`}
-            >
-              Approved
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setFilter("Rejected")}
-              className={`block w-full text-left py-2 px-4 rounded ${
-                filter === "Rejected" ? "bg-blue-200" : "bg-white"
-              }`}
-            >
-              Rejected
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => setFilter("Already Paid")}
-              className={`mt-6 block w-full text-left py-2 px-4 rounded ${
-                filter === "Already Paid" ? "bg-blue-200" : "bg-white"
-              }`}
-            >
-              Already Paid
-            </button>
-          </li>
-        </ul>
+      {/* Sidebar for filters with sticky positioning */}
+      <aside
+        id="filter-sidebar"
+        className="fixed z-50 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
+      >
+        <div className="flex flex-col items-start mb-3 md:items-start md:mb-0">
+          <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+            Filter by Status
+          </h3>
+          <ul className="space-y-2 w-full">
+            {" "}
+            {/* Ensuring full width for the list */}
+            <li>
+              <button
+                onClick={() => setFilter("All")}
+                className={`block w-full text-left py-2 px-4 rounded ${
+                  filter === "All"
+                    ? "bg-blue-200"
+                    : "bg-white dark:bg-gray-800 dark:text-white"
+                }`}
+              >
+                All
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setFilter("Pending")}
+                className={`block w-full text-left py-2 px-4 rounded ${
+                  filter === "Pending" ? "bg-blue-200" : "bg-white"
+                }`}
+              >
+                Pending
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setFilter("Approved")}
+                className={`block w-full text-left py-2 px-4 rounded ${
+                  filter === "Approved" ? "bg-blue-200" : "bg-white"
+                }`}
+              >
+                Approved
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setFilter("Rejected")}
+                className={`block w-full text-left py-2 px-4 rounded ${
+                  filter === "Rejected" ? "bg-blue-200" : "bg-white"
+                }`}
+              >
+                Rejected
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setFilter("Already Paid")}
+                className={`mt-6 block w-full text-left py-2 px-4 rounded ${
+                  filter === "Already Paid" ? "bg-blue-200" : "bg-white"
+                }`}
+              >
+                Already Paid
+              </button>
+            </li>
+          </ul>
+        </div>
       </aside>
 
-      <section className="w-3/4 p-4">
+      <section className="w-3/4 p-4 ml-[calc(25%+1rem)]">
         <div className="w-full max-w-7xl mx-auto">
           <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mb-11">
             Customer Orders
