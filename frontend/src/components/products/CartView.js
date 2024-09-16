@@ -6,12 +6,14 @@ import {
   decreaseQuantity,
   clearCart,
 } from "../../features/products/cartSlice"; // Import the actions
-import orderService from "../../services/orderService";
+import { placeOrder } from "../../services/orderService";
 
 const CartView = ({ toggleCart }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   const [orderSuccess, setOrderSuccess] = useState(false); // State to manage success message visibility
+  const [paymentMethod, setPaymentMethod] = useState(""); // State for selected payment method
+  const [error, setError] = useState(""); // State for error message
 
   const handleRemoveFromCart = (productId) => {
     dispatch(removeFromCart(productId));
@@ -32,20 +34,27 @@ const CartView = ({ toggleCart }) => {
   };
 
   const handleCheckout = async () => {
+    // Check if a payment method is selected
+    if (!paymentMethod) {
+      setError("Please select a payment method.");
+      return;
+    }
+
     const orderData = {
       orderDetails: cartItems.map((item) => ({
         product: item._id,
         quantity: item.quantity,
       })),
       totalPrice: parseFloat(calculateSubtotal()),
-      paymentMethod: "Cash on Delivery", // or other methods if available
+      paymentMethod, // Use the selected payment method
     };
 
     try {
-      const response = await orderService.placeOrder(orderData);
+      const response = await placeOrder(orderData);
       console.log("Order placed successfully:", response);
       setOrderSuccess(true); // Show success message
       dispatch(clearCart()); // Clear the cart
+      setError(""); // Clear error message
       // Optionally close the cart after a short delay
       // setTimeout(() => toggleCart(), 2000);
     } catch (error) {
@@ -105,7 +114,7 @@ const CartView = ({ toggleCart }) => {
                     </div>
                   </div>
 
-                  {/* Success Message moved to the top, under "Shopping cart" */}
+                  {/* Success Message */}
                   {orderSuccess && (
                     <div
                       id="alert-additional-content-3"
@@ -206,6 +215,41 @@ const CartView = ({ toggleCart }) => {
                 </div>
 
                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                  {/* Payment Method Selection */}
+                  <div className="mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Select Payment Method
+                    </h3>
+                    <div className="mt-2">
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="Cash on Delivery"
+                          checked={paymentMethod === "Cash on Delivery"}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="mr-2"
+                        />
+                        Cash on Delivery
+                      </label>
+                      <label className="flex items-center mt-2">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="Card Payment"
+                          checked={paymentMethod === "Card Payment"}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="mr-2"
+                        />
+                        Card Payment
+                      </label>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <p className="text-red-500 text-sm mb-4">{error}</p>
+                  )}
+
                   <div className="flex justify-between text-base font-medium text-gray-900">
                     <p>Subtotal</p>
                     <p>Rs: {calculateSubtotal()}</p>
