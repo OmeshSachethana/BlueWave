@@ -1,29 +1,40 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { updatePaymentStatus } from "../../services/orderService";
+import { useDispatch } from "react-redux";
+import { createPayment } from "../../features/payment/paymentSlice";
 
 const PaymentPage = () => {
   const location = useLocation();
   const { orderId, orderAmount } = location.state || {};
 
-  const [formData, setFormData] = useState();
+  const dispatch = useDispatch();
+
+  const [formData, setFormData] = useState({
+    type: "",
+    cardNumber: "",
+    name: "",
+    expiryDate: "",
+    cvv: "",
+  });
 
   const handleChange = (e) => {
-    setFormData({ [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Handle payment submission logic here
-    console.log("Form data submitted:", formData);
-
     try {
+      // Dispatch the createPayment action
+      await dispatch(createPayment(formData)).unwrap();
+
       // Assuming payment goes through successfully, update the payment status to "Completed"
       await updatePaymentStatus(orderId, "Completed");
       alert(`Payment of Rs.${orderAmount} for Order #${orderId} completed!`);
     } catch (error) {
-      console.error("Payment status update failed:", error);
+      console.error("Payment processing failed:", error);
       alert("Error processing payment. Please try again.");
     }
   };
@@ -42,16 +53,36 @@ const PaymentPage = () => {
               className="w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6 lg:max-w-xl lg:p-8"
             >
               <div className="mb-6 grid grid-cols-2 gap-4">
+                {/* Card Type */}
                 <div className="col-span-2 sm:col-span-1">
                   <label
-                    htmlFor="full_name"
+                    htmlFor="type"
+                    className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Card Type*
+                  </label>
+                  <select
+                    id="type"
+                    onChange={handleChange}
+                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                    required
+                  >
+                    <option value="">Select Card Type</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                  </select>
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="name"
                     className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Full name (as displayed on card)*
                   </label>
                   <input
                     type="text"
-                    id="full_name"
+                    id="name"
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                     placeholder="Bonnie Green"
@@ -61,14 +92,14 @@ const PaymentPage = () => {
 
                 <div className="col-span-2 sm:col-span-1">
                   <label
-                    htmlFor="card-number-input"
+                    htmlFor="cardNumber"
                     className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Card number*
                   </label>
                   <input
                     type="text"
-                    id="card-number-input"
+                    id="cardNumber"
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                     placeholder="xxxx-xxxx-xxxx-xxxx"
@@ -78,7 +109,7 @@ const PaymentPage = () => {
 
                 <div>
                   <label
-                    htmlFor="card-expiration-input"
+                    htmlFor="expiryDate"
                     className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Card expiration*
@@ -102,7 +133,7 @@ const PaymentPage = () => {
                       </svg>
                     </div>
                     <input
-                      id="card-expiration-input"
+                      id="expiryDate"
                       type="text"
                       onChange={handleChange}
                       className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
@@ -113,7 +144,7 @@ const PaymentPage = () => {
                 </div>
                 <div>
                   <label
-                    htmlFor="cvv-input"
+                    htmlFor="cvv"
                     className="mb-2 flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     CVV*
@@ -147,7 +178,7 @@ const PaymentPage = () => {
                   </label>
                   <input
                     type="number"
-                    id="cvv-input"
+                    id="cvv"
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                     placeholder="•••"

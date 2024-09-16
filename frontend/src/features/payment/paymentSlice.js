@@ -1,13 +1,15 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+// src/features/payment/paymentSlice.js
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL + "/api/payments";
 
-export const updatePaymentStatus = createAsyncThunk(
-  'payment/updateStatus',
-  async ({ orderId, status }, { rejectWithValue }) => {
+// Async Thunk for creating a payment
+export const createPayment = createAsyncThunk(
+  "payment/createPayment",
+  async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${backendUrl}/api/payments/${orderId}`, { status });
+      const response = await axios.post(API_URL, paymentData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -16,22 +18,25 @@ export const updatePaymentStatus = createAsyncThunk(
 );
 
 const paymentSlice = createSlice({
-  name: 'payment',
+  name: "payment",
   initialState: {
-    status: null,
+    payment: null,
+    loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(updatePaymentStatus.pending, (state) => {
-        state.status = 'loading';
+      .addCase(createPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
-      .addCase(updatePaymentStatus.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+      .addCase(createPayment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payment = action.payload;
       })
-      .addCase(updatePaymentStatus.rejected, (state, action) => {
-        state.status = 'failed';
+      .addCase(createPayment.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
