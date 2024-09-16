@@ -116,6 +116,27 @@ exports.updateDeliveryStatus = async (req, res) => {
   }
 };
 
+// Update payment status
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { paymentStatus } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) return res.status(404).json({ error: "Order not found" });
+
+    order.paymentStatus = paymentStatus;
+    await order.save();
+
+    res
+      .status(200)
+      .json({ message: "Payment status updated successfully", order });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error updating payment status", details: error });
+  }
+};
+
 // Delete an order
 exports.deleteOrder = async (req, res) => {
   try {

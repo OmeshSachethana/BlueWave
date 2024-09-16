@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAllOrders, deleteOrder } from "../../services/orderService";
 
 const OrderList = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +52,10 @@ const OrderList = () => {
     setModalOpen(false);
   };
 
+  const handlePaymentClick = (orderId, orderAmount) => {
+    navigate("/payment", { state: { orderId, orderAmount } });
+  };
+
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p>Error loading orders: {error.message}</p>;
 
@@ -72,8 +78,23 @@ const OrderList = () => {
             orders.map((order) => (
               <div
                 key={order._id}
-                className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6"
+                className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
+                {/* Conditionally rendered "Pay Now" button */}
+                {order.paymentStatus !== "Completed" &&
+                  order.approvalStatus === "Approved" && (
+                    <button
+                      className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
+                      onClick={() =>
+                        handlePaymentClick(order._id, order.totalPrice)
+                      }
+                    >
+                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        Pay Now
+                      </span>
+                    </button>
+                  )}
+
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
                   <div className="data">
                     <p className="font-semibold text-base leading-7 text-black">
@@ -85,7 +106,9 @@ const OrderList = () => {
                     <p className="font-semibold text-base leading-7 text-black mt-4">
                       Order Date:{" "}
                       <span className="text-gray-400 font-medium">
-                        {new Date(order.createdAt).toLocaleDateString()}
+                        {new Date(order.createdAt).toLocaleString("en-GB", {
+                          hour12: false,
+                        })}
                       </span>
                     </p>
                     <p className="font-semibold text-base leading-7 text-black mt-2">
@@ -127,6 +150,12 @@ const OrderList = () => {
                                   {item.quantity}
                                 </span>
                               </p>
+                              <p className="font-medium text-base leading-7 text-black pr-4 mr-4">
+                                Category:{" "}
+                                <span className="text-gray-500">
+                                  {item.product.category}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -152,6 +181,21 @@ const OrderList = () => {
                                 }`}
                             >
                               {order.delivery.deliveryStatus}
+                            </p>
+                          </div>
+                          <div className="flex gap-3 lg:block ml-6">
+                            <p className="font-medium text-sm leading-7 text-black">
+                              Approval Status
+                            </p>
+                            <p
+                              className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
+                                ${
+                                  order.approvalStatus === "Approved"
+                                    ? "bg-emerald-50 text-emerald-600"
+                                    : "bg-red-50 text-red-600"
+                                }`}
+                            >
+                              {order.approvalStatus}
                             </p>
                           </div>
                         </div>
@@ -184,8 +228,13 @@ const OrderList = () => {
                       Cancel Order
                     </button>
                     <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center">
-                      Paid using {order.paymentMethod}{" "}
-                      <span className="text-gray-500">ending with XXXX</span>
+                      {order.paymentStatus === "Pending" ? (
+                        <span className="text-red-600">Payment Pending</span>
+                      ) : (
+                        <span className="text-emerald-600">
+                          Paid using {order.paymentMethod}
+                        </span>
+                      )}
                     </p>
                     <p className="font-semibold text-lg text-black py-6 ps-[150px]">
                       Total Price:{" "}

@@ -17,6 +17,9 @@ router.put('/:id/approve', orderController.approveOrder);
 // Update delivery status
 router.put('/:id/delivery', orderController.updateDeliveryStatus);
 
+// Update delivery status
+router.put('/:id/payment', orderController.updatePaymentStatus);
+
 // Delete an order (admin only)
 router.delete('/:id', orderController.deleteOrder);
 

@@ -61,3 +61,18 @@ export const deleteOrder = async (orderId) => {
     throw error.response ? error.response.data : new Error('Error deleting order');
   }
 };
+
+// Update payment status
+export const updatePaymentStatus = async (orderId, paymentStatus) => {
+  try {
+    const response = await axios.put(`${API_URL}/api/orders/${orderId}/payment`, { paymentStatus }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    throw error.response ? error.response.data : new Error('Error updating payment status');
+  }
+};
