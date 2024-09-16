@@ -31,8 +31,8 @@ function App() {
             <Route path="/employee" element={<Employee />} />
             <Route path="/payroll" element={<EmployeeSalaryForm />} />
             <Route path="/orders" element={<OrderList />} />
-            <Route path="/inventory" element={<AddMaintenance />} />
-            <Route path="/inventorylist" element={<MaintenanceList />} />
+            <Route path="/maintenance" element={<AddMaintenance />} />
+            <Route path="/maintenancelist" element={<MaintenanceList />} />
             
             {/* Add other routes here as needed */}
           </Routes>
