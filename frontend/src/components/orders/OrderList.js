@@ -77,7 +77,7 @@ const OrderList = () => {
   return (
     <div className="container mx-auto flex min-h-screen">
       {/* Sidebar for filters */}
-      <aside className="w-1/4 p-4 border-gray-300">
+      <aside className="w-1/4 p-4 bg-gray-50">
         <h3 className="font-bold text-xl mb-4">Filter by Payment Status</h3>
         <ul>
           <li>
@@ -260,11 +260,24 @@ const OrderList = () => {
                 <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between ">
                   <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
                     <button
-                      onClick={() => openModal(order._id)} // Open modal with order ID
-                      className="flex outline-0 py-6 sm:pr-6 sm:border-r border-gray-200 whitespace-nowrap gap-2 items-center justify-center font-semibold group text-lg text-black bg-white transition-all duration-500 hover:text-indigo-600"
+                      onClick={() => {
+                        if (order.paymentStatus !== "Completed") {
+                          openModal(order._id); // Open modal with order ID
+                        }
+                      }}
+                      className={`flex outline-0 py-6 sm:pr-6 sm:border-r border-gray-200 whitespace-nowrap gap-2 items-center justify-center font-semibold text-lg text-black bg-white transition-all duration-500 ${
+                        order.paymentStatus === "Completed"
+                          ? "cursor-not-allowed opacity-50"
+                          : "group hover:text-indigo-600"
+                      }`}
+                      disabled={order.paymentStatus === "Completed"}
                     >
                       <svg
-                        className="stroke-black transition-all duration-500 group-hover:stroke-indigo-600"
+                        className={`stroke-black transition-all duration-500 ${
+                          order.paymentStatus === "Completed"
+                            ? ""
+                            : "group-hover:stroke-indigo-600"
+                        }`}
                         xmlns="http://www.w3.org/2000/svg"
                         width="22"
                         height="22"
@@ -280,9 +293,16 @@ const OrderList = () => {
                       </svg>
                       Cancel Order
                     </button>
+
                     <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center">
                       {order.paymentStatus === "Pending" ? (
-                        <span className="text-red-600">Payment Pending</span>
+                        order.paymentMethod === "Cash on Delivery" ? (
+                          <span className="text-emerald-600">
+                            Cash on Delivery
+                          </span>
+                        ) : (
+                          <span className="text-red-600">Payment Pending</span>
+                        )
                       ) : (
                         <span className="text-emerald-600">
                           Paid using {order.paymentMethod}
