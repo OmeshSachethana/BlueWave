@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getAllOrders, deleteOrder } from "../../services/orderService";
+import {
+  getAllOrders,
+  updateApprovalStatus,
+  updateDeliveryStatus,
+} from "../../services/orderService";
 
 const OrderList = () => {
   const dispatch = useDispatch();
@@ -8,8 +12,6 @@ const OrderList = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("All");
 
   const fetchOrders = async () => {
@@ -30,44 +32,70 @@ const OrderList = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    let filtered = [];
     if (filter === "All") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.approvalStatus === filter)
+      filtered = orders;
+    } else if (filter === "Already Paid") {
+      filtered = orders.filter((order) => order.paymentStatus === "Completed");
+    } else if (filter === "Approved") {
+      filtered = orders.filter(
+        (order) =>
+          order.approvalStatus === "Approved" &&
+          order.paymentStatus !== "Completed"
       );
+    } else {
+      filtered = orders.filter((order) => order.approvalStatus === filter);
     }
+    setFilteredOrders(filtered);
   }, [filter, orders]);
 
-  const handleDeleteOrder = async () => {
+  const handleRejectClick = async (orderId) => {
     try {
-      await deleteOrder(orderToDelete);
+      await updateApprovalStatus(orderId, "reject"); // Sending 'reject' to backend
       setOrders((prevOrders) =>
-        prevOrders.filter((order) => order._id !== orderToDelete)
+        prevOrders.map((order) =>
+          order._id === orderId
+            ? { ...order, approvalStatus: "Rejected" }
+            : order
+        )
       );
-      setFilteredOrders((prevOrders) =>
-        prevOrders.filter((order) => order._id !== orderToDelete)
-      );
-      setModalOpen(false);
     } catch (err) {
-      console.error("Error deleting order:", err);
-      // Optionally, show an error message to the user
+      console.error("Error rejecting order:", err);
     }
   };
 
-  const openModal = (orderId) => {
-    setOrderToDelete(orderId);
-    setModalOpen(true);
+  const handleApproveClick = async (orderId) => {
+    try {
+      await updateApprovalStatus(orderId, "approve"); // Sending 'approve' to backend
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId
+            ? { ...order, approvalStatus: "Approved" }
+            : order
+        )
+      );
+    } catch (err) {
+      console.error("Error approving order:", err);
+    }
   };
 
-  const closeModal = () => {
-    setOrderToDelete(null);
-    setModalOpen(false);
-  };
-
-  const handleRejectClick = (orderId) => {
-    // Implement the reject functionality here
-    console.log(`Reject order with ID: ${orderId}`);
+  const handleShipClick = async (orderId) => {
+    try {
+      // Assume updateDeliveryStatus is a function that updates the delivery status to 'Shipped' in the backend
+      await updateDeliveryStatus(orderId, "Shipped");
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId
+            ? {
+                ...order,
+                delivery: { ...order.delivery, deliveryStatus: "Shipped" },
+              }
+            : order
+        )
+      );
+    } catch (err) {
+      console.error("Error updating delivery status:", err);
+    }
   };
 
   if (loading) return <p>Loading orders...</p>;
@@ -75,9 +103,8 @@ const OrderList = () => {
 
   return (
     <div className="container mx-auto flex min-h-screen">
-      {/* Sidebar for filters */}
       <aside className="w-1/4 p-4 bg-gray-50">
-        <h3 className="font-bold text-xl mb-4">Filter by Approval Status</h3>
+        <h3 className="font-bold text-xl mb-4">Filter by Status</h3>
         <ul>
           <li>
             <button
@@ -119,10 +146,19 @@ const OrderList = () => {
               Rejected
             </button>
           </li>
+          <li>
+            <button
+              onClick={() => setFilter("Already Paid")}
+              className={`mt-6 block w-full text-left py-2 px-4 rounded ${
+                filter === "Already Paid" ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              Already Paid
+            </button>
+          </li>
         </ul>
       </aside>
 
-      {/* Main content */}
       <section className="w-3/4 p-4">
         <div className="w-full max-w-7xl mx-auto">
           <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mb-11">
@@ -139,16 +175,57 @@ const OrderList = () => {
                 key={order._id}
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
-                {/* Conditionally rendered "Reject" button */}
+                {/* Conditionally rendered buttons */}
                 {order.paymentStatus !== "Completed" && (
-                  <button
-                    className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
-                    onClick={() => handleRejectClick(order._id)}
-                  >
-                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                      Reject
-                    </span>
-                  </button>
+                  <div className="absolute top-4 right-4 flex space-x-2">
+                    {/* Show Already Shipped disabled button */}
+                    {order.delivery.deliveryStatus === "Shipped" ? (
+                      <button
+                        class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-500 rounded-lg bg-gray-200 cursor-not-allowed"
+                        disabled
+                      >
+                        <span class="relative px-5 py-2.5 bg-white rounded-md">
+                          Already Shipped
+                        </span>
+                      </button>
+                    ) : (
+                      filter !== "Rejected" && (
+                        <button
+                          class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                          onClick={() => handleShipClick(order._id)}
+                        >
+                          <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Ship
+                          </span>
+                        </button>
+                      )
+                    )}
+
+                    {/* Show Reject button only if filter is not Rejected */}
+                    {filter !== "Rejected" &&
+                      order.delivery.deliveryStatus !== "Shipped" && (
+                        <button
+                          className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                          onClick={() => handleRejectClick(order._id)}
+                        >
+                          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            Reject
+                          </span>
+                        </button>
+                      )}
+
+                    {/* Show Approve button only if filter is not Approved */}
+                    {filter !== "Approved" && (
+                      <button
+                        className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                        onClick={() => handleApproveClick(order._id)}
+                      >
+                        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                          Approve
+                        </span>
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
@@ -179,16 +256,12 @@ const OrderList = () => {
                 {order.orderDetails.map((item, index) => (
                   <div
                     key={index}
-                    className="w-full px-3 min-[400px]:px-6 py-6 border-b border-gray-200 gap-6 flex flex-col lg:flex-row items-center"
+                    className="w-full px-3 min-[400px]:px-6 py-6 border-b border-gray-200 gap-6 flex flex-col lg:flex-row"
                   >
-                    <div className="img-box max-lg:w-full">
+                    <div className="w-1/4">
                       <img
-                        src={
-                          item.product.image
-                            ? `http://localhost:5000${item.product.image}`
-                            : "https://via.placeholder.com/140"
-                        }
-                        alt={item.product.name || "Product image"}
+                        src={item.product.image || "default-image-url"}
+                        alt={item.product.name || "Product Image"}
                         className="aspect-square w-full lg:max-w-[140px] rounded-xl object-cover"
                       />
                     </div>
@@ -231,7 +304,7 @@ const OrderList = () => {
                             <p
                               className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
                                 ${
-                                  order.delivery.deliveryStatus === "Delivered"
+                                  order.delivery.deliveryStatus === "Shipped"
                                     ? "bg-emerald-50 text-emerald-600"
                                     : "bg-red-50 text-red-600"
                                 }`}
@@ -280,37 +353,13 @@ const OrderList = () => {
                   </div>
                   <p className="font-semibold text-lg text-black py-6">
                     Total Price:{" "}
-                    <span className="text-indigo-600">Rs.{order.totalPrice}</span>
+                    <span className="text-indigo-600">
+                      Rs.{order.totalPrice}
+                    </span>
                   </p>
                 </div>
               </div>
             ))
-          )}
-
-          {/* Modal for deletion confirmation */}
-          {modalOpen && (
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
-                <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
-                <p className="mb-4">
-                  Are you sure you want to delete this order?
-                </p>
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={handleDeleteOrder}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
           )}
         </div>
       </section>
@@ -319,4 +368,3 @@ const OrderList = () => {
 };
 
 export default OrderList;
-

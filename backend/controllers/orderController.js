@@ -5,7 +5,8 @@ const SubscriptionPlan = require("../models/SubscriptionPlan");
 // User places an order
 exports.placeOrder = async (req, res) => {
   try {
-    const { user, orderDetails, paymentMethod, delivery, subscriptionPlanId } = req.body;
+    const { user, orderDetails, paymentMethod, delivery, subscriptionPlanId } =
+      req.body;
 
     let totalPrice = 0;
     const orderItems = [];
@@ -54,7 +55,13 @@ exports.placeOrder = async (req, res) => {
 // Admin approves or rejects an order
 exports.approveOrder = async (req, res) => {
   try {
-    const { decision } = req.body; // 'approve' or 'reject'
+    const { decision } = req.body;
+
+    // Validate decision input
+    if (!["approve", "reject"].includes(decision)) {
+      return res.status(400).json({ error: "Invalid decision value" });
+    }
+
     const order = await Order.findById(req.params.id);
 
     if (!order) return res.status(404).json({ error: "Order not found" });
@@ -62,10 +69,9 @@ exports.approveOrder = async (req, res) => {
     order.approvalStatus = decision === "approve" ? "Approved" : "Rejected";
     await order.save();
 
-    res
-      .status(200)
-      .json({ message: `Order ${decision}ed successfully`, order });
+    res.status(200).json({ message: `Order ${decision}d successfully`, order });
   } catch (error) {
+    console.error("Error approving/rejecting order:", error);
     res
       .status(500)
       .json({ error: "Error updating order approval", details: error });
@@ -141,13 +147,15 @@ exports.updatePaymentStatus = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
   try {
     const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-    
+
     if (!deletedOrder) {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    res.status(200).json({ message: 'Order deleted successfully', deletedOrder });
+    res
+      .status(200)
+      .json({ message: "Order deleted successfully", deletedOrder });
   } catch (error) {
-    res.status(500).json({ error: 'Error deleting order' });
+    res.status(500).json({ error: "Error deleting order" });
   }
 };

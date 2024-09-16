@@ -47,21 +47,6 @@ export const getOrderById = async (orderId) => {
   }
 };
 
-// Delete an order
-export const deleteOrder = async (orderId) => {
-  try {
-    const response = await axios.delete(`${API_URL}/api/orders/${orderId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error deleting order:', error);
-    throw error.response ? error.response.data : new Error('Error deleting order');
-  }
-};
-
 // Update delivery status
 export const updateDeliveryStatus = async (orderId, deliveryStatus) => {
   try {
@@ -78,9 +63,9 @@ export const updateDeliveryStatus = async (orderId, deliveryStatus) => {
 };
 
 // Update approval status
-export const updateApprovalStatus = async (orderId, approvalStatus) => {
+export const updateApprovalStatus = async (orderId, decision) => {
   try {
-    const response = await axios.put(`${API_URL}/api/orders/${orderId}/approve`, { approvalStatus }, {
+    const response = await axios.put(`${API_URL}/api/orders/${orderId}/approve`, { decision }, {
       headers: {
         'Content-Type': 'application/json',
       },
