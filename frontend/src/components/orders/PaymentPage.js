@@ -218,7 +218,7 @@ const PaymentPage = () => {
               </div>
 
               <div className="mt-6 flex items-center justify-center gap-8">
-                <img
+                {/* <img
                   className="h-8 w-auto dark:hidden"
                   src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/brand-logos/paypal.svg"
                   alt="PayPal"
@@ -227,7 +227,7 @@ const PaymentPage = () => {
                   className="hidden h-8 w-auto dark:flex"
                   src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/brand-logos/paypal-dark.svg"
                   alt="PayPal Dark"
-                />
+                /> */}
                 <img
                   className="h-8 w-auto dark:hidden"
                   src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/brand-logos/visa.svg"
