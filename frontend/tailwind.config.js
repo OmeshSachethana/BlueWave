@@ -7,6 +7,7 @@ module.exports = {
       colors: {
         primary: {
           700: '#1D4ED8', // Define your primary color (or use Tailwind's default palette)
+          600: '#2563EB',
         },
       },
     },
