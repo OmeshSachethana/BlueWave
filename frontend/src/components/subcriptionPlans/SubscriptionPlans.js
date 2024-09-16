@@ -21,8 +21,13 @@ const SubscriptionPlans = () => {
     fetchPlans();
   }, []);
 
-  const handlePaymentClick = (plan) => {
-    navigate('/payment', { state: { planID: plan._id, planPrice: plan.pricing } });
+  // const handlePaymentClick = (plan) => {
+  //   navigate('/payment', { state: { planID: plan._id, planPrice: plan.pricing } });
+  // };
+
+  const handlePaymentClick = (planID, planPrice) => {
+    navigate('/payment-subscriptions', { state: { planID: planID, planPrice: planPrice } });
+    console.log(planPrice);
   };
 
   if (error) return <div>{error}</div>;
