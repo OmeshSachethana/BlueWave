@@ -257,7 +257,7 @@ const OrderList = () => {
                   </div>
                 ))}
 
-                <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between ">
+                <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between">
                   <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
                     <button
                       onClick={() => {
@@ -294,7 +294,7 @@ const OrderList = () => {
                       Cancel Order
                     </button>
 
-                    <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center">
+                    <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center flex-grow">
                       {order.paymentStatus === "Pending" ? (
                         order.paymentMethod === "Cash on Delivery" ? (
                           <span className="text-emerald-600">
@@ -309,13 +309,11 @@ const OrderList = () => {
                         </span>
                       )}
                     </p>
-                    <p className="font-semibold text-lg text-black py-6 ps-[150px]">
-                      Total Price:{" "}
-                      <span className="text-indigo-600">
-                        ${order.totalPrice}
-                      </span>
-                    </p>
                   </div>
+                  <p className="font-semibold text-lg text-black py-6">
+                    Total Price:{" "}
+                    <span className="text-indigo-600">${order.totalPrice}</span>
+                  </p>
                 </div>
               </div>
             ))
