@@ -7,16 +7,18 @@ const OrderList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
+  const [filter, setFilter] = useState("All");
 
   const fetchOrders = async () => {
     try {
       const ordersData = await getAllOrders();
       setOrders(ordersData);
-      console.log("Orders:", ordersData);
+      setFilteredOrders(ordersData);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -29,10 +31,23 @@ const OrderList = () => {
     fetchOrders();
   }, [dispatch]);
 
+  useEffect(() => {
+    if (filter === "All") {
+      setFilteredOrders(orders);
+    } else {
+      setFilteredOrders(
+        orders.filter((order) => order.paymentStatus === filter)
+      );
+    }
+  }, [filter, orders]);
+
   const handleDeleteOrder = async () => {
     try {
       await deleteOrder(orderToDelete);
       setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderToDelete)
+      );
+      setFilteredOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderToDelete)
       );
       setModalOpen(false);
@@ -60,22 +75,60 @@ const OrderList = () => {
   if (error) return <p>Error loading orders: {error.message}</p>;
 
   return (
-    <div className="container mx-auto flex justify-center items-center min-h-screen">
-      <section className="relative mt-[650px]">
-        <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
-          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mt-[-650px]">
+    <div className="container mx-auto flex min-h-screen">
+      {/* Sidebar for filters */}
+      <aside className="w-1/4 p-4 border-gray-300">
+        <h3 className="font-bold text-xl mb-4">Filter by Payment Status</h3>
+        <ul>
+          <li>
+            <button
+              onClick={() => setFilter("All")}
+              className={`block w-full text-left py-2 px-4 rounded ${
+                filter === "All" ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              All
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setFilter("Pending")}
+              className={`block w-full text-left py-2 px-4 rounded ${
+                filter === "Pending" ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              Pending
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setFilter("Completed")}
+              className={`block w-full text-left py-2 px-4 rounded ${
+                filter === "Completed" ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              Completed
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      {/* Main content */}
+      <section className="w-3/4 p-4">
+        <div className="w-full max-w-7xl mx-auto">
+          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
             Your Orders
           </h2>
           <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
             Thanks for placing an order. You can check your order summary below.
           </p>
 
-          {orders.length === 0 ? (
+          {filteredOrders.length === 0 ? (
             <p className="mt-4 font-normal text-lg leading-8 text-gray-600 mb-11 text-center">
               No orders found.
             </p>
           ) : (
-            orders.map((order) => (
+            filteredOrders.map((order) => (
               <div
                 key={order._id}
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
