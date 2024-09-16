@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
 
 const MaintenanceList = () => {
   const dispatch = useDispatch();
   const { maintenanceList, error } = useSelector((state) => state.maintenance);
+
+  // Local state to manage which record is being updated
+  const [editingId, setEditingId] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   // Fetch maintenance records on component mount
   useEffect(() => {
@@ -16,9 +20,16 @@ const MaintenanceList = () => {
     dispatch(deleteMaintenance(id));
   };
 
-  // Handle Status Update action
-  const handleStatusUpdate = (id, newStatus) => {
-    dispatch(updateMaintenanceStatus({ id, status: newStatus }));
+  // Handle Status Update action (trigger status change UI)
+  const handleStatusEdit = (id, currentStatus) => {
+    setEditingId(id); // Set the ID of the record being updated
+    setSelectedStatus(currentStatus); // Pre-select the current status
+  };
+
+  // Submit the updated status
+  const handleStatusUpdate = (id) => {
+    dispatch(updateMaintenanceStatus({ id, status: selectedStatus }));
+    setEditingId(null); // Close the editing UI after updating
   };
 
   if (error) {
@@ -35,20 +46,48 @@ const MaintenanceList = () => {
             <p className="text-gray-700">{maintenance.description}</p>
             <p className="text-gray-500">{new Date(maintenance.date).toLocaleDateString()}</p>
             <p className="text-gray-500">Status: {maintenance.status}</p>
-            <div className="flex justify-between mt-4">
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                onClick={() => handleStatusUpdate(maintenance._id, 'In Progress')}
-              >
-                Update Status
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                onClick={() => handleDelete(maintenance._id)}
-              >
-                Delete
-              </button>
-            </div>
+
+            {/* If editing this record, show the dropdown */}
+            {editingId === maintenance._id ? (
+              <div className="mt-4">
+                <select
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+                <button
+                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  onClick={() => handleStatusUpdate(maintenance._id)}
+                >
+                  Save
+                </button>
+                <button
+                  className="ml-2 px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
+                  onClick={() => setEditingId(null)} // Cancel editing
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-between mt-4">
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  onClick={() => handleStatusEdit(maintenance._id, maintenance.status)}
+                >
+                  Update Status
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  onClick={() => handleDelete(maintenance._id)}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         ))
       ) : (
