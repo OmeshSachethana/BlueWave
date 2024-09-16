@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import employeeReducer from '../features/employee/employeeSlice';
 import salaryReducer from '../features/employee/salarySlice';
 import productsReducer from '../features/products/productsSlice';
+import maintenanceReducer  from '../features/maintenance/maintenanceSlice';
 
 // Save cart state to localStorage
 const saveState = (state) => {
@@ -18,6 +19,7 @@ const store = configureStore({
     employees: employeeReducer,
     products: productsReducer,
     salary: salaryReducer,
+    maintenance: maintenanceReducer,
   },
 });
 
