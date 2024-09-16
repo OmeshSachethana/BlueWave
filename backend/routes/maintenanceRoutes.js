@@ -4,8 +4,8 @@ const maintenanceController = require('../controllers/maintenanceController');
 
 router.post('/', maintenanceController.createMaintenance);
 router.get('/', maintenanceController.getAllMaintenanceRecords);
-// router.get('/:id', maintenanceController.getEmployeeById);
-// router.put('/:id', maintenanceController.updateEmployee);
-// router.delete('/:id', maintenanceController.deleteEmployee);
+router.get('/:id', maintenanceController.getMaintenanceById);
+router.put('/:id', maintenanceController.updateMaintenance);
+router.delete('/:id', maintenanceController.deleteMaintenance);
 
 module.exports = router;
