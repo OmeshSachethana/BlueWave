@@ -5,6 +5,7 @@ import Employee from "./pages/Employee";
 import ProductList from "./components/products/ProductList";
 import OrderList from "./components/orders/OrderList";
 import PaymentPage from "./components/orders/PaymentPage";
+import SubscriptionPlans from "./components/subcriptionPlans/SubscriptionPlans";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/employee" element={<Employee />} />
             <Route path="/orders" element={<OrderList />} />
             <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
             {/* Add other routes here as needed */}
           </Routes>
         </main>
