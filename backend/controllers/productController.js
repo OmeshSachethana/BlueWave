@@ -1,5 +1,6 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const Product = require("../models/Product");
 
 // Set up multer for file storage
@@ -87,33 +88,75 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// Update a product by ID
-exports.updateProduct = async (req, res) => {
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedProduct)
-      return res.status(404).json({ error: "Product not found" });
-    res.status(200).json({
-      message: "Product updated successfully",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Error updating product" });
-  }
-};
+exports.updateProduct = [
+  upload.single("image"), // Handle image upload for updating
+  async (req, res) => {
+    try {
+      const productId = req.params.id;
+      let updatedData = req.body;
+
+      // Find the product first to check for the existing image
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // If a new image is uploaded
+      if (req.file) {
+        const existingImagePath = path.join(__dirname, "../", product.image);
+        const newImageName = `${Date.now()}_${req.file.originalname}`;
+        const newImagePath = `/uploads/${newImageName}`;
+
+        // Check if the existing image file exists and remove it
+        if (fs.existsSync(existingImagePath)) {
+          fs.unlinkSync(existingImagePath);
+        }
+
+        // Move the new image to the correct location
+        fs.renameSync(req.file.path, path.join(__dirname, "../", newImagePath));
+        updatedData.image = newImagePath;
+      }
+
+      // Update the product with the new data
+      const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        updatedData,
+        { new: true }
+      );
+
+      res.status(200).json({
+        message: "Product updated successfully",
+        product: updatedProduct,
+      });
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ error: "Error updating product" });
+    }
+  },
+];
 
 // Delete a product by ID
 exports.deleteProduct = async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-    if (!deletedProduct)
+    const product = await Product.findById(req.params.id);
+    if (!product) {
       return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Delete the image from the uploads folder if it exists
+    if (product.image) {
+      const imagePath = path.join(__dirname, "../", product.image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); // Remove the image file
+      }
+    }
+
+    // Delete the product from the database
+    await Product.findByIdAndDelete(req.params.id);
+
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
+    console.error("Error deleting product:", error);
     res.status(500).json({ error: "Error deleting product" });
   }
 };

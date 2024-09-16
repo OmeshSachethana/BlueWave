@@ -5,6 +5,7 @@ import Employee from "./pages/Employee";
 import EmployeeSalaryForm from './pages/EmployeeSalaryForm';
 import ProductList from "./components/products/ProductList";
 import SpecialPromotions from "./components/products/SpecialPromotions";
+import OrderList from "./components/orders/OrderList";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             />
             <Route path="/employee" element={<Employee />} />
             <Route path="/payroll" element={<EmployeeSalaryForm />} />
+            <Route path="/orders" element={<OrderList />} />
             {/* Add other routes here as needed */}
           </Routes>
         </main>

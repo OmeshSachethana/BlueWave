@@ -16,6 +16,12 @@ const Navbar = () => {
     setIsCartOpen(!isCartOpen);
   };
 
+  // Get the current location
+  const location = useLocation();
+
+  // Function to check if the link is active
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div>
       {/* Navbar Section */}
@@ -30,33 +36,51 @@ const Navbar = () => {
           <div className="flex space-x-4">
             <Link
               to="/"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Home
             </Link>
             <Link
               to="/products"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/products") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Products
             </Link>
             <Link
-              to="/special-offers"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              to="/subscription-plans"
+              className={`px-4 py-2 rounded ${
+                isActive("/subscription-plans") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
-              Special Offers
+              Subscription Plans
             </Link>
             <Link
               to="/contact-us"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/contact-us") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Contact Us
             </Link>
             <Link
               to="/employee"
-              className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
+              className={`px-4 py-2 rounded ${
+                isActive("/employee") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
             >
               Employee
+            </Link>
+            <Link
+              to="/orders"
+              className={`px-4 py-2 rounded ${
+                isActive("/orders") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Your Orders
             </Link>
           </div>
 
@@ -103,4 +127,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
