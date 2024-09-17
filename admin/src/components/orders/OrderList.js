@@ -189,9 +189,10 @@ const OrderList = () => {
               >
                 {/* Conditionally rendered buttons */}
                 <div className="absolute top-4 right-4 flex space-x-2">
-                  {/* Show Ship button only if approval status is Approved */}
-                  {(order.paymentMethod === "Card Payment" ||
-                    order.paymentMethod === "Cash on Delivery") &&
+                  {/* Show Ship button only if paymentStatus is not Pending and approval status is Approved */}
+                  {order.paymentStatus !== "Pending" &&
+                    (order.paymentMethod === "Card Payment" ||
+                      order.paymentMethod === "Cash on Delivery") &&
                     order.approvalStatus === "Approved" && (
                       <>
                         {/* Show Already Shipped disabled button */}
@@ -244,7 +245,7 @@ const OrderList = () => {
                       </button>
                     )}
 
-                  {/* Show Approve button only if filter is not Approved */}
+                  {/* Show Approve button only if approvalStatus is not Approved */}
                   {order.approvalStatus !== "Approved" && (
                     <button
                       className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
