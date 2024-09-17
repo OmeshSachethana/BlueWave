@@ -6,7 +6,7 @@ import EmployeeSalaryForm from './pages/EmployeeSalaryForm';
 import ProductList from "./components/products/ProductList";
 import OrderList from "./components/orders/OrderList";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
-import MaintenanceList from "./features/maintenance/maintenanceList";
+import MaintenanceList from "./components/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
 import SchedulePage from "./pages/Schedule/SchedulePage";
 
