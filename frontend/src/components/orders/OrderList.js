@@ -82,13 +82,19 @@ const OrderList = () => {
         className="fixed z-10 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
       >
         <div className="flex flex-col items-start mb-3 md:items-start md:mb-0">
-          <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">Filter by Payment Status</h3>
-          <ul className="space-y-2 w-full"> {/* Ensuring full width for the list */}
+          <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+            Filter by Payment Status
+          </h3>
+          <ul className="space-y-2 w-full">
+            {" "}
+            {/* Ensuring full width for the list */}
             <li>
               <button
                 onClick={() => setFilter("All")}
                 className={`block w-full text-left py-2 px-4 rounded ${
-                  filter === "All" ? "bg-blue-200" : "bg-white dark:bg-gray-800 dark:text-white"
+                  filter === "All"
+                    ? "bg-blue-200"
+                    : "bg-white dark:bg-gray-800 dark:text-white"
                 }`}
               >
                 All
@@ -98,7 +104,9 @@ const OrderList = () => {
               <button
                 onClick={() => setFilter("Pending")}
                 className={`block w-full text-left py-2 px-4 rounded ${
-                  filter === "Pending" ? "bg-blue-200" : "bg-white dark:bg-gray-800 dark:text-white"
+                  filter === "Pending"
+                    ? "bg-blue-200"
+                    : "bg-white dark:bg-gray-800 dark:text-white"
                 }`}
               >
                 Pending
@@ -108,7 +116,9 @@ const OrderList = () => {
               <button
                 onClick={() => setFilter("Completed")}
                 className={`block w-full text-left py-2 px-4 rounded ${
-                  filter === "Completed" ? "bg-blue-200" : "bg-white dark:bg-gray-800 dark:text-white"
+                  filter === "Completed"
+                    ? "bg-blue-200"
+                    : "bg-white dark:bg-gray-800 dark:text-white"
                 }`}
               >
                 Completed
@@ -117,7 +127,7 @@ const OrderList = () => {
           </ul>
         </div>
       </aside>
-  
+
       {/* Main content */}
       <section className="w-3/4 p-4 ml-[calc(25%+1rem)]">
         <div className="w-full max-w-7xl mx-auto">
@@ -127,7 +137,7 @@ const OrderList = () => {
           <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
             Thanks for placing an order. You can check your order summary below.
           </p>
-  
+
           {filteredOrders.length === 0 ? (
             <p className="mt-4 font-normal text-lg leading-8 text-gray-600 mb-11 text-center">
               No orders found.
@@ -139,7 +149,8 @@ const OrderList = () => {
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
                 {/* Conditionally rendered "Pay Now" button */}
-                {order.paymentStatus !== "Completed" &&
+                {order.paymentMethod !== "Cash on Delivery" &&
+                  order.paymentStatus !== "Completed" &&
                   order.approvalStatus === "Approved" && (
                     <button
                       className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
@@ -247,11 +258,13 @@ const OrderList = () => {
                             </p>
                             <p
                               className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
-                                ${
-                                  order.approvalStatus === "Approved"
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "bg-red-50 text-red-600"
-                                }`}
+      ${
+        order.approvalStatus === "Approved"
+          ? "bg-emerald-50 text-emerald-600" // Green for Approved
+          : order.approvalStatus === "Pending"
+          ? "bg-amber-50 text-amber-600" // Amber for Pending
+          : "bg-red-50 text-red-600" // Red for anything else (e.g., Rejected)
+      }`}
                             >
                               {order.approvalStatus}
                             </p>
@@ -317,7 +330,9 @@ const OrderList = () => {
                   </div>
                   <p className="font-semibold text-lg text-black py-6">
                     Total Price:{" "}
-                    <span className="text-indigo-600">Rs.{order.totalPrice}</span>
+                    <span className="text-indigo-600">
+                      Rs.{order.totalPrice}
+                    </span>
                   </p>
                 </div>
               </div>
