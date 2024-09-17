@@ -188,15 +188,15 @@ const OrderList = () => {
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
                 {/* Conditionally rendered buttons */}
-                {order.paymentStatus !== "Completed" && (
+                {order.paymentStatus === "Completed" && (
                   <div className="absolute top-4 right-4 flex space-x-2">
                     {/* Show Already Shipped disabled button */}
                     {order.delivery.deliveryStatus === "Shipped" ? (
                       <button
-                        class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-500 rounded-lg bg-gray-200 cursor-not-allowed"
+                        className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-500 rounded-lg bg-gray-200 cursor-not-allowed"
                         disabled
                       >
-                        <span class="relative px-5 py-2.5 bg-white rounded-md">
+                        <span className="relative px-5 py-2.5 bg-white rounded-md">
                           Already Shipped
                         </span>
                       </button>
@@ -224,8 +224,9 @@ const OrderList = () => {
                       )
                     )}
 
-                    {/* Show Reject button only if filter is not Rejected */}
-                    {order.approvalStatus !== "Rejected" &&
+                    {/* Show Reject button only if filter is not Rejected and payment status is not Completed */}
+                    {order.paymentStatus !== "Completed" &&
+                      order.approvalStatus !== "Rejected" &&
                       order.delivery.deliveryStatus !== "Shipped" && (
                         <button
                           className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
