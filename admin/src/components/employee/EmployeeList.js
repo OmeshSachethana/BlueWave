@@ -1,5 +1,5 @@
 // src/components/employee/EmployeeList.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEmployees } from '../../features/employee/employeeSlice';
 import EmployeeItem from './EmployeeItem';
@@ -8,6 +8,7 @@ const EmployeeList = ({ onEdit }) => {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employees.employees);
   const status = useSelector((state) => state.employees.status);
+  const [filter, setFilter] = useState('All'); // Added filter state
 
   useEffect(() => {
     if (status === 'idle') {
@@ -15,9 +16,24 @@ const EmployeeList = ({ onEdit }) => {
     }
   }, [status, dispatch]);
 
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
+  const filteredEmployees = filter === 'All' ? employees : employees.filter(employee => employee.department === filter);
+
   return (
     <div className="p-6">
       <h2 className="text-lg font-semibold text-center mb-4">View Employees</h2>
+      <div className="mb-4">
+        <label htmlFor="department-filter" className="mr-2">Filter by Department:</label>
+        <select id="department-filter" value={filter} onChange={handleFilterChange} className="p-2 border border-gray-300 rounded">
+          <option value="All">All</option>
+          <option value="HR">HR</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Sales">Sales</option>
+        </select>
+      </div>
       <table className="table-auto w-full border-collapse bg-gray-50 shadow-lg">
         <thead>
           <tr className="bg-blue-500 text-white">
@@ -33,7 +49,7 @@ const EmployeeList = ({ onEdit }) => {
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
+          {filteredEmployees.map((employee) => (
             <EmployeeItem key={employee._id} employee={employee} onEdit={onEdit} />
           ))}
         </tbody>
