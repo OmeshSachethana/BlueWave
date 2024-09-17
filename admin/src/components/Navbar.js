@@ -42,16 +42,6 @@ const Navbar = () => {
             <Link
               to="/"
               className={`px-4 py-2 rounded ${
-                isActive("/")
-                  ? "bg-white text-blue-600"
-                  : "text-white bg-blue-500 hover:bg-blue-400"
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/products"
-              className={`px-4 py-2 rounded ${
                 isActive("/products")
                   ? "bg-white text-blue-600"
                   : "text-white bg-blue-500 hover:bg-blue-400"
@@ -124,7 +114,7 @@ const Navbar = () => {
           {/* Cart Button Section */}
           <div className="flex items-center space-x-8">
             {/* Conditionally render the Add Product image on the products page */}
-            {location.pathname === "/products" && (
+            {location.pathname === "/" && (
               <button onClick={toggleModal}>
                 <img
                   src={add_product_image}
