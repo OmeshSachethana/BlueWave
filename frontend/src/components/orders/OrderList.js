@@ -244,7 +244,7 @@ const OrderList = () => {
                             <p
                               className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
                                 ${
-                                  order.delivery.deliveryStatus === "Delivered"
+                                  order.delivery.deliveryStatus === "Shipped"
                                     ? "bg-emerald-50 text-emerald-600"
                                     : "bg-red-50 text-red-600"
                                 }`}
