@@ -59,14 +59,6 @@ const Navbar = () => {
               Contact Us
             </Link>
             <Link
-              to="/employee"
-              className={`px-4 py-2 rounded ${
-                isActive("/employee") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
-              }`}
-            >
-              Employee
-            </Link>
-            <Link
               to="/orders"
               className={`px-4 py-2 rounded ${
                 isActive("/orders") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"

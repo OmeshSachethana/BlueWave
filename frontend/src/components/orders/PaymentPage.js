@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { updatePaymentStatus } from "../../services/orderService";
 import { useDispatch } from "react-redux";
 import { createPayment } from "../../features/payment/paymentSlice";
@@ -9,6 +9,7 @@ const PaymentPage = () => {
   const { orderId, orderAmount } = location.state || {};
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();  // Use navigate hook for redirection
 
   const [formData, setFormData] = useState({
     type: "",
@@ -37,6 +38,10 @@ const PaymentPage = () => {
       console.error("Payment processing failed:", error);
       alert("Error processing payment. Please try again.");
     }
+  };
+
+  const handleViewCards = () => {
+    navigate('/cards');  // Navigate to the new CardListPage
   };
 
   return (
@@ -193,7 +198,17 @@ const PaymentPage = () => {
               >
                 Pay now
               </button>
+              <div className="mt-6 grow">
+              <button
+                onClick={handleViewCards}
+                className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                View Saved Cards
+              </button>
+            </div>
             </form>
+            {/* View Cards Button */}
+            
 
             <div className="mt-6 grow sm:mt-8 lg:mt-0">
               <div className="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
