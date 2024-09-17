@@ -4,7 +4,6 @@ import Navbar from "./components/Navbar";
 import Employee from "./pages/Employee";
 import EmployeeSalaryForm from './pages/EmployeeSalaryForm';
 import ProductList from "./components/products/ProductList";
-import SpecialPromotions from "./components/products/SpecialPromotions";
 import OrderList from "./components/orders/OrderList";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
 import MaintenanceList from "./features/maintenance/maintenanceList";
@@ -25,7 +24,6 @@ function App() {
                     <h2 className="text-2xl font-bold mb-4">Products</h2>
                     <ProductList />
                   </section>
-                  <SpecialPromotions />
                 </>
               }
             />
