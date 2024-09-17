@@ -109,6 +109,16 @@ const Navbar = () => {
             >
               Maintenance
             </Link>
+            <Link
+              to="/schedule"
+              className={`px-4 py-2 rounded ${
+                isActive("/schedule")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Schedule
+            </Link>
           </div>
 
           {/* Cart Button Section */}

@@ -8,6 +8,7 @@ import OrderList from "./components/orders/OrderList";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
 import MaintenanceList from "./features/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
+import ScheduleForm from "./components/schedule/ScheduleForm";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/maintenance" element={<AddMaintenance />} />
             <Route path="/maintenancelist" element={<MaintenanceList />} />
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
+            <Route path="/schedule" element={<ScheduleForm />} />
             
             {/* Add other routes here as needed */}
           </Routes>
