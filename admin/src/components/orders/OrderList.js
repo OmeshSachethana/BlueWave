@@ -189,10 +189,11 @@ const OrderList = () => {
               >
                 {/* Conditionally rendered buttons */}
                 <div className="absolute top-4 right-4 flex space-x-2">
-                  {/* Show Ship button only if paymentStatus is not Pending and approval status is Approved */}
-                  {order.paymentStatus !== "Pending" &&
-                    (order.paymentMethod === "Card Payment" ||
-                      order.paymentMethod === "Cash on Delivery") &&
+                  {/* Show Ship button if paymentMethod is Cash on Delivery, regardless of paymentStatus, and approvalStatus is Approved */}
+                  {(order.paymentMethod === "Cash on Delivery" ||
+                    (order.paymentStatus !== "Pending" &&
+                      (order.paymentMethod === "Card Payment" ||
+                        order.paymentMethod === "Cash on Delivery"))) &&
                     order.approvalStatus === "Approved" && (
                       <>
                         {/* Show Already Shipped disabled button */}
@@ -274,12 +275,28 @@ const OrderList = () => {
                         })}
                       </span>
                     </p>
-                    <p className="font-semibold text-base leading-7 text-black mt-2">
-                      Payment Method:{" "}
-                      <span className="text-gray-400 font-medium">
-                        {order.paymentMethod}
-                      </span>
-                    </p>
+                    <div className="flex items-center mt-2">
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Payment Method:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.paymentMethod}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Name:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.user.name}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black">
+                        Shipping Address:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.delivery.deliveryLocationName}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
 

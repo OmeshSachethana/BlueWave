@@ -3,21 +3,9 @@ const mongoose = require("mongoose");
 const orderSchema = new mongoose.Schema(
   {
     user: {
-      firstName: { type: String, required: true, default: "John" },
-      lastName: { type: String, required: true, default: "Doe" },
+      name: { type: String, required: true, default: "John Doe" },
       email: { type: String, required: true, default: "john@example.com" },
       phone: { type: String, required: true, default: "1234567890" },
-      shippingAddress: {
-        country: { type: String, required: true, default: "United States" },
-        streetAddress: {
-          type: String,
-          required: true,
-          default: "1234 Main St",
-        },
-        apartment: { type: String, default: "" },
-        city: { type: String, required: true, default: "New York" },
-        postcode: { type: String, required: true, default: "10001" },
-      },
     },
     orderDetails: [
       {
@@ -31,6 +19,7 @@ const orderSchema = new mongoose.Schema(
     delivery: {
       deliveryTime: { type: Date },
       deliveryStatus: { type: String, default: "Pending" }, // Pending, Shipped, Delivered
+      deliveryLocationName: { type: String, required: true },
     },
     approvalStatus: {
       type: String,
