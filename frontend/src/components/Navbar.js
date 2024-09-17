@@ -43,14 +43,6 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              to="/products"
-              className={`px-4 py-2 rounded ${
-                isActive("/products") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
-              }`}
-            >
-              Products
-            </Link>
-            <Link
               to="/subscription-plans"
               className={`px-4 py-2 rounded ${
                 isActive("/subscription-plans") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"

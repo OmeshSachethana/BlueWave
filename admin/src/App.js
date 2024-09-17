@@ -18,7 +18,7 @@ function App() {
         <main>
           <Routes>
             <Route
-              path="/products"
+              path="/"
               element={
                 <>
                   <section>
