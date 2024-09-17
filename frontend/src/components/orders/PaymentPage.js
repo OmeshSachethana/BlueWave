@@ -198,9 +198,7 @@ const PaymentPage = () => {
               >
                 Pay now
               </button>
-            </form>
-            {/* View Cards Button */}
-            <div className="mt-6 grow">
+              <div className="mt-6 grow">
               <button
                 onClick={handleViewCards}
                 className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
@@ -208,6 +206,9 @@ const PaymentPage = () => {
                 View Saved Cards
               </button>
             </div>
+            </form>
+            {/* View Cards Button */}
+            
 
             <div className="mt-6 grow sm:mt-8 lg:mt-0">
               <div className="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
