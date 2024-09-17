@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addSchedule } from '../features/schedules/scheduleSlice';
+import { addSchedule } from '../../features/schedule/scheduleSlice';
 
 const ScheduleForm = () => {
   const [formData, setFormData] = useState({
