@@ -201,12 +201,23 @@ const OrderList = () => {
                         </span>
                       </button>
                     ) : (
-                      filter !== "Rejected" && (
+                      order.approvalStatus !== "Rejected" && (
                         <button
-                          class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                          className={`relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium rounded-lg focus:ring-4 focus:outline-none ${
+                            order.approvalStatus === "Pending"
+                              ? "text-gray-500 bg-gray-200 cursor-not-allowed focus:ring-gray-200"
+                              : "text-gray-900 bg-gradient-to-br from-cyan-500 to-blue-500 group hover:text-white focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                          }`}
                           onClick={() => handleShipClick(order._id)}
+                          disabled={order.approvalStatus === "Pending"}
                         >
-                          <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                          <span
+                            className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${
+                              order.approvalStatus === "Pending"
+                                ? "bg-white"
+                                : "bg-white dark:bg-gray-900 group-hover:bg-opacity-0"
+                            }`}
+                          >
                             Ship
                           </span>
                         </button>
@@ -214,7 +225,7 @@ const OrderList = () => {
                     )}
 
                     {/* Show Reject button only if filter is not Rejected */}
-                    {filter !== "Rejected" &&
+                    {order.approvalStatus !== "Rejected" &&
                       order.delivery.deliveryStatus !== "Shipped" && (
                         <button
                           className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
@@ -227,7 +238,7 @@ const OrderList = () => {
                       )}
 
                     {/* Show Approve button only if filter is not Approved */}
-                    {filter !== "Approved" && (
+                    {order.approvalStatus !== "Approved" && (
                       <button
                         className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
                         onClick={() => handleApproveClick(order._id)}
@@ -330,11 +341,13 @@ const OrderList = () => {
                             </p>
                             <p
                               className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
-                                ${
-                                  order.approvalStatus === "Approved"
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "bg-red-50 text-red-600"
-                                }`}
+      ${
+        order.approvalStatus === "Approved"
+          ? "bg-emerald-50 text-emerald-600" // Green for Approved
+          : order.approvalStatus === "Pending"
+          ? "bg-amber-50 text-amber-600" // Amber for Pending
+          : "bg-red-50 text-red-600" // Red for anything else (e.g., Rejected)
+      }`}
                             >
                               {order.approvalStatus}
                             </p>
