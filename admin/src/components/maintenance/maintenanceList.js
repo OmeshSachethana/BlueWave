@@ -9,6 +9,7 @@ const MaintenanceList = () => {
   // Local state to manage which record is being updated
   const [editingId, setEditingId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [filterStatus, setFilterStatus] = useState(''); // New state for filtering status
 
   // Fetch maintenance records on component mount
   useEffect(() => {
@@ -32,6 +33,12 @@ const MaintenanceList = () => {
     setEditingId(null); // Close the editing UI after updating
   };
 
+  // Filter maintenance list based on selected status
+  const filteredMaintenanceList = maintenanceList.filter((maintenance) => {
+    if (filterStatus === '') return true; // Show all if no filter is selected
+    return maintenance.status === filterStatus;
+  });
+
   if (error) {
     return <div className="text-red-500">Error: {error}</div>;
   }
@@ -39,8 +46,25 @@ const MaintenanceList = () => {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
       <h2 className="text-xl font-bold mb-4 text-blue-600">Maintenance List</h2>
-      {maintenanceList.length > 0 ? (
-        maintenanceList.map((maintenance) => (
+
+      {/* Filter Dropdown */}
+      <div className="mb-4">
+        <label htmlFor="filterStatus" className="mr-2 text-gray-700 font-semibold">Filter by Status:</label>
+        <select
+          id="filterStatus"
+          className="px-4 py-2 border border-gray-300 rounded-lg"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">All</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+
+      {filteredMaintenanceList.length > 0 ? (
+        filteredMaintenanceList.map((maintenance) => (
           <div key={maintenance._id} className="bg-white p-4 mb-4 rounded-lg shadow">
             <h3 className="text-lg font-semibold">{maintenance.name}</h3>
             <p className="text-gray-700">{maintenance.description}</p>

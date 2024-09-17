@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addSchedule, fetchSchedules } from '../../features/schedule/scheduleSlice';
-import ScheduleTable from './ScheduleTable';
 
 const ScheduleForm = () => {
   const [formData, setFormData] = useState({
@@ -102,10 +101,10 @@ const ScheduleForm = () => {
       </div>
 
       {/* Separate Schedule Table Section */}
-      <div className="max-w-5xl mx-auto bg-gray-100 p-6 rounded-md shadow-lg">
+      {/* <div className="max-w-5xl mx-auto bg-gray-100 p-6 rounded-md shadow-lg">
         <h2 className="text-xl font-bold mb-4">Schedule Table</h2>
         <ScheduleTable />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -6,9 +6,9 @@ import EmployeeSalaryForm from './pages/EmployeeSalaryForm';
 import ProductList from "./components/products/ProductList";
 import OrderList from "./components/orders/OrderList";
 import AddMaintenance from "./components/maintenance/AddMaintenance";
-import MaintenanceList from "./features/maintenance/maintenanceList";
+import MaintenanceList from "./components/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
-import ScheduleForm from "./components/schedule/ScheduleForm";
+import SchedulePage from "./pages/Schedule/SchedulePage";
 
 function App() {
   return (
@@ -34,7 +34,7 @@ function App() {
             <Route path="/maintenance" element={<AddMaintenance />} />
             <Route path="/maintenancelist" element={<MaintenanceList />} />
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
-            <Route path="/schedule" element={<ScheduleForm />} />
+            <Route path="/schedule" element={<SchedulePage />} />
             
             {/* Add other routes here as needed */}
           </Routes>
