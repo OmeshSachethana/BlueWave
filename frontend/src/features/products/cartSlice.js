@@ -4,6 +4,10 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     items: [],
+    userDetails: {
+      name: "",
+      location: { lat: 40.748817, lng: -73.985428 }, // Default location
+    },
   },
   reducers: {
     addToCart: (state, action) => {
@@ -39,9 +43,19 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = []; // Clear all items from the cart
     },
+    setUserDetails: (state, action) => {
+      state.userDetails = action.payload;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  clearCart,
+  setUserDetails,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

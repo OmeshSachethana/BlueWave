@@ -188,68 +188,76 @@ const OrderList = () => {
                 className="main-box border border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-[100%] mb-6 relative"
               >
                 {/* Conditionally rendered buttons */}
-                {order.paymentStatus !== "Completed" && (
-                  <div className="absolute top-4 right-4 flex space-x-2">
-                    {/* Show Already Shipped disabled button */}
-                    {order.delivery.deliveryStatus === "Shipped" ? (
-                      <button
-                        class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-500 rounded-lg bg-gray-200 cursor-not-allowed"
-                        disabled
-                      >
-                        <span class="relative px-5 py-2.5 bg-white rounded-md">
-                          Already Shipped
-                        </span>
-                      </button>
-                    ) : (
-                      order.approvalStatus !== "Rejected" && (
-                        <button
-                          className={`relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium rounded-lg focus:ring-4 focus:outline-none ${
-                            order.approvalStatus === "Pending"
-                              ? "text-gray-500 bg-gray-200 cursor-not-allowed focus:ring-gray-200"
-                              : "text-gray-900 bg-gradient-to-br from-cyan-500 to-blue-500 group hover:text-white focus:ring-cyan-200 dark:focus:ring-cyan-800"
-                          }`}
-                          onClick={() => handleShipClick(order._id)}
-                          disabled={order.approvalStatus === "Pending"}
-                        >
-                          <span
-                            className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${
-                              order.approvalStatus === "Pending"
-                                ? "bg-white"
-                                : "bg-white dark:bg-gray-900 group-hover:bg-opacity-0"
-                            }`}
+                <div className="absolute top-4 right-4 flex space-x-2">
+                  {/* Show Ship button if paymentMethod is Cash on Delivery, regardless of paymentStatus, and approvalStatus is Approved */}
+                  {(order.paymentMethod === "Cash on Delivery" ||
+                    (order.paymentStatus !== "Pending" &&
+                      (order.paymentMethod === "Card Payment" ||
+                        order.paymentMethod === "Cash on Delivery"))) &&
+                    order.approvalStatus === "Approved" && (
+                      <>
+                        {/* Show Already Shipped disabled button */}
+                        {order.delivery.deliveryStatus === "Shipped" ? (
+                          <button
+                            className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-500 rounded-lg bg-gray-200 cursor-not-allowed"
+                            disabled
                           >
-                            Ship
-                          </span>
-                        </button>
-                      )
+                            <span className="relative px-5 py-2.5 bg-white rounded-md">
+                              Already Shipped
+                            </span>
+                          </button>
+                        ) : (
+                          <button
+                            className={`relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium rounded-lg focus:ring-4 focus:outline-none ${
+                              order.delivery.deliveryStatus === "Shipped"
+                                ? "text-gray-500 bg-gray-200 cursor-not-allowed focus:ring-gray-200"
+                                : "text-gray-900 bg-gradient-to-br from-cyan-500 to-blue-500 group hover:text-white focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                            }`}
+                            onClick={() => handleShipClick(order._id)}
+                            disabled={
+                              order.delivery.deliveryStatus === "Shipped"
+                            }
+                          >
+                            <span
+                              className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${
+                                order.delivery.deliveryStatus === "Shipped"
+                                  ? "bg-white"
+                                  : "bg-white dark:bg-gray-900 group-hover:bg-opacity-0"
+                              }`}
+                            >
+                              Ship
+                            </span>
+                          </button>
+                        )}
+                      </>
                     )}
 
-                    {/* Show Reject button only if filter is not Rejected */}
-                    {order.approvalStatus !== "Rejected" &&
-                      order.delivery.deliveryStatus !== "Shipped" && (
-                        <button
-                          className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
-                          onClick={() => handleRejectClick(order._id)}
-                        >
-                          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                            Reject
-                          </span>
-                        </button>
-                      )}
-
-                    {/* Show Approve button only if filter is not Approved */}
-                    {order.approvalStatus !== "Approved" && (
+                  {/* Show Reject button only if payment is not Completed */}
+                  {order.paymentStatus !== "Completed" &&
+                    order.approvalStatus !== "Rejected" &&
+                    order.delivery.deliveryStatus !== "Shipped" && (
                       <button
-                        className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
-                        onClick={() => handleApproveClick(order._id)}
+                        className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                        onClick={() => handleRejectClick(order._id)}
                       >
                         <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                          Approve
+                          Reject
                         </span>
                       </button>
                     )}
-                  </div>
-                )}
+
+                  {/* Show Approve button only if approvalStatus is not Approved */}
+                  {order.approvalStatus !== "Approved" && (
+                    <button
+                      className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                      onClick={() => handleApproveClick(order._id)}
+                    >
+                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        Approve
+                      </span>
+                    </button>
+                  )}
+                </div>
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
                   <div className="data">
@@ -267,12 +275,28 @@ const OrderList = () => {
                         })}
                       </span>
                     </p>
-                    <p className="font-semibold text-base leading-7 text-black mt-2">
-                      Payment Method:{" "}
-                      <span className="text-gray-400 font-medium">
-                        {order.paymentMethod}
-                      </span>
-                    </p>
+                    <div className="flex items-center mt-2">
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Payment Method:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.paymentMethod}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Name:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.user.name}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black">
+                        Shipping Address:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.delivery.deliveryLocationName}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
 

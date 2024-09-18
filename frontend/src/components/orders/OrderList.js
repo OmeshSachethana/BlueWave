@@ -180,12 +180,28 @@ const OrderList = () => {
                         })}
                       </span>
                     </p>
-                    <p className="font-semibold text-base leading-7 text-black mt-2">
-                      Payment Method:{" "}
-                      <span className="text-gray-400 font-medium">
-                        {order.paymentMethod}
-                      </span>
-                    </p>
+                    <div className="flex items-center mt-2">
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Payment Method:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.paymentMethod}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black mr-4">
+                        Name:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.user.name}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-base leading-7 text-black">
+                        Shipping Address:{" "}
+                        <span className="text-gray-400 font-medium">
+                          {order.delivery.deliveryLocationName}{" "}
+                          {/* Add your actual payment status variable here */}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -244,7 +260,7 @@ const OrderList = () => {
                             <p
                               className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 
                                 ${
-                                  order.delivery.deliveryStatus === "Delivered"
+                                  order.delivery.deliveryStatus === "Shipped"
                                     ? "bg-emerald-50 text-emerald-600"
                                     : "bg-red-50 text-red-600"
                                 }`}

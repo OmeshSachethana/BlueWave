@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromCart,
@@ -7,13 +7,43 @@ import {
   clearCart,
 } from "../../features/products/cartSlice"; // Import the actions
 import { placeOrder } from "../../services/orderService";
+import UserOrderInputModal from "../modals/UserOrderInputModal";
+
+const getLocationName = async (lat, lng) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+    );
+    const data = await response.json();
+    return data.display_name || "Unknown location";
+  } catch (error) {
+    console.error("Error fetching location name:", error);
+    return "Error retrieving location";
+  }
+};
 
 const CartView = ({ toggleCart }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
-  const [orderSuccess, setOrderSuccess] = useState(false); // State to manage success message visibility
-  const [paymentMethod, setPaymentMethod] = useState(""); // State for selected payment method
-  const [error, setError] = useState(""); // State for error message
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false); // State to manage modal visibility
+  const [userDetails, setUserDetails] = useState({
+    name: "",
+    location: { lat: 40.748817, lng: -73.985428, name: "" },
+  }); // Default location
+
+  useEffect(() => {
+    // Load user details from local storage
+    const storedUserDetails = JSON.parse(
+      localStorage.getItem("userDetails")
+    ) || {
+      name: "",
+      location: { lat: 40.748817, lng: -73.985428, name: "" },
+    };
+    setUserDetails(storedUserDetails);
+  }, []);
 
   const handleRemoveFromCart = (productId) => {
     dispatch(removeFromCart(productId));
@@ -33,34 +63,79 @@ const CartView = ({ toggleCart }) => {
       .toFixed(2);
   };
 
-  const handleCheckout = async () => {
-    // Check if a payment method is selected
-    if (!paymentMethod) {
-      setError("Please select a payment method.");
-      return;
-    }
-
-    const orderData = {
+  const getOrderData = (name, location) => {
+    return {
       orderDetails: cartItems.map((item) => ({
         product: item._id,
         quantity: item.quantity,
       })),
       totalPrice: parseFloat(calculateSubtotal()),
-      paymentMethod, // Use the selected payment method
+      paymentMethod,
+      user: {
+        name: name,
+      },
+      delivery: {
+        deliveryLocationName: location.name,
+      },
     };
+  };
 
-    try {
-      const response = await placeOrder(orderData);
-      console.log("Order placed successfully:", response);
-      setOrderSuccess(true); // Show success message
-      dispatch(clearCart()); // Clear the cart
-      setError(""); // Clear error message
-      // Optionally close the cart after a short delay
-      // setTimeout(() => toggleCart(), 2000);
-    } catch (error) {
-      console.error("Error placing order:", error);
-      // Handle error (e.g., show error message to user)
+  const handleCheckout = () => {
+    if (!paymentMethod) {
+      setError("Please select a payment method.");
+      return;
     }
+
+    if (userDetails.name && userDetails.location.name) {
+      // Place the order with existing user details
+      const orderData = getOrderData(userDetails.name, userDetails.location);
+      console.log("Order data:", orderData);
+      placeOrder(orderData)
+        .then((response) => {
+          console.log("Order placed successfully:", response);
+          setOrderSuccess(true);
+          dispatch(clearCart());
+          setError("");
+        })
+        .catch((error) => {
+          console.error("Error placing order:", error);
+        });
+    } else {
+      // Show modal to update user details
+      setShowModal(true);
+    }
+  };
+
+  const handleSaveUserDetails = async (name, location) => {
+    // Fetch location name from coordinates
+    const locationName = await getLocationName(location.lat, location.lng);
+
+    // Update user details
+    const updatedUserDetails = {
+      name,
+      location: { ...location, name: locationName },
+    };
+    setUserDetails(updatedUserDetails);
+
+    // Save user details to local storage
+    localStorage.setItem("userDetails", JSON.stringify(updatedUserDetails));
+
+    const orderData = getOrderData(name, updatedUserDetails.location);
+
+    // Place the order with user details
+    placeOrder(orderData)
+      .then((response) => {
+        console.log("Order placed successfully:", response);
+        setOrderSuccess(true);
+        dispatch(clearCart());
+        setError("");
+      })
+      .catch((error) => {
+        console.error("Error placing order:", error);
+      });
+
+    // Close the modal
+    setShowModal(false);
   };
 
   return (
@@ -216,33 +291,51 @@ const CartView = ({ toggleCart }) => {
 
                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                   {/* Payment Method Selection */}
-                  <div className="mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      Select Payment Method
-                    </h3>
-                    <div className="mt-2">
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="Cash on Delivery"
-                          checked={paymentMethod === "Cash on Delivery"}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="mr-2"
-                        />
-                        Cash on Delivery
-                      </label>
-                      <label className="flex items-center mt-2">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="Card Payment"
-                          checked={paymentMethod === "Card Payment"}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="mr-2"
-                        />
-                        Card Payment
-                      </label>
+                  <div className="flex">
+                    <div className="w-1/2">
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Select Payment Method
+                      </h3>
+                      <div className="mt-2">
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="Cash on Delivery"
+                            checked={paymentMethod === "Cash on Delivery"}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            className="mr-2"
+                          />
+                          Cash on Delivery
+                        </label>
+                        <label className="flex items-center mt-2">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="Card Payment"
+                            checked={paymentMethod === "Card Payment"}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            className="mr-2"
+                          />
+                          Card Payment
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* User Details */}
+                    <div className="w-1/2">
+                      <h4 className="text-lg font-semibold">User Details</h4>
+                      <p>Name: {userDetails.name || "Not provided"}</p>
+                      <p>
+                        Location: {userDetails.location?.name || "Not provided"}
+                      </p>
+                      <a
+                        href="#"
+                        onClick={() => setShowModal(true)}
+                        className="mt-2 text-blue-500 underline"
+                      >
+                        Edit
+                      </a>
                     </div>
                   </div>
 
@@ -250,7 +343,7 @@ const CartView = ({ toggleCart }) => {
                     <p className="text-red-500 text-sm mb-4">{error}</p>
                   )}
 
-                  <div className="flex justify-between text-base font-medium text-gray-900">
+                  <div className="flex justify-between text-base font-medium text-gray-900 mt-6">
                     <p>Subtotal</p>
                     <p>Rs: {calculateSubtotal()}</p>
                   </div>
@@ -275,6 +368,14 @@ const CartView = ({ toggleCart }) => {
           </div>
         </div>
       </div>
+
+      {/* Render the User Input Modal */}
+      {showModal && (
+        <UserOrderInputModal
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveUserDetails}
+        />
+      )}
     </div>
   );
 };
