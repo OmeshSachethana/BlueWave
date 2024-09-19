@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules, updateSchedule, deleteSchedule } from '../../features/schedule/scheduleSlice';
+import { Bar } from 'react-chartjs-2'; // Import the Bar chart from react-chartjs-2
+import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ScheduleTable = () => {
   const dispatch = useDispatch();
@@ -36,8 +41,42 @@ const ScheduleTable = () => {
     });
   };
 
+  // Prepare data for the chart
+  const chartData = {
+    labels: schedules.map(schedule => schedule.category), // Categories as X-axis labels
+    datasets: [
+      {
+        label: 'Quantity',
+        data: schedules.map(schedule => schedule.quantity), // Quantities as Y-axis values
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Category vs Quantity',
+      },
+    },
+  };
+
   return (
     <div className="max-w-4xl mx-auto mt-6">
+      <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
+
+      {/* Render Bar chart */}
+      <div className="mb-6">
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+
       <table className="min-w-full bg-gray-100 border">
         <thead>
           <tr className="bg-blue-600 text-white">
