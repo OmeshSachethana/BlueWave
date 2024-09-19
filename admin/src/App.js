@@ -9,6 +9,7 @@ import AddMaintenance from "./components/maintenance/AddMaintenance";
 import MaintenanceList from "./components/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
 import SchedulePage from "./pages/Schedule/SchedulePage";
+import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePage";
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
             <Route path="/maintenancelist" element={<MaintenanceList />} />
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
             <Route path="/schedule" element={<SchedulePage />} />
+            <Route path="/income-expenditure" element={<IncomeExpenditurePage />} />
+            
             
             {/* Add other routes here as needed */}
           </Routes>

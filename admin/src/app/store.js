@@ -4,6 +4,7 @@ import salaryReducer from '../features/employee/salarySlice';
 import productsReducer from '../features/products/productsSlice';
 import maintenanceReducer  from '../features/maintenance/maintenanceSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
+import incomeExpenditureReducer from '../features/incomeExpenditure/incomeExpenditureSlice';
 
 // Save cart state to localStorage
 const saveState = (state) => {
@@ -22,6 +23,7 @@ const store = configureStore({
     salary: salaryReducer,
     maintenance: maintenanceReducer,
     schedules: scheduleReducer,
+    incomeExpenditure: incomeExpenditureReducer,
   },
 });
 
