@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules, updateSchedule, deleteSchedule } from '../../features/schedule/scheduleSlice';
-import { Bar } from 'react-chartjs-2'; // Import the Bar chart from react-chartjs-2
+import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 // Register Chart.js components
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -41,13 +43,40 @@ const ScheduleTable = () => {
     });
   };
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Schedule Table', 14, 20);
+
+    const tableColumn = ['ID', 'Name', 'Quantity', 'Category', 'Location'];
+    const tableRows = [];
+
+    schedules.forEach(schedule => {
+      const scheduleData = [
+        schedule._id,
+        schedule.name,
+        schedule.quantity,
+        schedule.category,
+        schedule.location
+      ];
+      tableRows.push(scheduleData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+    });
+
+    doc.save('schedule_table.pdf');
+  };
+
   // Prepare data for the chart
   const chartData = {
-    labels: schedules.map(schedule => schedule.category), // Categories as X-axis labels
+    labels: schedules.map(schedule => schedule.category),
     datasets: [
       {
         label: 'Quantity',
-        data: schedules.map(schedule => schedule.quantity), // Quantities as Y-axis values
+        data: schedules.map(schedule => schedule.quantity),
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -77,6 +106,17 @@ const ScheduleTable = () => {
         <Bar data={chartData} options={chartOptions} />
       </div>
 
+      {/* Button to download the table as PDF */}
+      <div className="mb-4">
+        <button
+          onClick={downloadPDF}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Download PDF
+        </button>
+      </div>
+
+      {/* Schedule Table */}
       <table className="min-w-full bg-gray-100 border">
         <thead>
           <tr className="bg-blue-600 text-white">
