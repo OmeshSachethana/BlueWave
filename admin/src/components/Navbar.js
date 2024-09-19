@@ -112,7 +112,7 @@ const Navbar = () => {
             <Link
               to="/income-expenditure"
               className={`px-4 py-2 rounded ${
-                isActive("/schedule")
+                isActive("/income-expenditure")
                   ? "bg-white text-blue-600"
                   : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
