@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmployeeSalary, updateEmployeeSalary, deleteEmployeeSalary, fetchEmployeeSalaries } from '../features/employee/salarySlice';
+import { convertToCSV, downloadCSV } from '../utils/salaryUtils'; // Import CSV utilities
 
 const EmployeeSalaryForm = () => {
   const dispatch = useDispatch();
@@ -8,7 +9,6 @@ const EmployeeSalaryForm = () => {
 
   const [formData, setFormData] = useState({
     employeeID: '',
-    // employeeName: '',
     basicSalary: '',
     allowances: '',
     overtimeHours: '',
@@ -51,7 +51,6 @@ const EmployeeSalaryForm = () => {
     }
     setFormData({
       employeeID: '',
-      // employeeName: '',
       basicSalary: '',
       allowances: '',
       overtimeHours: '',
@@ -64,7 +63,6 @@ const EmployeeSalaryForm = () => {
   const handleEdit = (employee) => {
     setFormData({
       employeeID: employee.employeeID,
-      // employeeName: employee.employeeName,
       basicSalary: employee.basicSalary,
       allowances: employee.allowances,
       overtimeHours: employee.overtimeHours,
@@ -104,6 +102,12 @@ const EmployeeSalaryForm = () => {
     return grossSalary - totalDeductions;
   };
 
+  const handleDownloadReport = () => {
+    const headers = ['employeeID', 'basicSalary', 'allowances', 'overtimeHours', 'overtimeRate', 'deductions', 'epfRate', 'netSalary'];
+    const csvContent = convertToCSV(salaryList, headers); // Use utility function
+    downloadCSV(csvContent, 'employee_salary_report.csv'); // Use utility function
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-lg mx-auto bg-blue-100 p-6 rounded-lg">
@@ -129,8 +133,7 @@ const EmployeeSalaryForm = () => {
             {isEditing ? 'Update' : 'Submit'}
           </button>
         </form>
-        {/* Display salary details */}
-      <div className="mt-6 bg-gray-100 p-4 rounded-lg">
+        <div className="mt-6 bg-gray-100 p-4 rounded-lg">
         <h2 className="text-xl font-semibold mb-2">Salary Details</h2>
         {status === 'loading' && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
@@ -141,13 +144,10 @@ const EmployeeSalaryForm = () => {
             <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
             <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
           </div>
-           )}
-           </div>
-    
-  
+        )}
+      </div>
       </div>
 
-      {/* Table for displaying salary records */}
       <div className="mt-12">
         <h2 className="text-xl font-semibold text-center mb-6">Employee Salary Records</h2>
         <div className="overflow-x-auto">
@@ -155,7 +155,6 @@ const EmployeeSalaryForm = () => {
             <thead>
               <tr className="bg-blue-500 text-white">
                 <th className="p-2 border border-gray-300">EID</th>
-                {/* <th className="p-2 border border-gray-300">Employee Name</th> */}
                 <th className="p-2 border border-gray-300">Basic Salary</th>
                 <th className="p-2 border border-gray-300">Allowances</th>
                 <th className="p-2 border border-gray-300">OT Hours</th>
@@ -171,7 +170,6 @@ const EmployeeSalaryForm = () => {
                 salaryList.map((employee) => (
                   <tr key={employee.employeeID} className="text-center">
                     <td className="p-2 border border-gray-300">{employee.employeeID}</td>
-                    {/* <td className="p-2 border border-gray-300">{employee.employeeName}</td> */}
                     <td className="p-2 border border-gray-300">{employee.basicSalary}</td>
                     <td className="p-2 border border-gray-300">{employee.allowances}</td>
                     <td className="p-2 border border-gray-300">{employee.overtimeHours}</td>
@@ -205,6 +203,16 @@ const EmployeeSalaryForm = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Download CSV Button */}
+      <div className="text-center mt-6">
+        <button
+          onClick={handleDownloadReport}
+          className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600"
+        >
+          Download Salary Report as CSV
+        </button>
       </div>
     </div>
   );
