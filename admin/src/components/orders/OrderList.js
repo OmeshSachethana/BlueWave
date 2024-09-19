@@ -19,7 +19,7 @@ const OrderList = () => {
       const ordersData = await getAllOrders();
       setOrders(ordersData);
       setFilteredOrders(ordersData);
-      setLoading(false);
+      setLoading(false);a
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError(err);
