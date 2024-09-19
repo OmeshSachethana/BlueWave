@@ -1,43 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Bar } from 'react-chartjs-2';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables); // Register necessary chart.js components
 
 const MaintenanceList = () => {
   const dispatch = useDispatch();
   const { maintenanceList, error } = useSelector((state) => state.maintenance);
 
-  // Local state to manage which record is being updated
   const [editingId, setEditingId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [filterStatus, setFilterStatus] = useState(''); // New state for filtering status
+  const [filterStatus, setFilterStatus] = useState('');
 
-  // Fetch maintenance records on component mount
   useEffect(() => {
     dispatch(fetchAllMaintenance());
   }, [dispatch]);
 
-  // Handle Delete action
   const handleDelete = (id) => {
     dispatch(deleteMaintenance(id));
   };
 
-  // Handle Status Update action (trigger status change UI)
   const handleStatusEdit = (id, currentStatus) => {
-    setEditingId(id); // Set the ID of the record being updated
-    setSelectedStatus(currentStatus); // Pre-select the current status
+    setEditingId(id);
+    setSelectedStatus(currentStatus);
   };
 
-  // Submit the updated status
   const handleStatusUpdate = (id) => {
     dispatch(updateMaintenanceStatus({ id, status: selectedStatus }));
-    setEditingId(null); // Close the editing UI after updating
+    setEditingId(null);
   };
 
-  // Filter maintenance list based on selected status
   const filteredMaintenanceList = maintenanceList.filter((maintenance) => {
-    if (filterStatus === '') return true; // Show all if no filter is selected
+    if (filterStatus === '') return true;
     return maintenance.status === filterStatus;
   });
+
+  // Count the occurrences of each status
+  const statusCounts = maintenanceList.reduce(
+    (acc, maintenance) => {
+      acc[maintenance.status] = (acc[maintenance.status] || 0) + 1;
+      return acc;
+    },
+    { Pending: 0, 'In Progress': 0, Completed: 0 }
+  );
+
+  const data = {
+    labels: ['Pending', 'In Progress', 'Completed'],
+    datasets: [
+      {
+        label: 'Maintenance Status Count',
+        data: [statusCounts.Pending, statusCounts['In Progress'], statusCounts.Completed],
+        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
 
   if (error) {
     return <div className="text-red-500">Error: {error}</div>;
@@ -63,6 +92,11 @@ const MaintenanceList = () => {
         </select>
       </div>
 
+      {/* Bar Chart */}
+      <div className="mb-8">
+        <Bar data={data} options={options} />
+      </div>
+
       {filteredMaintenanceList.length > 0 ? (
         filteredMaintenanceList.map((maintenance) => (
           <div key={maintenance._id} className="bg-white p-4 mb-4 rounded-lg shadow">
@@ -71,7 +105,6 @@ const MaintenanceList = () => {
             <p className="text-gray-500">{new Date(maintenance.date).toLocaleDateString()}</p>
             <p className="text-gray-500">Status: {maintenance.status}</p>
 
-            {/* If editing this record, show the dropdown */}
             {editingId === maintenance._id ? (
               <div className="mt-4">
                 <select
@@ -91,7 +124,7 @@ const MaintenanceList = () => {
                 </button>
                 <button
                   className="ml-2 px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
-                  onClick={() => setEditingId(null)} // Cancel editing
+                  onClick={() => setEditingId(null)}
                 >
                   Cancel
                 </button>
