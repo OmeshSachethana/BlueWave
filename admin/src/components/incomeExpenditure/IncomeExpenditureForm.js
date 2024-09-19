@@ -37,15 +37,16 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const profit = formData.income - formData.expenses;
-
+  
     if (isEdit) {
-      await dispatch(updateRecord({ ...formData, profit }));
+      // Dispatch with id and updatedRecord
+      await dispatch(updateRecord({ id: currentRecord._id, updatedRecord: { ...formData, profit } }));
     } else {
       await dispatch(addRecord({ ...formData, profit }));
     }
-
+  
     // Reset form after submission
     setFormData({
       no: '',
@@ -55,7 +56,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
       expenses: '',
     });
     onCancel(); // Clear the edit mode and current record after submission
-  };
+  };  
 
   const handleChange = (e) => {
     setFormData({
