@@ -14,6 +14,7 @@ const subscriptionPlanRoutes = require("./routes/subscriptionPlanRoutes.js");
 const discountRoutes = require("./routes/discountRoutes.js");
 const packageRoutes = require("./routes/packageRoutes.js");
 const paymentRoutes = require("./routes/paymentRoutes.js");
+const incomeExpenditureRoutes = require("./routes/incomeExpenditureRoutes.js")
 require("dotenv").config();
 
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/subscriptionPlans", subscriptionPlanRoutes);
 app.use("/api/discounts", discountRoutes);
 app.use("/api/packages", packageRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/incomeExpenditure", incomeExpenditureRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Ensure the uploads directory exists
