@@ -70,7 +70,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
       <h2 className="text-2xl font-bold text-center mb-6">{isEdit ? 'Edit Record' : 'Add New Record'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">NO</label>
+          <label className="block text-sm font-medium mb-1">No</label>
           <input
             type="number"
             name="no"
