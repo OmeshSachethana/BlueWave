@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRecords, deleteRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 
@@ -13,6 +13,20 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     const handleDelete = (id) => {
         dispatch(deleteRecord(id));
     };
+
+    // Calculate total income, expenses, and profit
+    const { totalIncome, totalExpenses, totalProfit } = useMemo(() => {
+        return records.reduce((totals, record) => {
+            const income = record.income || 0;
+            const expenses = record.expenses || 0;
+            const profit = record.profit || 0;
+            return {
+                totalIncome: totals.totalIncome + income,
+                totalExpenses: totals.totalExpenses + expenses,
+                totalProfit: totals.totalProfit + profit,
+            };
+        }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
+    }, [records]);
 
     return (
         <div className="container mx-auto mt-8">
@@ -55,6 +69,15 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                         </tr>
                     ))}
                 </tbody>
+                <tfoot>
+                    <tr className="bg-gray-200 font-bold">
+                        <td className="px-4 py-2" colSpan="3">Total</td>
+                        <td className="px-4 py-2">{totalIncome}</td>
+                        <td className="px-4 py-2">{totalExpenses}</td>
+                        <td className="px-4 py-2">{totalProfit}</td>
+                        <td className="px-4 py-2"></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     );
