@@ -196,8 +196,6 @@ exports.searchProducts = async (req, res) => {
       }
     }
 
-    console.log('Constructed query:', query); // Log the query to check its structure
-
     // Fetch products that match the query
     const products = await Product.find(query);
 
