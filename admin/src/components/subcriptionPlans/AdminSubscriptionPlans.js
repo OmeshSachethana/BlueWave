@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { getPlans, addPlan, updatePlan, deletePlan } from '../../services/subscriptionPlanService';
+import React, { useEffect, useState } from "react";
+import {
+  getPlans,
+  addPlan,
+  updatePlan,
+  deletePlan,
+} from "../../services/subscriptionPlanService";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const AdminSubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    duration: '',
-    pricing: '',
-    deliveryFrequency: '',
-    updateId: null
+    name: "",
+    description: "",
+    duration: "",
+    pricing: "",
+    deliveryFrequency: "",
+    updateId: null,
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -40,7 +47,7 @@ const AdminSubscriptionPlans = () => {
           description: formData.description,
           duration: formData.duration,
           pricing: formData.pricing,
-          deliveryFrequency: formData.deliveryFrequency
+          deliveryFrequency: formData.deliveryFrequency,
         });
         setIsEditing(false);
       } else {
@@ -49,16 +56,16 @@ const AdminSubscriptionPlans = () => {
           description: formData.description,
           duration: formData.duration,
           pricing: formData.pricing,
-          deliveryFrequency: formData.deliveryFrequency
+          deliveryFrequency: formData.deliveryFrequency,
         });
       }
       setFormData({
-        name: '',
-        description: '',
-        duration: '',
-        pricing: '',
-        deliveryFrequency: '',
-        updateId: null
+        name: "",
+        description: "",
+        duration: "",
+        pricing: "",
+        deliveryFrequency: "",
+        updateId: null,
       });
       const updatedPlans = await getPlans();
       setPlans(updatedPlans);
@@ -74,7 +81,7 @@ const AdminSubscriptionPlans = () => {
       duration: plan.duration,
       pricing: plan.pricing,
       deliveryFrequency: plan.deliveryFrequency,
-      updateId: plan._id
+      updateId: plan._id,
     });
     setIsEditing(true);
   };
@@ -89,13 +96,46 @@ const AdminSubscriptionPlans = () => {
     }
   };
 
+  const generateReport = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("Subscription Plans Report", 14, 22);
+    doc.autoTable({
+      head: [
+        ["Name", "Description", "Duration", "Pricing", "Delivery Frequency"],
+      ],
+      body: plans.map((plan) => [
+        plan.name,
+        plan.description,
+        plan.duration,
+        plan.pricing,
+        plan.deliveryFrequency,
+      ]),
+      startY: 30,
+    });
+    doc.save("subscription-plans-report.pdf");
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Subscription Plans</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Subscription Plans</h1>
+        <button
+          onClick={generateReport}
+          className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
+        >
+          Generate Report
+        </button>
+      </div>
 
       <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
         <div className="mb-5">
-          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan Name</label>
+          <label
+            htmlFor="name"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Plan Name
+          </label>
           <input
             type="text"
             id="name"
@@ -107,7 +147,12 @@ const AdminSubscriptionPlans = () => {
           />
         </div>
         <div className="mb-5">
-          <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+          <label
+            htmlFor="description"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Description
+          </label>
           <textarea
             id="description"
             value={formData.description}
@@ -118,7 +163,12 @@ const AdminSubscriptionPlans = () => {
           />
         </div>
         <div className="mb-5">
-          <label htmlFor="duration" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Duration</label>
+          <label
+            htmlFor="duration"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Duration
+          </label>
           <input
             type="text"
             id="duration"
@@ -130,7 +180,12 @@ const AdminSubscriptionPlans = () => {
           />
         </div>
         <div className="mb-5">
-          <label htmlFor="pricing" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pricing</label>
+          <label
+            htmlFor="pricing"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Pricing
+          </label>
           <input
             type="text"
             id="pricing"
@@ -142,7 +197,12 @@ const AdminSubscriptionPlans = () => {
           />
         </div>
         <div className="mb-5">
-          <label htmlFor="deliveryFrequency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Delivery Frequency</label>
+          <label
+            htmlFor="deliveryFrequency"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Delivery Frequency
+          </label>
           <input
             type="text"
             id="deliveryFrequency"
@@ -157,7 +217,7 @@ const AdminSubscriptionPlans = () => {
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          {isEditing ? 'Update Plan' : 'Add Plan'}
+          {isEditing ? "Update Plan" : "Add Plan"}
         </button>
       </form>
 
@@ -174,8 +234,11 @@ const AdminSubscriptionPlans = () => {
             </tr>
           </thead>
           <tbody>
-            {plans.map(plan => (
-              <tr key={plan._id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+            {plans.map((plan) => (
+              <tr
+                key={plan._id}
+                className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+              >
                 <td className="px-6 py-4">{plan.name}</td>
                 <td className="px-6 py-4">{plan.description}</td>
                 <td className="px-6 py-4">{plan.duration}</td>
@@ -205,4 +268,3 @@ const AdminSubscriptionPlans = () => {
 };
 
 export default AdminSubscriptionPlans;
-

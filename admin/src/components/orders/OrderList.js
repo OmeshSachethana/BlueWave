@@ -5,6 +5,8 @@ import {
   updateApprovalStatus,
   updateDeliveryStatus,
 } from "../../services/orderService";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const OrderList = () => {
   const dispatch = useDispatch();
@@ -98,6 +100,65 @@ const OrderList = () => {
     }
   };
 
+  const generateReport = () => {
+    const doc = new jsPDF();
+
+    // Add title to the document
+    doc.text("Customer Orders Report", 14, 16);
+
+    // Prepare the data for the table
+    const orderData = filteredOrders.map((order) => ({
+      orderId: order._id,
+      orderDate: new Date(order.createdAt).toLocaleString("en-GB", {
+        hour12: false,
+      }),
+      paymentMethod: order.paymentMethod,
+      userName: order.user.name,
+      deliveryLocation: order.delivery.deliveryLocationName,
+      totalPrice: order.totalPrice,
+      paymentStatus: order.paymentStatus,
+      deliveryStatus: order.delivery.deliveryStatus,
+      approvalStatus: order.approvalStatus,
+      products: order.orderDetails
+        .map((item) => `${item.product.name} (Qty: ${item.quantity})`)
+        .join(", "),
+    }));
+
+    // Use autoTable to add the order data
+    doc.autoTable({
+      head: [
+        [
+          "Order ID",
+          "Order Date",
+          "Payment Method",
+          "Customer Name",
+          "Delivery Location",
+          "Total Price",
+          "Payment Status",
+          "Delivery Status",
+          "Approval Status",
+          "Products",
+        ],
+      ],
+      body: orderData.map((item) => [
+        item.orderId,
+        item.orderDate,
+        item.paymentMethod,
+        item.userName,
+        item.deliveryLocation,
+        item.totalPrice,
+        item.paymentStatus,
+        item.deliveryStatus,
+        item.approvalStatus,
+        item.products,
+      ]),
+      startY: 30,
+    });
+
+    // Save the PDF
+    doc.save("CustomerOrdersReport.pdf");
+  };
+
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p>Error loading orders: {error.message}</p>;
 
@@ -173,9 +234,17 @@ const OrderList = () => {
 
       <section className="w-3/4 p-4 ml-[calc(25%+1rem)]">
         <div className="w-full max-w-7xl mx-auto">
-          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center mb-11">
-            Customer Orders
-          </h2>
+          <div className="flex justify-between items-center mb-11">
+            <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
+              Customer Orders
+            </h2>
+            <button
+              onClick={generateReport}
+              className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
+            >
+              Generate Report
+            </button>
+          </div>
 
           {filteredOrders.length === 0 ? (
             <p className="mt-4 font-normal text-lg leading-8 text-gray-600 mb-11 text-center">

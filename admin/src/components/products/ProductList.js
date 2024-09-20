@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../services/productService";
+import { getAllOrders } from "../../services/orderService"; // Make sure to create this service
 import { setProducts } from "../../features/products/productsSlice";
 import ProductCard from "./ProductCard";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ProductList = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
+  const [orders, setOrders] = useState([]);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const fetchProducts = async () => {
@@ -18,8 +22,49 @@ const ProductList = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const ordersData = await getAllOrders();
+      setOrders(ordersData);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
+  const generateReport = () => {
+    const doc = new jsPDF();
+
+    // Aggregate order data
+    const orderSummary = products.map((product) => {
+      const orderCount = orders.reduce((count, order) => {
+        return (
+          count +
+          order.orderDetails.filter(
+            (item) => item.product._id.toString() === product._id.toString()
+          ).length
+        );
+      }, 0);
+      return {
+        productName: product.name,
+        orderCount,
+      };
+    });
+
+    // Add title to the document
+    doc.text("Products Report", 14, 16);
+    doc.autoTable({
+      head: [["Product Name", "Order Count"]],
+      body: orderSummary.map((item) => [item.productName, item.orderCount]),
+      startY: 20,
+    });
+
+    // Save the PDF
+    doc.save("ProductsReport.pdf");
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchOrders();
     if (deleteSuccess) {
       const timer = setTimeout(() => {
         setDeleteSuccess(false);
@@ -31,6 +76,15 @@ const ProductList = () => {
 
   return (
     <>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Products</h2>
+        <button
+          onClick={generateReport}
+          className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
+        >
+          Generate Report
+        </button>
+      </div>
       {/* Success Alert at the Top of the Page */}
       {deleteSuccess && (
         <div
