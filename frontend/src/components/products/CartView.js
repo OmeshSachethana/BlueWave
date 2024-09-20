@@ -6,7 +6,7 @@ import {
   decreaseQuantity,
   clearCart,
 } from "../../features/products/cartSlice"; // Import the actions
-import { placeOrder } from "../../services/orderService";
+import { placeOrder, updatePaymentStatus } from "../../services/orderService";
 import UserOrderInputModal from "../modals/UserOrderInputModal";
 
 const getLocationName = async (lat, lng) => {
@@ -80,7 +80,7 @@ const CartView = ({ toggleCart }) => {
     };
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!paymentMethod) {
       setError("Please select a payment method.");
       return;
@@ -90,16 +90,28 @@ const CartView = ({ toggleCart }) => {
       // Place the order with existing user details
       const orderData = getOrderData(userDetails.name, userDetails.location);
       console.log("Order data:", orderData);
-      placeOrder(orderData)
-        .then((response) => {
-          console.log("Order placed successfully:", response);
-          setOrderSuccess(true);
-          dispatch(clearCart());
-          setError("");
-        })
-        .catch((error) => {
-          console.error("Error placing order:", error);
-        });
+
+      try {
+        const response = await placeOrder(orderData);
+        console.log("Order placed successfully:", response);
+
+        // Get orderId from response if applicable
+        const orderId = response.order._id;
+
+        // If payment method is "Cash on Delivery", mark payment as completed
+        if (paymentMethod === "Cash on Delivery") {
+          await updatePaymentStatus(orderId, "Completed");
+          console.log(
+            "Payment status updated to Completed for Cash on Delivery"
+          );
+        }
+
+        setOrderSuccess(true);
+        dispatch(clearCart());
+        setError("");
+      } catch (error) {
+        console.error("Error placing order:", error);
+      }
     } else {
       // Show modal to update user details
       setShowModal(true);

@@ -192,8 +192,7 @@ const OrderList = () => {
                   {/* Show Ship button if paymentMethod is Cash on Delivery, regardless of paymentStatus, and approvalStatus is Approved */}
                   {(order.paymentMethod === "Cash on Delivery" ||
                     (order.paymentStatus !== "Pending" &&
-                      (order.paymentMethod === "Card Payment" ||
-                        order.paymentMethod === "Cash on Delivery"))) &&
+                      order.paymentMethod === "Card Payment")) &&
                     order.approvalStatus === "Approved" && (
                       <>
                         {/* Show Already Shipped disabled button */}
@@ -385,14 +384,12 @@ const OrderList = () => {
                 <div className="w-full border-t border-gray-200 px-6 flex flex-col lg:flex-row items-center justify-between">
                   <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
                     <p className="font-medium text-lg text-gray-900 pl-6 py-3 max-lg:text-center flex-grow">
-                      {order.paymentStatus === "Pending" ? (
-                        order.paymentMethod === "Cash on Delivery" ? (
-                          <span className="text-emerald-600">
-                            Cash on Delivery
-                          </span>
-                        ) : (
-                          <span className="text-red-600">Payment Pending</span>
-                        )
+                      {order.paymentMethod === "Cash on Delivery" ? (
+                        <span className="text-emerald-600">
+                          Cash on Delivery
+                        </span>
+                      ) : order.paymentStatus === "Pending" ? (
+                        <span className="text-red-600">Payment Pending</span>
                       ) : (
                         <span className="text-emerald-600">
                           Paid using {order.paymentMethod}
