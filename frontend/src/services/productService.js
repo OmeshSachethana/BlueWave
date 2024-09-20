@@ -23,3 +23,15 @@ export const getProductById = async (productId) => {
     throw error;
   }
 };
+
+// Search products based on query parameters
+export const searchProducts = async (searchParams) => {
+  try {
+    const queryString = new URLSearchParams(searchParams).toString(); // Convert search params to query string
+    const response = await axios.get(`${API_URL}/api/products/search?${queryString}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error searching products:", error);
+    throw error;
+  }
+};

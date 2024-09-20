@@ -160,3 +160,61 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ error: "Error deleting product" });
   }
 };
+
+// Search for products based on query parameters
+exports.searchProducts = async (req, res) => {
+  try {
+    const { name, category, minPrice, maxPrice } = req.query;
+
+    // Build the query object
+    let query = {};
+
+    // Case-insensitive name match
+    if (name) {
+      query.name = { $regex: new RegExp(name, "i") };
+    }
+
+    // Exact category match
+    if (category) {
+      query.category = category;
+    }
+
+    // Handle price range filtering with type checking
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) {
+        const min = parseFloat(minPrice);
+        if (!isNaN(min)) {
+          query.price.$gte = min;
+        }
+      }
+      if (maxPrice) {
+        const max = parseFloat(maxPrice);
+        if (!isNaN(max)) {
+          query.price.$lte = max;
+        }
+      }
+    }
+
+    console.log('Constructed query:', query); // Log the query to check its structure
+
+    // Fetch products that match the query
+    const products = await Product.find(query);
+
+    // Check if no products are found
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found matching your criteria" });
+    }
+
+    // Return matching products
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error.message);
+    res
+      .status(500)
+      .json({ error: "Error fetching products", details: error.message });
+  }
+};
+

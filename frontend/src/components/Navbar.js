@@ -1,25 +1,23 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import CartView from "./products/CartView";
+import ProductSearch from "./products/ProductSearch";
 import { useSelector } from "react-redux";
 
-const Navbar = () => {
+const Navbar = ({ onSearch }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Use useSelector to access the cart state
   const cartItems = useSelector((state) => state.cart.items);
-
-  // Calculate the total number of items in the cart
-  const totalItemsInCart = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const totalItemsInCart = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  // Get the current location
   const location = useLocation();
-
-  // Function to check if the link is active
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -37,7 +35,9 @@ const Navbar = () => {
             <Link
               to="/"
               className={`px-4 py-2 rounded ${
-                isActive("/") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Home
@@ -45,7 +45,9 @@ const Navbar = () => {
             <Link
               to="/subscription-plans"
               className={`px-4 py-2 rounded ${
-                isActive("/subscription-plans") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/subscription-plans")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Subscription Plans
@@ -53,7 +55,9 @@ const Navbar = () => {
             <Link
               to="/contact-us"
               className={`px-4 py-2 rounded ${
-                isActive("/contact-us") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/contact-us")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Contact Us
@@ -61,7 +65,9 @@ const Navbar = () => {
             <Link
               to="/orders"
               className={`px-4 py-2 rounded ${
-                isActive("/orders") ? "bg-white text-blue-600" : "text-white bg-blue-500 hover:bg-blue-400"
+                isActive("/orders")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
               Your Orders
@@ -69,7 +75,13 @@ const Navbar = () => {
           </div>
 
           {/* Cart Button Section */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-8 ml-[-150px]">
+            {location.pathname === "/" && (
+              <div className="hidden lg:flex flex-grow">
+                {/* Pass the onSearch function to ProductSearch */}
+                <ProductSearch onSearch={onSearch} />
+              </div>
+            )}
             <div className="relative">
               <button
                 type="button"
@@ -111,5 +123,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
