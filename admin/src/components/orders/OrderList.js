@@ -180,9 +180,7 @@ const OrderList = () => {
               <button
                 onClick={() => setFilter("All")}
                 className={`block w-full text-left py-2 px-4 rounded ${
-                  filter === "All"
-                    ? "bg-blue-200"
-                    : "bg-white"
+                  filter === "All" ? "bg-blue-200" : "bg-white"
                 }`}
               >
                 All
@@ -375,9 +373,16 @@ const OrderList = () => {
                   >
                     <div className="w-1/4">
                       <img
-                        src={item.product.image || "default-image-url"}
-                        alt={item.product.name || "Product Image"}
                         className="aspect-square w-full lg:max-w-[140px] rounded-xl object-cover"
+                        src={
+                          item.product.image
+                            ? `http://localhost:5000${item.product.image}`
+                            : "https://via.placeholder.com/150"
+                        }
+                        alt={item.product.name}
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/140";
+                        }}
                       />
                     </div>
                     <div className="flex flex-row items-center w-full">

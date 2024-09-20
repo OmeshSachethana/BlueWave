@@ -31,9 +31,17 @@ const ProductCard = ({ product }) => {
       >
         <img
           className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-          src={`http://localhost:5000${product.image}`}
+          src={
+            product.image
+              ? `http://localhost:5000${product.image}`
+              : "https://via.placeholder.com/150"
+          }
           alt={product.name}
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/140";
+          }}
         />
+
         <div className="flex flex-col justify-between p-4 leading-normal">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
             {product.name}
@@ -63,14 +71,18 @@ const ProductCard = ({ product }) => {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v6m10-6v6m-6-6v6"
               />
             </svg>
-            &nbsp;
-            Add to Cart
+            &nbsp; Add to Cart
           </button>
         </div>
       </a>
 
       {/* Modal */}
-      <ProductModal product={product} isOpen={isModalOpen} onClose={closeModal} singleProduct={singleProduct} />
+      <ProductModal
+        product={product}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        singleProduct={singleProduct}
+      />
     </>
   );
 };

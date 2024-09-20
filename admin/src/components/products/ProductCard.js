@@ -99,8 +99,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     <div className="relative w-full max-w-lg mx-auto">
       <div
         className={`flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-2xl ${
-          !isEditMode &&
-          "hover:bg-gray-100"
+          !isEditMode && "hover:bg-gray-100"
         }`}
       >
         <div className="w-full h-80 md:w-72 md:h-auto md:rounded-none md:rounded-l-lg flex items-center justify-center">
@@ -148,10 +147,17 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
             </label>
           ) : (
             <img
-              key={editedProduct.image} // Use image URL as key to force re-render
               className="object-cover w-full h-full md:w-72 md:h-auto rounded-t-lg md:rounded-none"
-              src={editedProduct.image}
+              key={editedProduct.image} // Use image URL as key to force re-render
+              src={
+                editedProduct.image
+                  ? `http://localhost:5000${editedProduct.image}`
+                  : "https://via.placeholder.com/150"
+              }
               alt={editedProduct.name}
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/140";
+              }}
             />
           )}
         </div>
@@ -247,8 +253,12 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               {showConfirmModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
                   <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
-                    <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
-                    <p className="mb-4">Are you sure you want to delete this product?</p>
+                    <h3 className="text-lg font-semibold mb-4">
+                      Confirm Delete
+                    </h3>
+                    <p className="mb-4">
+                      Are you sure you want to delete this product?
+                    </p>
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={handleConfirmDelete}
@@ -276,5 +286,3 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
 };
 
 export default ProductCard;
-
-

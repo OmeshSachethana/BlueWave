@@ -14,7 +14,7 @@ const ProductModal = ({ product, isOpen, onClose, singleProduct }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[800px] h-[400px] overflow-y-auto">
         <section className="relative">
-        <button
+          <button
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
             onClick={onClose}
             style={{ fontSize: "30px" }}
@@ -26,9 +26,16 @@ const ProductModal = ({ product, isOpen, onClose, singleProduct }) => {
               <div className="img">
                 <div className="img-box h-full max-lg:mx-auto">
                   <img
-                    src={`http://localhost:5000${product.image}`}
-                    alt="Yellow Tropical Printed Shirt image"
                     className="max-lg:mx-auto lg:ml-auto h-full object-cover"
+                    src={
+                      product.image
+                        ? `http://localhost:5000${product.image}`
+                        : "https://via.placeholder.com/150"
+                    }
+                    alt={product.name}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/140";
+                    }}
                   />
                 </div>
               </div>
@@ -49,30 +56,29 @@ const ProductModal = ({ product, isOpen, onClose, singleProduct }) => {
                     {product.description}
                   </p>
                   <button
-            type="button"
-            className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent modal from opening
-              handleAddToCart();
-            }}
-          >
-            <svg
-              className="h-6 w-6 inline-block"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v6m10-6v6m-6-6v6"
-              />
-            </svg>
-            &nbsp;
-            Add to Cart
-          </button>
+                    type="button"
+                    className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent modal from opening
+                      handleAddToCart();
+                    }}
+                  >
+                    <svg
+                      className="h-6 w-6 inline-block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v6m10-6v6m-6-6v6"
+                      />
+                    </svg>
+                    &nbsp; Add to Cart
+                  </button>
                 </div>
               </div>
             </div>

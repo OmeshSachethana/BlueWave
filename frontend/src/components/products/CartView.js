@@ -239,9 +239,17 @@ const CartView = ({ toggleCart }) => {
                           <li key={item._id} className="flex py-6">
                             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                               <img
-                                src={`http://localhost:5000${item.image}`}
-                                alt={item.name}
                                 className="h-full w-full object-cover object-center"
+                                src={
+                                  item.image
+                                    ? `http://localhost:5000${item.image}`
+                                    : "https://via.placeholder.com/150"
+                                }
+                                alt={item.name}
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://via.placeholder.com/140";
+                                }}
                               />
                             </div>
                             <div className="ml-4 flex flex-1 flex-col">
