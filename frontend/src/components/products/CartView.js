@@ -320,6 +320,10 @@ const CartView = ({ toggleCart }) => {
                           Card Payment
                         </label>
                       </div>
+                      {/* Display error under payment method */}
+                      {error && (
+                        <p className="text-red-500 text-sm mt-2">{error}</p>
+                      )}
                     </div>
 
                     {/* User Details */}
@@ -338,10 +342,6 @@ const CartView = ({ toggleCart }) => {
                       </a>
                     </div>
                   </div>
-
-                  {error && (
-                    <p className="text-red-500 text-sm mb-4">{error}</p>
-                  )}
 
                   <div className="flex justify-between text-base font-medium text-gray-900 mt-6">
                     <p>Subtotal</p>
