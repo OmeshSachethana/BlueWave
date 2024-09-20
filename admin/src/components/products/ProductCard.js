@@ -100,24 +100,24 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
       <div
         className={`flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-2xl ${
           !isEditMode &&
-          "hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+          "hover:bg-gray-100"
         }`}
       >
         <div className="w-full h-80 md:w-72 md:h-auto md:rounded-none md:rounded-l-lg flex items-center justify-center">
           {isEditMode ? (
             <label
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 text-center"
+              className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50hover:bg-gray-100 text-center"
               style={{
                 backgroundImage: `url(${imagePreview || editedProduct.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
-              <div className="absolute inset-0 bg-white opacity-60 dark:bg-gray-900"></div>
+              <div className="absolute inset-0 bg-white opacity-60"></div>
               <div className="flex flex-col items-center justify-center pt-5 pb-6 z-10">
                 <svg
-                  className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  className="w-8 h-8 mb-4 text-gray-500"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -131,11 +131,11 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                     d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                   />
                 </svg>
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                <p className="mb-2 text-sm text-gray-500">
                   <span className="font-semibold">Click to upload</span> or drag
                   and drop
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500">
                   SVG, PNG, JPG or GIF (MAX. 800x400px)
                 </p>
               </div>
@@ -164,7 +164,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 name="name"
                 value={editedProduct.name}
                 onChange={handleInputChange}
-                className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                className="mb-2 text-xl font-bold tracking-tight text-gray-900 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Name"
               />
               <input
@@ -172,14 +172,14 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 name="category"
                 value={editedProduct.category}
                 onChange={handleInputChange}
-                className="mb-2 text-lg text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                className="mb-2 text-lg text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Category"
               />
               <textarea
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
-                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Description"
               />
               <input
@@ -187,7 +187,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 name="quantity"
                 value={editedProduct.quantity}
                 onChange={handleInputChange}
-                className="mb-2 text-sm text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Quantity"
               />
               <input
@@ -195,25 +195,25 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 name="price"
                 value={editedProduct.price}
                 onChange={handleInputChange}
-                className="mb-3 font-normal text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded p-2 w-full"
+                className="mb-3 font-normal text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Price"
               />
             </>
           ) : (
             <>
-              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                 {editedProduct.name}
               </h5>
-              <p className="mb-1 text-lg font-semibold text-gray-600 dark:text-gray-300">
+              <p className="mb-1 text-lg font-semibold text-gray-600">
                 Category: {editedProduct.category}
               </p>
-              <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+              <p className="mb-3 font-normal text-gray-700">
                 {editedProduct.description}
               </p>
-              <p className="mb-1 text-sm font-semibold text-gray-600 dark:text-gray-300">
+              <p className="mb-1 text-sm font-semibold text-gray-600">
                 Quantity: {editedProduct.quantity}
               </p>
-              <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+              <p className="mb-3 font-normal text-gray-700">
                 Rs: {editedProduct.price.toFixed(2)}
               </p>
             </>

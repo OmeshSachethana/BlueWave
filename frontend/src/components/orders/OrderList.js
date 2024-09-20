@@ -79,10 +79,10 @@ const OrderList = () => {
       {/* Sidebar for filters with sticky positioning */}
       <aside
         id="filter-sidebar"
-        className="fixed z-10 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
+        className="fixed z-10 top-39 left-10 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm"
       >
         <div className="flex flex-col items-start mb-3 md:items-start md:mb-0">
-          <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+          <h3 className="font-bold text-xl mb-4 text-gray-900">
             Filter by Payment Status
           </h3>
           <ul className="space-y-2 w-full">
@@ -94,7 +94,7 @@ const OrderList = () => {
                 className={`block w-full text-left py-2 px-4 rounded ${
                   filter === "All"
                     ? "bg-blue-200"
-                    : "bg-white dark:bg-gray-800 dark:text-white"
+                    : "bg-white"
                 }`}
               >
                 All
@@ -106,7 +106,7 @@ const OrderList = () => {
                 className={`block w-full text-left py-2 px-4 rounded ${
                   filter === "Pending"
                     ? "bg-blue-200"
-                    : "bg-white dark:bg-gray-800 dark:text-white"
+                    : "bg-white"
                 }`}
               >
                 Pending
@@ -118,7 +118,7 @@ const OrderList = () => {
                 className={`block w-full text-left py-2 px-4 rounded ${
                   filter === "Completed"
                     ? "bg-blue-200"
-                    : "bg-white dark:bg-gray-800 dark:text-white"
+                    : "bg-white"
                 }`}
               >
                 Completed
@@ -135,7 +135,7 @@ const OrderList = () => {
             Your Orders
           </h2>
           <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
-            Thanks for placing an order. You can check your order summary below.
+            Thanks for placing an order. You can track your order here.
           </p>
 
           {filteredOrders.length === 0 ? (
@@ -153,12 +153,12 @@ const OrderList = () => {
                   order.paymentStatus !== "Completed" &&
                   order.approvalStatus === "Approved" && (
                     <button
-                      className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800"
+                      className="absolute top-4 right-4 inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 focus:ring-4 focus:outline-none focus:ring-lime-200"
                       onClick={() =>
                         handlePaymentClick(order._id, order.totalPrice)
                       }
                     >
-                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
                         Pay Now
                       </span>
                     </button>

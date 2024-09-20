@@ -167,10 +167,10 @@ const OrderList = () => {
       {/* Sidebar for filters with sticky positioning */}
       <aside
         id="filter-sidebar"
-        className="fixed z-50 top-39 left-20 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
+        className="fixed z-50 top-39 left-10 flex flex-col justify-between w-1/4 p-4 bg-white border border-gray-100 rounded-lg shadow-sm"
       >
         <div className="flex flex-col items-start mb-3 md:items-start md:mb-0">
-          <h3 className="font-bold text-xl mb-4 text-gray-900 dark:text-white">
+          <h3 className="font-bold text-xl mb-4 text-gray-900">
             Filter by Status
           </h3>
           <ul className="space-y-2 w-full">
@@ -182,7 +182,7 @@ const OrderList = () => {
                 className={`block w-full text-left py-2 px-4 rounded ${
                   filter === "All"
                     ? "bg-blue-200"
-                    : "bg-white dark:bg-gray-800 dark:text-white"
+                    : "bg-white"
                 }`}
               >
                 All
@@ -240,7 +240,7 @@ const OrderList = () => {
             </h2>
             <button
               onClick={generateReport}
-              className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
+              className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
             >
               Generate Report
             </button>
@@ -279,7 +279,7 @@ const OrderList = () => {
                             className={`relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium rounded-lg focus:ring-4 focus:outline-none ${
                               order.delivery.deliveryStatus === "Shipped"
                                 ? "text-gray-500 bg-gray-200 cursor-not-allowed focus:ring-gray-200"
-                                : "text-gray-900 bg-gradient-to-br from-cyan-500 to-blue-500 group hover:text-white focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                                : "text-gray-900 bg-gradient-to-br from-cyan-500 to-blue-500 group hover:text-white focus:ring-cyan-200"
                             }`}
                             onClick={() => handleShipClick(order._id)}
                             disabled={
@@ -290,7 +290,7 @@ const OrderList = () => {
                               className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${
                                 order.delivery.deliveryStatus === "Shipped"
                                   ? "bg-white"
-                                  : "bg-white dark:bg-gray-900 group-hover:bg-opacity-0"
+                                  : "bg-white group-hover:bg-opacity-0"
                               }`}
                             >
                               Ship
@@ -305,10 +305,10 @@ const OrderList = () => {
                     order.approvalStatus !== "Rejected" &&
                     order.delivery.deliveryStatus !== "Shipped" && (
                       <button
-                        className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                        className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-300 to-red-500 group-hover:from-red-300 group-hover:to-red-500 focus:ring-4 focus:outline-none focus:ring-red-200"
                         onClick={() => handleRejectClick(order._id)}
                       >
-                        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
                           Reject
                         </span>
                       </button>
@@ -317,10 +317,10 @@ const OrderList = () => {
                   {/* Show Approve button only if approvalStatus is not Approved */}
                   {order.approvalStatus !== "Approved" && (
                     <button
-                      className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+                      className="inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-300 to-green-500 group-hover:from-green-300 group-hover:to-green-500 focus:ring-4 focus:outline-none focus:ring-green-200"
                       onClick={() => handleApproveClick(order._id)}
                     >
-                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                      <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
                         Approve
                       </span>
                     </button>

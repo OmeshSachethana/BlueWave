@@ -122,7 +122,7 @@ const AdminSubscriptionPlans = () => {
         <h1 className="text-2xl font-bold">Subscription Plans</h1>
         <button
           onClick={generateReport}
-          className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
+          className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
         >
           Generate Report
         </button>
@@ -132,7 +132,7 @@ const AdminSubscriptionPlans = () => {
         <div className="mb-5">
           <label
             htmlFor="name"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900"
           >
             Plan Name
           </label>
@@ -141,7 +141,7 @@ const AdminSubscriptionPlans = () => {
             id="name"
             value={formData.name}
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="Enter plan name"
             required
           />
@@ -149,7 +149,7 @@ const AdminSubscriptionPlans = () => {
         <div className="mb-5">
           <label
             htmlFor="description"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900"
           >
             Description
           </label>
@@ -157,7 +157,7 @@ const AdminSubscriptionPlans = () => {
             id="description"
             value={formData.description}
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="Enter plan description"
             required
           />
@@ -165,7 +165,7 @@ const AdminSubscriptionPlans = () => {
         <div className="mb-5">
           <label
             htmlFor="duration"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900"
           >
             Duration
           </label>
@@ -174,7 +174,7 @@ const AdminSubscriptionPlans = () => {
             id="duration"
             value={formData.duration}
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="Enter duration"
             required
           />
@@ -182,7 +182,7 @@ const AdminSubscriptionPlans = () => {
         <div className="mb-5">
           <label
             htmlFor="pricing"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900"
           >
             Pricing
           </label>
@@ -191,7 +191,7 @@ const AdminSubscriptionPlans = () => {
             id="pricing"
             value={formData.pricing}
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="Enter pricing"
             required
           />
@@ -199,7 +199,7 @@ const AdminSubscriptionPlans = () => {
         <div className="mb-5">
           <label
             htmlFor="deliveryFrequency"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900"
           >
             Delivery Frequency
           </label>
@@ -208,22 +208,22 @@ const AdminSubscriptionPlans = () => {
             id="deliveryFrequency"
             value={formData.deliveryFrequency}
             onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="Enter delivery frequency"
             required
           />
         </div>
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
         >
           {isEditing ? "Update Plan" : "Add Plan"}
         </button>
       </form>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-sm text-left text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Description</th>
@@ -237,7 +237,7 @@ const AdminSubscriptionPlans = () => {
             {plans.map((plan) => (
               <tr
                 key={plan._id}
-                className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+                className="bg-white border-b"
               >
                 <td className="px-6 py-4">{plan.name}</td>
                 <td className="px-6 py-4">{plan.description}</td>
@@ -247,13 +247,13 @@ const AdminSubscriptionPlans = () => {
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleEdit(plan)}
-                    className="text-blue-600 dark:text-blue-500 hover:underline mr-3"
+                    className="text-blue-600 hover:underline mr-3"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(plan._id)}
-                    className="text-red-600 dark:text-red-500 hover:underline"
+                    className="text-red-600 hover:underline"
                   >
                     Delete
                   </button>
