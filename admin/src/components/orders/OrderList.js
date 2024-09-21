@@ -159,6 +159,11 @@ const OrderList = () => {
     doc.save("CustomerOrdersReport.pdf");
   };
 
+  // Sort filteredOrders by updatedAt in descending order
+  const sortedOrders = filteredOrders.sort((a, b) => {
+    return new Date(b.updatedAt) - new Date(a.updatedAt); // Sort by updatedAt in descending order
+  });
+
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p>Error loading orders: {error.message}</p>;
 
@@ -249,7 +254,7 @@ const OrderList = () => {
               No orders found.
             </p>
           ) : (
-            filteredOrders.map((order) => {
+            sortedOrders.map((order) => {
               // Check if any product in the order is unavailable or if product data is missing
               const isOrderDisabled = order.orderDetails.some(
                 (item) => item.product === null
@@ -309,7 +314,8 @@ const OrderList = () => {
                       )}
 
                     {/* Show Reject button only if payment is not Completed */}
-                    {(order.paymentMethod === "Cash on Delivery" || order.paymentStatus !== "Completed") &&
+                    {(order.paymentMethod === "Cash on Delivery" ||
+                      order.paymentStatus !== "Completed") &&
                       order.approvalStatus !== "Rejected" &&
                       order.delivery.deliveryStatus !== "Shipped" && (
                         <button

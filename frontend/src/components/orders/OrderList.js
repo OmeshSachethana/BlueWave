@@ -71,6 +71,11 @@ const OrderList = () => {
     navigate("/payment", { state: { orderId, orderAmount } });
   };
 
+  // Sort filteredOrders by updatedAt in descending order
+  const sortedOrders = filteredOrders.sort((a, b) => {
+    return new Date(b.updatedAt) - new Date(a.updatedAt); // Sort by updatedAt in descending order
+  });
+
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p>Error loading orders: {error.message}</p>;
 
@@ -137,7 +142,7 @@ const OrderList = () => {
               No orders found.
             </p>
           ) : (
-            filteredOrders.map((order) => {
+            sortedOrders.map((order) => {
               // Check if any product in the order is unavailable or if product data is missing
               const isOrderDisabled = order.orderDetails.some(
                 (item) => item.product === null
@@ -184,7 +189,7 @@ const OrderList = () => {
                       <p className="font-semibold text-base leading-7 text-black mt-4">
                         Order Date:{" "}
                         <span className="text-gray-400 font-medium">
-                          {new Date(order.createdAt).toLocaleString("en-GB", {
+                          {new Date(order.updatedAt).toLocaleString("en-GB", {
                             hour12: false,
                           })}
                         </span>
