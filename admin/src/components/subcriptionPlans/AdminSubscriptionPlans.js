@@ -128,6 +128,7 @@ const AdminSubscriptionPlans = () => {
         </button>
       </div>
 
+      <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
       <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
         <div className="mb-5">
           <label
@@ -220,8 +221,9 @@ const AdminSubscriptionPlans = () => {
           {isEditing ? "Update Plan" : "Add Plan"}
         </button>
       </form>
+      </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-2">
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
