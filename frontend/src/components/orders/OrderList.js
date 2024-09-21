@@ -13,6 +13,7 @@ const OrderList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
 
   const fetchOrders = async () => {
     try {
@@ -32,14 +33,40 @@ const OrderList = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (filter === "All") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.paymentStatus === filter)
+    let updatedOrders = orders;
+
+    // Apply filter based on payment status
+    if (filter !== "All") {
+      updatedOrders = updatedOrders.filter(
+        (order) => order.paymentStatus === filter
       );
     }
-  }, [filter, orders]);
+
+    // Apply search term filter (Enhanced search functionality)
+    if (searchTerm) {
+      updatedOrders = updatedOrders.filter(
+        (order) =>
+          // Searching in user fields
+          order.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          // Searching in order details (checking product name, if populated)
+          order.orderDetails.some((detail) =>
+            detail.product?.name
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase())
+          ) ||
+          // Searching by payment method
+          order.paymentMethod
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          // Searching by delivery location or status
+          order.delivery.deliveryLocationName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredOrders(updatedOrders);
+  }, [filter, orders, searchTerm]);
 
   const handleDeleteOrder = async () => {
     try {
@@ -53,7 +80,6 @@ const OrderList = () => {
       setModalOpen(false);
     } catch (err) {
       console.error("Error deleting order:", err);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -91,7 +117,6 @@ const OrderList = () => {
             Filter by Payment Status
           </h3>
           <ul className="space-y-2 w-full">
-            {" "}
             {/* Ensuring full width for the list */}
             <li>
               <button
@@ -130,12 +155,26 @@ const OrderList = () => {
       {/* Main content */}
       <section className="w-3/4 p-4 ml-[calc(25%+1rem)]">
         <div className="w-full max-w-7xl mx-auto">
-          <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
-            Your Orders
-          </h2>
-          <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
-            Thanks for placing an order. You can track your order here.
-          </p>
+          <div className="relative">
+            <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
+              Your Orders
+            </h2>
+
+            {/* Search box */}
+            <div className="absolute top-0 right-0">
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)} // Handle search input
+                className="p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <p className="mt-4 font-normal text-lg leading-8 text-gray-500 mb-11 text-center">
+              Thanks for placing an order. You can track your order here.
+            </p>
+          </div>
 
           {filteredOrders.length === 0 ? (
             <p className="mt-4 font-normal text-lg leading-8 text-gray-600 mb-11 text-center">
