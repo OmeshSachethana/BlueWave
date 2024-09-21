@@ -55,6 +55,7 @@ const ProductCard = ({ product }) => {
             onClick={(e) => {
               e.stopPropagation(); // Prevent modal from opening
               handleAddToCart();
+              e.preventDefault();
             }}
           >
             <svg
