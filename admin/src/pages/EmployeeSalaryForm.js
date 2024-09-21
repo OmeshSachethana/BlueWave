@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmployeeSalary, updateEmployeeSalary, deleteEmployeeSalary, fetchEmployeeSalaries } from '../features/employee/salarySlice';
-import { convertToCSV, downloadCSV } from '../utils/salaryUtils'; // Import CSV utilities
+import { convertToCSV, downloadCSV } from '../utils/salaryUtils';
 
 const EmployeeSalaryForm = () => {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const EmployeeSalaryForm = () => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Added search term state
 
   const handleChange = (e) => {
     setFormData({
@@ -104,9 +105,13 @@ const EmployeeSalaryForm = () => {
 
   const handleDownloadReport = () => {
     const headers = ['employeeID', 'basicSalary', 'allowances', 'overtimeHours', 'overtimeRate', 'deductions', 'epfRate', 'netSalary'];
-    const csvContent = convertToCSV(salaryList, headers); // Use utility function
-    downloadCSV(csvContent, 'employee_salary_report.csv'); // Use utility function
+    const csvContent = convertToCSV(salaryList, headers);
+    downloadCSV(csvContent, 'employee_salary_report.csv');
   };
+
+  const filteredSalaryList = salaryList.filter(employee =>
+    employee.employeeID.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto p-6">
@@ -134,22 +139,33 @@ const EmployeeSalaryForm = () => {
           </button>
         </form>
         <div className="mt-6 bg-gray-100 p-4 rounded-lg">
-        <h2 className="text-xl font-semibold mb-2">Salary Details</h2>
-        {status === 'loading' && <p>Loading...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-        {status === 'succeeded' && (
-          <div>
-            <p><strong>Gross Salary:</strong> ${calculateGrossSalary().toFixed(2)}</p>
-            <p><strong>EPF Contribution:</strong> ${calculateEPFContribution().toFixed(2)}</p>
-            <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
-            <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
-          </div>
-        )}
-      </div>
+          <h2 className="text-xl font-semibold mb-2">Salary Details</h2>
+          {status === 'loading' && <p>Loading...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+          {status === 'succeeded' && (
+            <div>
+              <p><strong>Gross Salary:</strong> ${calculateGrossSalary().toFixed(2)}</p>
+              <p><strong>EPF Contribution:</strong> ${calculateEPFContribution().toFixed(2)}</p>
+              <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
+              <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-12">
         <h2 className="text-xl font-semibold text-center mb-6">Employee Salary Records</h2>
+        
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by Employee ID"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
@@ -166,8 +182,8 @@ const EmployeeSalaryForm = () => {
               </tr>
             </thead>
             <tbody>
-              {salaryList.length > 0 ? (
-                salaryList.map((employee) => (
+              {filteredSalaryList.length > 0 ? (
+                filteredSalaryList.map((employee) => (
                   <tr key={employee.employeeID} className="text-center">
                     <td className="p-2 border border-gray-300">{employee.employeeID}</td>
                     <td className="p-2 border border-gray-300">{employee.basicSalary}</td>
@@ -205,7 +221,6 @@ const EmployeeSalaryForm = () => {
         </div>
       </div>
 
-      {/* Download CSV Button */}
       <div className="text-center mt-6">
         <button
           onClick={handleDownloadReport}
