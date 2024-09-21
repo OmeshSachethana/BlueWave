@@ -9,7 +9,8 @@ const EmployeeList = ({ onEdit }) => {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employees.employees);
   const status = useSelector((state) => state.employees.status);
-  const [filter, setFilter] = useState('All'); // Added filter state
+  const [filter, setFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState(''); // Added search term state
 
   useEffect(() => {
     if (status === 'idle') {
@@ -21,53 +22,68 @@ const EmployeeList = ({ onEdit }) => {
     setFilter(event.target.value);
   };
 
-  const filteredEmployees = filter === 'All' ? employees : employees.filter(employee => employee.department === filter);
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredEmployees = employees.filter(employee => {
+    const matchesFilter = filter === 'All' || employee.department === filter;
+    const matchesSearch = employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          employee.lastName.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   // pdf handling
   const handleDownloadPDF = () => {
     const input = document.getElementById('employee-table');
-    
-    // Temporarily hide the "Actions" column before generating the PDF
     const actionCells = document.querySelectorAll('#employee-table th:last-child, #employee-table td:last-child');
     actionCells.forEach(cell => cell.style.display = 'none');
-  
+
     html2canvas(input)
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF();
-        const imgWidth = 190; // Adjust for margins
-        const pageHeight = 290; // A4 page height
+        const imgWidth = 190;
+        const pageHeight = 290;
         const imgHeight = canvas.height * imgWidth / canvas.width;
         let heightLeft = imgHeight;
-        let position = 30; // Start below the title
-  
-        // Add title
+        let position = 30;
+
         pdf.setFontSize(18);
         pdf.text('Employee List', 105, 20, { align: 'center' });
-  
+
         pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
-  
+
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
           pdf.addPage();
           pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-  
+
         pdf.save('employee-list.pdf');
       })
       .finally(() => {
-        // Restore the "Actions" column after generating the PDF
         actionCells.forEach(cell => cell.style.display = '');
       })
       .catch((err) => console.error('Failed to download PDF', err));
   };
-  
 
   return (
     <div className="p-6">
       <h2 className="text-lg font-semibold text-center mb-4">View Employees</h2>
+
+      <div className="mb-4">
+        <input 
+          type="text" 
+          placeholder="Search by Name" 
+          value={searchTerm} 
+          onChange={handleSearchChange} 
+          className="p-2 border border-gray-300 rounded"
+        />
+      </div>
+
       <div className="mb-4">
         <label htmlFor="department-filter" className="mr-2">Filter by Department:</label>
         <select id="department-filter" value={filter} onChange={handleFilterChange} className="p-2 border border-gray-300 rounded">

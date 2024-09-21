@@ -13,6 +13,7 @@ const MaintenanceList = () => {
   const [editingId, setEditingId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
   useEffect(() => {
     dispatch(fetchAllMaintenance());
@@ -33,8 +34,9 @@ const MaintenanceList = () => {
   };
 
   const filteredMaintenanceList = maintenanceList.filter((maintenance) => {
-    if (filterStatus === '') return true;
-    return maintenance.status === filterStatus;
+    const matchesStatus = filterStatus === '' || maintenance.status === filterStatus;
+    const matchesSearch = maintenance.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesStatus && matchesSearch;
   });
 
   // Count the occurrences of each status
@@ -76,6 +78,23 @@ const MaintenanceList = () => {
     <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
       <h2 className="text-xl font-bold mb-4 text-blue-600">Maintenance List</h2>
 
+      
+
+      {/* Bar Chart */}
+      <div className="mb-8">
+        <Bar data={data} options={options} />
+      </div>
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-1/2 p-2 border border-gray-300 rounded" // Adjust width as needed
+        />
+      </div>
+
       {/* Filter Dropdown */}
       <div className="mb-4">
         <label htmlFor="filterStatus" className="mr-2 text-gray-700 font-semibold">Filter by Status:</label>
@@ -90,11 +109,6 @@ const MaintenanceList = () => {
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
         </select>
-      </div>
-
-      {/* Bar Chart */}
-      <div className="mb-8">
-        <Bar data={data} options={options} />
       </div>
 
       {filteredMaintenanceList.length > 0 ? (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules, updateSchedule, deleteSchedule } from '../../features/schedule/scheduleSlice';
 import { Bar } from 'react-chartjs-2';
@@ -14,9 +14,8 @@ const ScheduleTable = () => {
   const { schedules, loading } = useSelector((state) => state.schedules);
 
   const [editItem, setEditItem] = useState(null);
-  const [editData, setEditData] = useState({
-    quantity: 0,
-  });
+  const [editData, setEditData] = useState({ quantity: 0 });
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
   useEffect(() => {
     dispatch(fetchSchedules());
@@ -97,6 +96,11 @@ const ScheduleTable = () => {
     },
   };
 
+  // Filter schedules based on search term
+  const filteredSchedules = schedules.filter(schedule =>
+    schedule.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="max-w-4xl mx-auto mt-6">
       <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
@@ -104,6 +108,17 @@ const ScheduleTable = () => {
       {/* Render Bar chart */}
       <div className="mb-6">
         <Bar data={chartData} options={chartOptions} />
+      </div>
+
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border border-gray-300 rounded" // Adjust styling as needed
+        />
       </div>
 
       {/* Button to download the table as PDF */}
@@ -134,7 +149,7 @@ const ScheduleTable = () => {
               <td colSpan="6" className="text-center py-4">Loading...</td>
             </tr>
           ) : (
-            schedules.map((schedule) => (
+            filteredSchedules.map((schedule) => (
               <tr key={schedule._id} className="border-b">
                 <td className="py-2 px-4">{schedule._id}</td>
                 <td className="py-2 px-4">{schedule.name}</td>
