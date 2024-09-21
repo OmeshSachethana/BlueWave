@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRecords, deleteRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 
 const IncomeExpenditureTable = ({ onEdit }) => {
     const dispatch = useDispatch();
     const records = useSelector((state) => state.incomeExpenditure.records);
+    const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
     useEffect(() => {
         dispatch(fetchRecords());
@@ -28,9 +29,26 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
     }, [records]);
 
+    // Filter records based on search term
+    const filteredRecords = records.filter(record =>
+        record.details.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="container mx-auto mt-8">
             <h2 className="text-2xl font-bold mb-6">Income & Expenditure Statement</h2>
+
+            {/* Search Input */}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search by Details"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-1/2 p-2 border border-gray-300 rounded" // Adjust width as needed
+                />
+            </div>
+
             <table className="table-auto w-full text-left">
                 <thead>
                     <tr className="bg-gray-100">
@@ -44,7 +62,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {records.map((record, index) => (
+                    {filteredRecords.map((record, index) => (
                         <tr key={record._id} className="border-t">
                             <td className="px-4 py-2">{index + 1}</td>
                             <td className="px-4 py-2">{new Date(record.date).toLocaleDateString()}</td>
