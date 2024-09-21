@@ -15,47 +15,80 @@ import Carousel from "./components/Carousel";
 import CardListPage from "./components/orders/CardListPage";
 import { getAllProducts, searchProducts } from "./services/productService";
 
+function Footer() {
+  const links = [
+    { name: "Home", path: "/" },
+    { name: "Orders", path: "/orders" },
+    { name: "Payment", path: "/payment" },
+    { name: "Subscription Plans", path: "/subscription-plans" },
+  ];
+
+  return (
+    <footer className="bg-gray-800 text-white py-6 mt-8">
+      <div className="container mx-auto text-center">
+        <div className="mb-4">
+          <h5 className="font-bold text-lg">Quick Links</h5>
+          <ul className="flex justify-center space-x-6">
+            {links.map((link, index) => (
+              <li key={index}>
+                <a href={link.path} className="hover:underline">
+                  {link.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="text-sm text-gray-400">
+          <p>© 2024 BlueWave | All rights reserved.</p>
+          <p>
+            Follow us on 
+            <a href="https://twitter.com" className="ml-1 hover:underline">
+              Twitter
+            </a>, 
+            <a href="https://facebook.com" className="ml-1 hover:underline">
+              Facebook
+            </a>, and 
+            <a href="https://instagram.com" className="ml-1 hover:underline">
+              Instagram
+            </a>.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  // Fetch products based on the search term or get all products on initial load
   useEffect(() => {
     const fetchInitialProducts = async () => {
       try {
         if (!searchTerm) {
-          // Fetch all products if no search term is provided
           const products = await getAllProducts();
-          setFilteredProducts(products); // Update filtered products with all products
+          setFilteredProducts(products);
         } else {
-          // Fetch filtered products based on search term
           const searchResults = await searchProducts({ name: searchTerm });
-          setFilteredProducts(searchResults); // Update filtered products with search results
+          setFilteredProducts(searchResults);
         }
       } catch (error) {
         console.error("Error fetching or searching products:", error);
       }
     };
 
-    // Call the function to fetch products
     fetchInitialProducts();
-  }, [searchTerm]); // This runs whenever the searchTerm changes or on the first load
+  }, [searchTerm]);
 
-  // Handle search from Navbar
   const handleSearch = (term) => {
-    setSearchTerm(term); // Update searchTerm state to trigger the useEffect above
+    setSearchTerm(term);
   };
 
   return (
     <Router>
       <Navbar onSearch={handleSearch} />
-      <MainContent
-        searchTerm={searchTerm}
-        filteredProducts={filteredProducts}
-      />
-      <footer className="mt-8">
-        <p className="text-center text-gray-500">© 2024 BlueWave</p>
-      </footer>
+      <MainContent searchTerm={searchTerm} filteredProducts={filteredProducts} />
+      <Footer />
     </Router>
   );
 }
