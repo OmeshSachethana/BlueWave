@@ -157,14 +157,15 @@ const EmployeeSalaryForm = () => {
         <h2 className="text-xl font-semibold text-center mb-6">Employee Salary Records</h2>
         
         <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search by Employee ID"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
+  <input
+    type="text"
+    placeholder="Search by Employee ID"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-1/2 p-2 border border-gray-300 rounded" // Adjusted width
+  />
+</div>
+
         
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse border border-gray-300">
