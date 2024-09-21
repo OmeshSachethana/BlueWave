@@ -11,12 +11,56 @@ import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscript
 import SchedulePage from "./pages/Schedule/SchedulePage";
 import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePage";
 
+function Footer() {
+  const links = [
+    { name: "Home", path: "/" },
+    { name: "Employee", path: "/employee" },
+    { name: "Payroll", path: "/payroll" },
+    { name: "Orders", path: "/orders" },
+  ];
+
+  return (
+    <footer className="bg-gray-800 text-white py-6 mt-8 w-full px-0">
+      <div className="text-center">
+        <div className="mb-4">
+          <h5 className="font-bold text-lg">Quick Links</h5>
+          <ul className="flex justify-center space-x-6">
+            {links.map((link, index) => (
+              <li key={index}>
+                <a href={link.path} className="hover:underline">
+                  {link.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="text-sm text-gray-400">
+          <p>© 2024 BlueWave | All rights reserved.</p>
+          <p>
+            Follow us on 
+            <a href="https://twitter.com" className="ml-1 hover:underline">
+              Twitter
+            </a>, 
+            <a href="https://facebook.com" className="ml-1 hover:underline">
+              Facebook
+            </a>, and 
+            <a href="https://instagram.com" className="ml-1 hover:underline">
+              Instagram
+            </a>.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
 function App() {
   return (
     <Router>
       <Navbar />
-      <div className="container mx-auto p-4">
-        <main>
+      <div className="w-full p-0 m-0">
+        <main className="w-full">
           <Routes>
             <Route
               path="/"
@@ -36,18 +80,13 @@ function App() {
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/income-expenditure" element={<IncomeExpenditurePage />} />
-            
-            
-            {/* Add other routes here as needed */}
           </Routes>
         </main>
-
-        <footer className="mt-8">
-          <p className="text-center text-gray-500">© 2024 BlueWave</p>
-        </footer>
+        <Footer />
       </div>
     </Router>
   );
 }
+
 
 export default App;
