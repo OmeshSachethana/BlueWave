@@ -366,7 +366,7 @@ const OrderList = () => {
                       <p className="font-semibold text-base leading-7 text-black mt-4">
                         Order Date:{" "}
                         <span className="text-gray-400 font-medium">
-                          {new Date(order.createdAt).toLocaleString("en-GB", {
+                          {new Date(order.updatedAt).toLocaleString("en-GB", {
                             hour12: false,
                           })}
                         </span>
