@@ -309,7 +309,7 @@ const OrderList = () => {
                       )}
 
                     {/* Show Reject button only if payment is not Completed */}
-                    {order.paymentStatus !== "Completed" &&
+                    {(order.paymentMethod === "Cash on Delivery" || order.paymentStatus !== "Completed") &&
                       order.approvalStatus !== "Rejected" &&
                       order.delivery.deliveryStatus !== "Shipped" && (
                         <button
