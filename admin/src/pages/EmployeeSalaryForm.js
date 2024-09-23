@@ -116,23 +116,23 @@ const EmployeeSalaryForm = () => {
     const overtimeRate = parseFloat(formData.overtimeRate) || 0;
     return basicSalary + allowances + (overtimeHours * overtimeRate);
   };
-
+  
   const calculateEPFContribution = () => {
-    const grossSalary = calculateGrossSalary();
+    const basicSalary = parseFloat(formData.basicSalary) || 0; // EPF based on basic salary only
     const epfRate = parseFloat(formData.epfRate) || 0;
-    return (grossSalary * epfRate) / 100;
+    return (basicSalary * epfRate) / 100;
   };
-
+  
   const calculateTotalDeductions = () => {
     const deductions = parseFloat(formData.deductions) || 0;
-    return deductions + calculateEPFContribution();
+    return deductions + calculateEPFContribution(); // Total deductions including EPF
   };
-
+  
   const calculateNetSalary = () => {
     const grossSalary = calculateGrossSalary();
     const totalDeductions = calculateTotalDeductions();
-    return grossSalary - totalDeductions;
-  };
+    return grossSalary - totalDeductions; // Net salary after deductions
+  };  
 
   const handleDownloadReport = () => {
     const headers = ['employeeID', 'basicSalary', 'allowances', 'overtimeHours', 'overtimeRate', 'deductions', 'epfRate', 'netSalary'];
