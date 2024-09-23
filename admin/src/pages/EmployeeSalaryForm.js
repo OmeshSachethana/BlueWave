@@ -177,10 +177,10 @@ const EmployeeSalaryForm = () => {
           {error && <p className="text-red-500">{error}</p>}
           {status === 'succeeded' && (
             <div>
-              <p><strong>Gross Salary:</strong> ${calculateGrossSalary().toFixed(2)}</p>
-              <p><strong>EPF Contribution:</strong> ${calculateEPFContribution().toFixed(2)}</p>
-              <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
-              <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
+              <p><strong>Gross Salary:</strong> Rs. {calculateGrossSalary().toFixed(2)}</p>
+              <p><strong>EPF Contribution:</strong> Rs. {calculateEPFContribution().toFixed(2)}</p>
+              <p><strong>Total Deductions:</strong> Rs. {calculateTotalDeductions().toFixed(2)}</p>
+              <p><strong>Net Salary:</strong> Rs. {calculateNetSalary().toFixed(2)}</p>
             </div>
           )}
         </div>
