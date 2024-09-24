@@ -16,7 +16,7 @@ const PaymentPage = () => {
     cardNumber: selectedCard?.cardNumber || "",
     name: selectedCard?.name || "",
     expiryDate: selectedCard?.expiryDate || "",
-    cvv: "",
+    cvv: selectedCard?.cvv || "",
   });
 
   const handleChange = (e) => {
@@ -45,6 +45,7 @@ const PaymentPage = () => {
   };
 
   return (
+    
     <section className="bg-white py-8 antialiased">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         <div className="mx-auto max-w-5xl">
