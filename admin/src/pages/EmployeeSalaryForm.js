@@ -19,12 +19,40 @@ const EmployeeSalaryForm = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState(''); // Added search term state
+  const [formErrors, setFormErrors] = useState({}); // For form validation errors
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    // Validate that only numbers are allowed in numeric fields
+    if (['basicSalary', 'allowances', 'overtimeHours', 'overtimeRate', 'deductions', 'epfRate'].includes(name)) {
+      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.employeeID) errors.employeeID = 'Employee ID is required';
+    if (!formData.basicSalary || parseFloat(formData.basicSalary) <= 0) errors.basicSalary = 'Basic salary must be a positive number';
+    if (!formData.allowances || parseFloat(formData.allowances) < 0) errors.allowances = 'Allowances cannot be negative';
+    if (!formData.overtimeHours || parseFloat(formData.overtimeHours) < 0) errors.overtimeHours = 'Overtime hours cannot be negative';
+    if (!formData.overtimeRate || parseFloat(formData.overtimeRate) <= 0) errors.overtimeRate = 'Overtime rate must be a positive number';
+    if (!formData.deductions || parseFloat(formData.deductions) < 0) errors.deductions = 'Deductions cannot be negative';
+    if (!formData.epfRate || parseFloat(formData.epfRate) < 0) errors.epfRate = 'EPF rate cannot be negative';
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   useEffect(() => {
@@ -33,6 +61,9 @@ const EmployeeSalaryForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return; // Prevent form submission if validation fails
+
     const netSalary = calculateNetSalary();
     const salaryData = {
       employeeID: formData.employeeID,
@@ -85,23 +116,23 @@ const EmployeeSalaryForm = () => {
     const overtimeRate = parseFloat(formData.overtimeRate) || 0;
     return basicSalary + allowances + (overtimeHours * overtimeRate);
   };
-
+  
   const calculateEPFContribution = () => {
-    const grossSalary = calculateGrossSalary();
+    const basicSalary = parseFloat(formData.basicSalary) || 0; // EPF based on basic salary only
     const epfRate = parseFloat(formData.epfRate) || 0;
-    return (grossSalary * epfRate) / 100;
+    return (basicSalary * epfRate) / 100;
   };
-
+  
   const calculateTotalDeductions = () => {
     const deductions = parseFloat(formData.deductions) || 0;
-    return deductions + calculateEPFContribution();
+    return deductions + calculateEPFContribution(); // Total deductions including EPF
   };
-
+  
   const calculateNetSalary = () => {
     const grossSalary = calculateGrossSalary();
     const totalDeductions = calculateTotalDeductions();
-    return grossSalary - totalDeductions;
-  };
+    return grossSalary - totalDeductions; // Net salary after deductions
+  };  
 
   const handleDownloadReport = () => {
     const headers = ['employeeID', 'basicSalary', 'allowances', 'overtimeHours', 'overtimeRate', 'deductions', 'epfRate', 'netSalary'];
@@ -126,9 +157,11 @@ const EmployeeSalaryForm = () => {
                 name={field}
                 value={formData[field]}
                 onChange={handleChange}
+                placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
                 className="w-full p-2 border border-gray-300 rounded-lg"
                 required
               />
+              {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
             </div>
           ))}
           <button
@@ -144,10 +177,10 @@ const EmployeeSalaryForm = () => {
           {error && <p className="text-red-500">{error}</p>}
           {status === 'succeeded' && (
             <div>
-              <p><strong>Gross Salary:</strong> ${calculateGrossSalary().toFixed(2)}</p>
-              <p><strong>EPF Contribution:</strong> ${calculateEPFContribution().toFixed(2)}</p>
-              <p><strong>Total Deductions:</strong> ${calculateTotalDeductions().toFixed(2)}</p>
-              <p><strong>Net Salary:</strong> ${calculateNetSalary().toFixed(2)}</p>
+              <p><strong>Gross Salary:</strong> Rs. {calculateGrossSalary().toFixed(2)}</p>
+              <p><strong>EPF Contribution:</strong> Rs. {calculateEPFContribution().toFixed(2)}</p>
+              <p><strong>Total Deductions:</strong> Rs. {calculateTotalDeductions().toFixed(2)}</p>
+              <p><strong>Net Salary:</strong> Rs. {calculateNetSalary().toFixed(2)}</p>
             </div>
           )}
         </div>
@@ -157,16 +190,15 @@ const EmployeeSalaryForm = () => {
         <h2 className="text-xl font-semibold text-center mb-6">Employee Salary Records</h2>
         
         <div className="mb-4">
-  <input
-    type="text"
-    placeholder="Search by Employee ID"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-1/2 p-2 border border-gray-300 rounded" // Adjusted width
-  />
-</div>
+          <input
+            type="text"
+            placeholder="Search by Employee ID"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-1/2 p-2 border border-gray-300 rounded" // Adjusted width
+          />
+        </div>
 
-        
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
@@ -183,52 +215,44 @@ const EmployeeSalaryForm = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredSalaryList.length > 0 ? (
-                filteredSalaryList.map((employee) => (
-                  <tr key={employee.employeeID} className="text-center">
-                    <td className="p-2 border border-gray-300">{employee.employeeID}</td>
-                    <td className="p-2 border border-gray-300">{employee.basicSalary}</td>
-                    <td className="p-2 border border-gray-300">{employee.allowances}</td>
-                    <td className="p-2 border border-gray-300">{employee.overtimeHours}</td>
-                    <td className="p-2 border border-gray-300">{employee.overtimeRate}</td>
-                    <td className="p-2 border border-gray-300">{employee.deductions}</td>
-                    <td className="p-2 border border-gray-300">{employee.epfRate}</td>
-                    <td className="p-2 border border-gray-300">{employee.netSalary}</td>
-                    <td className="p-2 border border-gray-300">
-                      <button
-                        onClick={() => handleEdit(employee)}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(employee.employeeID)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="10" className="p-4 text-center text-gray-500">
-                    No employee salary records found.
+              {filteredSalaryList.map((employee) => (
+                <tr key={employee.employeeID}>
+                  <td className="p-2 border border-gray-300">{employee.employeeID}</td>
+                  <td className="p-2 border border-gray-300">{employee.basicSalary}</td>
+                  <td className="p-2 border border-gray-300">{employee.allowances}</td>
+                  <td className="p-2 border border-gray-300">{employee.overtimeHours}</td>
+                  <td className="p-2 border border-gray-300">{employee.overtimeRate}</td>
+                  <td className="p-2 border border-gray-300">{employee.deductions}</td>
+                  <td className="p-2 border border-gray-300">{employee.epfRate}</td>
+                  <td className="p-2 border border-gray-300">{employee.netSalary}</td>
+                  <td className="p-2 border border-gray-300">
+                    <button
+                      onClick={() => handleEdit(employee)}
+                      className="p-1 text-blue-500 hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(employee.employeeID)}
+                      className="p-1 text-red-500 hover:underline"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-      </div>
 
-      <div className="text-center mt-6">
-        <button
-          onClick={handleDownloadReport}
-          className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600"
-        >
-          Download Salary Report as CSV
-        </button>
+        <div className="mt-6">
+          <button
+            onClick={handleDownloadReport}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          >
+            Download Salary Report as CSV
+          </button>
+        </div>
       </div>
     </div>
   );
