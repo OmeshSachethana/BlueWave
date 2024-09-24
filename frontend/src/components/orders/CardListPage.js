@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPayments, updatePayment, deletePayment } from "../../features/payment/paymentSlice";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useNavigate for redirection
 
-const CardListPage = () => {
+const CardListPage = () => { // Accept orderAmount as a prop
+  const location = useLocation();
+  const { orderId, orderAmount } = location.state || {};
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // To handle redirection
   const { payments, loading, error } = useSelector((state) => state.payment);
   const [editingCard, setEditingCard] = useState(null); // Track which card is being edited
   const [cardData, setCardData] = useState({
@@ -51,10 +55,21 @@ const CardListPage = () => {
       expiryDate: cardData.expiryDate,
       type: cardData.type,
     };
-    dispatch(updatePayment(updatedCardData)).then(() => {
-      dispatch(fetchPayments()); // Fetch the latest payments after update
-    });
-    setEditingCard(null); // End editing
+    dispatch(updatePayment(updatedCardData))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchPayments()); // Fetch the latest payments after update
+        setEditingCard(null); // End editing after save
+      })
+      .catch((error) => {
+        console.error("Failed to update card:", error);
+        alert("Error updating card. Please try again.");
+      });
+  };
+
+  const handleSelectCard = (card) => {
+    // Navigate to the payment form page and pass the selected card details and order amount
+    navigate("/payment", { state: { selectedCard: card, orderAmount, orderId  } });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -139,6 +154,13 @@ const CardListPage = () => {
                     className="mt-2 p-2 bg-red-600 text-white rounded"
                   >
                     Delete
+                  </button>
+                  {/* Select Button */}
+                  <button
+                    onClick={() => handleSelectCard(card)}
+                    className="mt-2 p-2 bg-green-600 text-white rounded"
+                  >
+                    Select
                   </button>
                 </div>
               )}
