@@ -34,6 +34,7 @@ const PaymentPage = () => {
       // Update payment status to "Completed"
       await updatePaymentStatus(orderId, "Completed");
       alert(`Payment of Rs.${orderAmount} for Order #${orderId} completed!`);
+      navigate('/orders'); // Navigate to /orders after successful payment
     } catch (error) {
       console.error("Payment processing failed:", error);
       alert("Error processing payment. Please try again.");
