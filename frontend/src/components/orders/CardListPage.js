@@ -15,6 +15,8 @@ const CardListPage = () => { // Accept orderAmount as a prop
     cardNumber: "",
     expiryDate: "",
     type: "",
+    cvv: "",
+
   });
 
   useEffect(() => {
@@ -28,6 +30,7 @@ const CardListPage = () => { // Accept orderAmount as a prop
       cardNumber: card.cardNumber,
       expiryDate: card.expiryDate,
       type: card.type,
+      cvv: card.cvv,
     });
   };
 
@@ -38,6 +41,7 @@ const CardListPage = () => { // Accept orderAmount as a prop
       cardNumber: "",
       expiryDate: "",
       type: "",
+      cvv:"",
     });
   };
 
@@ -54,6 +58,7 @@ const CardListPage = () => { // Accept orderAmount as a prop
       cardNumber: cardData.cardNumber,
       expiryDate: cardData.expiryDate,
       type: cardData.type,
+      cvv: cardData.cvv,
     };
     dispatch(updatePayment(updatedCardData))
       .unwrap()
@@ -115,6 +120,13 @@ const CardListPage = () => { // Accept orderAmount as a prop
                     className="mb-2 p-2 border rounded w-full"
                     placeholder="Card Type"
                   />
+                  <input
+                    type="text"
+                    value={cardData.cvv}
+                    onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+                    className="mb-2 p-2 border rounded w-full"
+                    placeholder="CVV"
+                  />
                   <button
                     onClick={() => handleSaveEdit(card._id)}
                     className="mr-2 p-2 bg-blue-600 text-white rounded"
@@ -142,6 +154,9 @@ const CardListPage = () => { // Accept orderAmount as a prop
                   </p>
                   <p className="text-gray-700 dark:text-gray-400">
                     Card Type: {card.type}
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-400">
+                    CVV: {card.cvv}
                   </p>
                   <button
                     onClick={() => handleEditClick(card)}
