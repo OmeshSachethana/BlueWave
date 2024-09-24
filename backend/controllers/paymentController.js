@@ -1,26 +1,41 @@
 const Payment = require('../models/payment');  // Ensure correct path
 
-// Create a new payment record
+// Create or replace a payment record if duplicate cardNumber exists
 exports.createPayment = async (req, res) => {
   try {
     const { type, cardNumber, name, expiryDate, cvv } = req.body;
 
-    // Create a new payment document
-    const newPayment = new Payment({
-      type,
-      cardNumber,
-      name,
-      expiryDate,
-      cvv
-    });
+    // Check if a payment record with the same cardNumber exists
+    let existingPayment = await Payment.findOne({ cardNumber });
 
-    // Save the payment record to the database
-    await newPayment.save();
-    res.status(201).json({ message: 'Payment record created successfully', data: newPayment });
+    if (existingPayment) {
+      // Update the existing payment record
+      existingPayment.type = type;
+      existingPayment.name = name;
+      existingPayment.expiryDate = expiryDate;
+      existingPayment.cvv = cvv;
+
+      await existingPayment.save();
+      return res.status(200).json({ message: 'Payment record updated successfully', data: existingPayment });
+    } else {
+      // Create a new payment document if no duplicate found
+      const newPayment = new Payment({
+        type,
+        cardNumber,
+        name,
+        expiryDate,
+        cvv
+      });
+
+      // Save the new payment record to the database
+      await newPayment.save();
+      res.status(201).json({ message: 'Payment record created successfully', data: newPayment });
+    }
   } catch (error) {
-    res.status(500).json({ message: 'Error creating payment record', error: error.message });
+    res.status(500).json({ message: 'Error creating or updating payment record', error: error.message });
   }
 };
+
 
 // Get a payment record by ID
 exports.getPaymentById = async (req, res) => {
