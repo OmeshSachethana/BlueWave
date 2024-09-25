@@ -18,7 +18,6 @@ const incomeExpenditureRoutes = require("./routes/incomeExpenditureRoutes.js")
 require("dotenv").config();
 
 const app = express();
-const uploadsDir = path.join(__dirname, 'uploads');
 
 app.use(cors());
 
@@ -37,12 +36,6 @@ app.use("/api/discounts", discountRoutes);
 app.use("/api/packages", packageRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/incomeExpenditure", incomeExpenditureRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Ensure the uploads directory exists
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
 
 const PORT = process.env.PORT || 5002;
 const MONGODB_URI = process.env.MONGODB_URI;

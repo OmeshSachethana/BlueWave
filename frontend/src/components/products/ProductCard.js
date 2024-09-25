@@ -21,6 +21,13 @@ const ProductCard = ({ product }) => {
     setIsModalOpen(false);
   };
 
+  // Determine if the image is Base64 encoded or a URL
+  const imageSrc = product.image
+    ? product.image.startsWith("data:image")
+      ? product.image // If it's already a Base64 string
+      : `data:image/jpeg;base64,${product.image}` // For file-based image (if you kept serving images from the backend)
+    : "https://via.placeholder.com/140";
+
   return (
     <>
       {/* Trigger modal by clicking the product card */}
@@ -31,11 +38,7 @@ const ProductCard = ({ product }) => {
       >
         <img
           className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-          src={
-            product.image
-              ? `http://localhost:5000${product.image}`
-              : "https://via.placeholder.com/150"
-          }
+          src={imageSrc}
           alt={product.name}
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/140";

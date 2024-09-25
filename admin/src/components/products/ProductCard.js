@@ -151,8 +151,10 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               key={editedProduct.image} // Use image URL as key to force re-render
               src={
                 editedProduct.image
-                  ? `http://localhost:5000${editedProduct.image}`
-                  : "https://via.placeholder.com/150"
+                  ? editedProduct.image.startsWith("data:image")
+                    ? editedProduct.image // If the image string already starts with "data:image"
+                    : `data:image/jpeg;base64,${editedProduct.image}` // Prepend the base64 prefix if missing
+                  : "https://via.placeholder.com/140" // Default placeholder if no image
               }
               alt={editedProduct.name}
               onError={(e) => {
