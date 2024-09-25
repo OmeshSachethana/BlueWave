@@ -9,6 +9,8 @@ const AddMaintenance = () => {
     date: '',
     description: '',
     status: 'Pending',
+    priority: 'Medium', // Default priority
+    technician: '',     // Empty technician field
   });
 
   const dispatch = useDispatch();
@@ -26,6 +28,8 @@ const AddMaintenance = () => {
       date: '',
       description: '',
       status: 'Pending',
+      priority: 'Medium',
+      technician: '',
     });
   };
 
@@ -45,6 +49,7 @@ const AddMaintenance = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
+            placeholder="Enter maintenance name"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -56,6 +61,7 @@ const AddMaintenance = () => {
             name="date"
             value={formData.date}
             onChange={handleChange}
+            placeholder="Select maintenance date"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -66,6 +72,7 @@ const AddMaintenance = () => {
             name="description"
             value={formData.description}
             onChange={handleChange}
+            placeholder="Enter maintenance description"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             required
           ></textarea>
@@ -82,6 +89,32 @@ const AddMaintenance = () => {
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Priority Level</label>
+          <select
+            name="priority"
+            value={formData.priority}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+            required
+          >
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Responsible Technician</label>
+          <input
+            type="text"
+            name="technician"
+            value={formData.technician}
+            onChange={handleChange}
+            placeholder="Enter technician's name"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+            required
+          />
         </div>
         <button
           type="submit"
