@@ -20,6 +20,15 @@ const AdminSubscriptionPlans = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
 
+  const maxWords = 50;
+
+  // Function to count words
+  const countWords = (text) => {
+    return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  };
+
+  const wordsUsed = countWords(formData.description);
+
   useEffect(() => {
     const fetchAllPlans = async () => {
       try {
@@ -129,98 +138,113 @@ const AdminSubscriptionPlans = () => {
       </div>
 
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-      <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
-        <div className="mb-5">
-          <label
-            htmlFor="name"
-            className="block mb-2 text-sm font-medium text-gray-900"
+        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
+          <div className="mb-5">
+            <label
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Plan Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={(e) => {
+                // Allow only alphabetic characters
+                const regex = /^[A-Za-z\s]*$/; // Regex for alphabetic characters and spaces
+                if (regex.test(e.target.value) || e.target.value === "") {
+                  handleChange(e);
+                }
+              }}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Enter plan name"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="description"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Enter plan description"
+              required
+            />
+            <p className="text-sm text-gray-500">
+              {maxWords - wordsUsed} words remaining
+            </p>
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="duration"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Duration
+            </label>
+            <input
+              type="text"
+              id="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Enter duration"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="pricing"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Pricing
+            </label>
+            <input
+              type="text"
+              id="pricing"
+              value={formData.pricing}
+              onChange={(e) => {
+                // Allow only valid numeric inputs (digits and optional decimal point)
+                const regex = /^\d*\.?\d*$/; // Regex for numbers including decimal point
+                if (regex.test(e.target.value) || e.target.value === "") {
+                  handleChange(e);
+                }
+              }}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Enter pricing"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="deliveryFrequency"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Delivery Frequency
+            </label>
+            <input
+              type="text"
+              id="deliveryFrequency"
+              value={formData.deliveryFrequency}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Enter delivery frequency"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
-            Plan Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter plan name"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="description"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Description
-          </label>
-          <textarea
-            id="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter plan description"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="duration"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Duration
-          </label>
-          <input
-            type="text"
-            id="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter duration"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="pricing"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Pricing
-          </label>
-          <input
-            type="text"
-            id="pricing"
-            value={formData.pricing}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter pricing"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="deliveryFrequency"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Delivery Frequency
-          </label>
-          <input
-            type="text"
-            id="deliveryFrequency"
-            value={formData.deliveryFrequency}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter delivery frequency"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-        >
-          {isEditing ? "Update Plan" : "Add Plan"}
-        </button>
-      </form>
+            {isEditing ? "Update Plan" : "Add Plan"}
+          </button>
+        </form>
       </div>
 
       <div className="overflow-x-auto mt-2">
@@ -237,10 +261,7 @@ const AdminSubscriptionPlans = () => {
           </thead>
           <tbody>
             {plans.map((plan) => (
-              <tr
-                key={plan._id}
-                className="bg-white border-b"
-              >
+              <tr key={plan._id} className="bg-white border-b">
                 <td className="px-6 py-4">{plan.name}</td>
                 <td className="px-6 py-4">{plan.description}</td>
                 <td className="px-6 py-4">{plan.duration}</td>
