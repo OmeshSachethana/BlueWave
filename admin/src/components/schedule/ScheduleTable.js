@@ -14,7 +14,7 @@ const ScheduleTable = () => {
   const { schedules, loading } = useSelector((state) => state.schedules);
 
   const [editItem, setEditItem] = useState(null);
-  const [editData, setEditData] = useState({ quantity: 0 });
+  const [editData, setEditData] = useState({ quantity: 0, driver: '', duration: 0 }); // Updated to include driver and duration
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const ScheduleTable = () => {
 
   const handleEdit = (schedule) => {
     setEditItem(schedule._id);
-    setEditData({ quantity: schedule.quantity });
+    setEditData({ quantity: schedule.quantity, driver: schedule.driver, duration: schedule.duration }); // Include driver and duration
   };
 
   const handleDelete = (id) => {
@@ -31,7 +31,7 @@ const ScheduleTable = () => {
   };
 
   const handleSave = (id) => {
-    dispatch(updateSchedule({ id, quantity: editData.quantity }));
+    dispatch(updateSchedule({ id, quantity: editData.quantity, driver: editData.driver, duration: editData.duration })); // Include driver and duration
     setEditItem(null);
   };
 
@@ -46,7 +46,7 @@ const ScheduleTable = () => {
     const doc = new jsPDF();
     doc.text('Schedule Table', 14, 20);
 
-    const tableColumn = ['ID', 'Name', 'Quantity', 'Category', 'Location'];
+    const tableColumn = ['ID', 'Name', 'Quantity', 'Category', 'Location', 'Driver', 'Duration']; // Added Driver and Duration
     const tableRows = [];
 
     schedules.forEach(schedule => {
@@ -55,7 +55,9 @@ const ScheduleTable = () => {
         schedule.name,
         schedule.quantity,
         schedule.category,
-        schedule.location
+        schedule.location,
+        schedule.driver, // Added Driver
+        schedule.duration // Added Duration
       ];
       tableRows.push(scheduleData);
     });
@@ -140,13 +142,15 @@ const ScheduleTable = () => {
             <th className="py-2 px-4">Quantity</th>
             <th className="py-2 px-4">Category</th>
             <th className="py-2 px-4">Location</th>
+            <th className="py-2 px-4">Assigned Driver</th> {/* New column for Driver */}
+            <th className="py-2 px-4">Estimated Duration (days)</th> {/* New column for Duration */}
             <th className="py-2 px-4">Actions</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="6" className="text-center py-4">Loading...</td>
+              <td colSpan="8" className="text-center py-4">Loading...</td> {/* Adjusted colspan */}
             </tr>
           ) : (
             filteredSchedules.map((schedule) => (
@@ -168,6 +172,33 @@ const ScheduleTable = () => {
                 </td>
                 <td className="py-2 px-4">{schedule.category}</td>
                 <td className="py-2 px-4">{schedule.location}</td>
+                <td className="py-2 px-4">
+                  {editItem === schedule._id ? (
+                    <input
+                      type="text"
+                      name="driver"
+                      value={editData.driver}
+                      onChange={handleChange}
+                      className="p-2 border border-gray-300 rounded"
+                    />
+                  ) : (
+                    schedule.driver
+                  )}
+                </td>
+                <td className="py-2 px-4">
+                  {editItem === schedule._id ? (
+                    <input
+                      type="number"
+                      name="duration"
+                      value={editData.duration}
+                      onChange={handleChange}
+                      className="p-2 border border-gray-300 rounded"
+                      min="1"
+                    />
+                  ) : (
+                    schedule.duration
+                  )}
+                </td>
                 <td className="py-2 px-4">
                   {editItem === schedule._id ? (
                     <button
