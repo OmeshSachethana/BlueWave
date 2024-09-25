@@ -8,14 +8,14 @@ const ScheduleForm = () => {
     quantity: 0,
     category: '',
     location: '',
-    driver: '',      // New field for Assigned Driver
-    duration: 0      // New field for Estimated Duration in days
+    driver: '',
+    duration: 0
   });
 
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fetch schedules when the component is mounted
     dispatch(fetchSchedules());
   }, [dispatch]);
 
@@ -26,17 +26,38 @@ const ScheduleForm = () => {
     });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (formData.name.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
+    }
+    if (formData.quantity <= 0) {
+      newErrors.quantity = 'Quantity must be a positive number';
+    }
+    if (formData.driver.length < 3) {
+      newErrors.driver = 'Assigned driver name must be at least 3 characters long';
+    }
+    if (formData.duration <= 0) {
+      newErrors.duration = 'Duration must be at least 1 day';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addSchedule(formData));
-    setFormData({
-      name: '',
-      quantity: 0,
-      category: '',
-      location: '',
-      driver: '',      // Reset driver field
-      duration: 0      // Reset duration field
-    });
+    if (validateForm()) {
+      dispatch(addSchedule(formData));
+      setFormData({
+        name: '',
+        quantity: 0,
+        category: '',
+        location: '',
+        driver: '',
+        duration: 0
+      });
+      setErrors({});
+    }
   };
 
   return (
@@ -53,8 +74,10 @@ const ScheduleForm = () => {
               value={formData.name}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter item name (e.g., Equipment)"
               required
             />
+            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
           </div>
           <div className="mb-4">
             <label className="block mb-1">Quantity:</label>
@@ -64,9 +87,11 @@ const ScheduleForm = () => {
               value={formData.quantity}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter quantity (e.g., 5)"
               required
-              min="0"
+              min="1"
             />
+            {errors.quantity && <span className="text-red-500 text-sm">{errors.quantity}</span>}
           </div>
           <div className="mb-4">
             <label className="block mb-1">Category:</label>
@@ -106,8 +131,10 @@ const ScheduleForm = () => {
               value={formData.driver}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter driver's name"
               required
             />
+            {errors.driver && <span className="text-red-500 text-sm">{errors.driver}</span>}
           </div>
           <div className="mb-4">
             <label className="block mb-1">Estimated Duration (in days):</label>
@@ -117,21 +144,17 @@ const ScheduleForm = () => {
               value={formData.duration}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter duration in days"
               required
               min="1"
             />
+            {errors.duration && <span className="text-red-500 text-sm">{errors.duration}</span>}
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
             Add Schedule
           </button>
         </form>
       </div>
-
-      {/* Separate Schedule Table Section */}
-      {/* <div className="max-w-5xl mx-auto bg-gray-100 p-6 rounded-md shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Schedule Table</h2>
-        <ScheduleTable />
-      </div> */}
     </div>
   );
 };
