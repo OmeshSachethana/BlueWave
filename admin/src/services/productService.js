@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -38,24 +38,21 @@ export const getProductById = async (productId) => {
 // Update a product by ID
 export const updateProduct = async (productId, productData, selectedFile) => {
   try {
-    // Use FormData to handle file uploads
-    const formData = new FormData();
-
-    // Append all other product data fields to the FormData
-    Object.keys(productData).forEach((key) => {
-      formData.append(key, productData[key]);
-    });
-
-    // Append the selected file (if any) to FormData
+    // If there's a base64 encoded image, add it to productData
     if (selectedFile) {
-      formData.append("image", selectedFile);
+      productData.image = selectedFile; // Add the base64 image string to productData
     }
 
-    const response = await axios.put(`${API_URL}/api/products/${productId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    // Send the product data (including image) as JSON
+    const response = await axios.put(
+      `${API_URL}/api/products/${productId}`,
+      productData,
+      {
+        headers: {
+          "Content-Type": "application/json", // Content type is now JSON
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -63,7 +60,6 @@ export const updateProduct = async (productId, productData, selectedFile) => {
     throw error;
   }
 };
-
 
 // Delete a product by ID
 export const deleteProduct = async (productId) => {

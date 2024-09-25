@@ -49,17 +49,30 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setSelectedFile(base64String); // Set the base64 image string to the state
+        setImagePreview(base64String); // Use the base64 image string for preview
+      };
+
+      reader.readAsDataURL(file); // Convert image to base64
     }
   };
 
   const handleSaveClick = async () => {
     try {
+      const updatedProductData = { ...editedProduct }; // Create a copy of the edited product
+
+      // If there's a selected file (base64 image), add it to the updated product
+      if (selectedFile) {
+        updatedProductData.image = selectedFile;
+      }
+
       const updatedProduct = await updateProduct(
         product._id,
-        editedProduct,
-        selectedFile
+        updatedProductData
       );
 
       setEditedProduct((prevProduct) => ({
