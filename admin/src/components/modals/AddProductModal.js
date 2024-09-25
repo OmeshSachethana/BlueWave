@@ -6,7 +6,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
     name: "",
     description: "",
     price: "",
-    quantity: "",
+    quantity: 0,
     category: "",
     image: null,
   });
@@ -25,6 +25,12 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Prevent quantity from going negative
+    if (name === "quantity" && value < 0) {
+      return;
+    }
+
     setProductData({ ...productData, [name]: value });
   };
 
@@ -54,7 +60,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
         name: "",
         description: "",
         price: "",
-        quantity: "",
+        quantity: 0,
         category: "",
         image: null,
       }); // Clear form
@@ -64,7 +70,6 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
       }
 
       fetchProducts();
-      
     } catch (error) {
       setErrorMessage("Failed to create product. Please try again.");
       console.error("Error:", error);

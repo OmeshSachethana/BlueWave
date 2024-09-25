@@ -35,6 +35,11 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     const updatedValue =
       name === "price" || name === "quantity" ? parseFloat(value) : value;
 
+    // Prevent quantity from going negative
+    if (name === "quantity" && value < 0) {
+      return;
+    }
+
     setEditedProduct((prevProduct) => ({
       ...prevProduct,
       [name]: updatedValue,
