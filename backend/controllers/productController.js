@@ -3,15 +3,8 @@ const path = require("path");
 const fs = require("fs");
 const Product = require("../models/Product");
 
-// Set up multer for file storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Save images to 'uploads' folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to the original filename
-  },
-});
+// Set up multer for file storage in memory (no need to store the actual file)
+const storage = multer.memoryStorage(); // Store the file in memory instead of on disk
 
 // File filter to only accept image types
 const fileFilter = (req, file, cb) => {
@@ -38,11 +31,12 @@ exports.createProduct = [
   async (req, res) => {
     try {
       const { name, description, price, quantity, category } = req.body;
-      let imageUrl = "";
+      let imageBase64 = "";
 
       // Check if an image was uploaded
       if (req.file) {
-        imageUrl = `/uploads/${req.file.filename}`; // Store the path to the image
+        // Encode the image as a Base64 string
+        imageBase64 = req.file.buffer.toString("base64");
       }
 
       // Create the product object
@@ -52,7 +46,7 @@ exports.createProduct = [
         price,
         quantity,
         category,
-        image: imageUrl,
+        image: imageBase64, // Store the Base64 encoded image
       });
 
       // Save the product to the database
@@ -215,4 +209,3 @@ exports.searchProducts = async (req, res) => {
       .json({ error: "Error fetching products", details: error.message });
   }
 };
-

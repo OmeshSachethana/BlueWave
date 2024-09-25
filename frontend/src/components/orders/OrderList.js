@@ -268,8 +268,10 @@ const OrderList = () => {
                           className="aspect-square w-full lg:max-w-[140px] rounded-xl object-cover"
                           src={
                             item.product && item.product.image
-                              ? `http://localhost:5000${item.product.image}`
-                              : "https://via.placeholder.com/140"
+                              ? item.product.image.startsWith("data:image")
+                                ? item.product.image // If the image string already starts with "data:image"
+                                : `data:image/jpeg;base64,${item.product.image}` // Prepend the base64 prefix if missing
+                              : "https://via.placeholder.com/140" // Default placeholder if no image
                           }
                           alt={
                             item.product ? item.product.name : "Product Image"
