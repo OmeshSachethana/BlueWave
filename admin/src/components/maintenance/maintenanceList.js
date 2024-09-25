@@ -78,8 +78,6 @@ const MaintenanceList = () => {
     <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
       <h2 className="text-xl font-bold mb-4 text-blue-600">Maintenance List</h2>
 
-      
-
       {/* Bar Chart */}
       <div className="mb-8">
         <Bar data={data} options={options} />
@@ -118,6 +116,8 @@ const MaintenanceList = () => {
             <p className="text-gray-700">{maintenance.description}</p>
             <p className="text-gray-500">{new Date(maintenance.date).toLocaleDateString()}</p>
             <p className="text-gray-500">Status: {maintenance.status}</p>
+            <p className="text-gray-500">Priority: {maintenance.priority}</p> {/* Display Priority Level */}
+            <p className="text-gray-500">Technician: {maintenance.technician}</p> {/* Display Technician */}
 
             {editingId === maintenance._id ? (
               <div className="mt-4">
