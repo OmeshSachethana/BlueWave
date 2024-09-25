@@ -6,17 +6,17 @@ import { createPayment } from "../../features/payment/paymentSlice";
 
 const PaymentPage = () => {
   const location = useLocation();
-  const { orderId, orderAmount } = location.state || {};
+  const { orderId, orderAmount, selectedCard } = location.state || {};
 
   const dispatch = useDispatch();
   const navigate = useNavigate();  // Use navigate hook for redirection
 
   const [formData, setFormData] = useState({
-    type: "",
-    cardNumber: "",
-    name: "",
-    expiryDate: "",
-    cvv: "",
+    type: selectedCard?.type || "",
+    cardNumber: selectedCard?.cardNumber || "",
+    name: selectedCard?.name || "",
+    expiryDate: selectedCard?.expiryDate || "",
+    cvv: selectedCard?.cvv || "",
   });
 
   const handleChange = (e) => {
@@ -31,9 +31,10 @@ const PaymentPage = () => {
       // Dispatch the createPayment action
       await dispatch(createPayment(formData)).unwrap();
 
-      // Assuming payment goes through successfully, update the payment status to "Completed"
+      // Update payment status to "Completed"
       await updatePaymentStatus(orderId, "Completed");
       alert(`Payment of Rs.${orderAmount} for Order #${orderId} completed!`);
+      navigate('/orders'); // Navigate to /orders after successful payment
     } catch (error) {
       console.error("Payment processing failed:", error);
       alert("Error processing payment. Please try again.");
@@ -41,10 +42,11 @@ const PaymentPage = () => {
   };
 
   const handleViewCards = () => {
-    navigate('/cards');  // Navigate to the new CardListPage
+    navigate('/cards', { state: { orderId, orderAmount } }); // Navigate to the CardListPage
   };
 
   return (
+    
     <section className="bg-white py-8 antialiased">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         <div className="mx-auto max-w-5xl">
@@ -68,6 +70,7 @@ const PaymentPage = () => {
                   </label>
                   <select
                     id="type"
+					value={formData.type}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     required
@@ -88,9 +91,10 @@ const PaymentPage = () => {
                   <input
                     type="text"
                     id="name"
+					value={formData.name}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
-                    placeholder="Bonnie Green"
+                    placeholder="Suresh Fernando"
                     required
                   />
                 </div>
@@ -105,6 +109,7 @@ const PaymentPage = () => {
                   <input
                     type="text"
                     id="cardNumber"
+					value={formData.cardNumber}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="xxxx-xxxx-xxxx-xxxx"
@@ -140,6 +145,7 @@ const PaymentPage = () => {
                     <input
                       id="expiryDate"
                       type="text"
+					  value={formData.expiryDate}
                       onChange={handleChange}
                       className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="12/23"
@@ -184,6 +190,7 @@ const PaymentPage = () => {
                   <input
                     type="number"
                     id="cvv"
+					value={formData.cvv}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="•••"

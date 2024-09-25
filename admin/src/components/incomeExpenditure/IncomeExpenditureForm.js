@@ -39,26 +39,28 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
   const validate = () => {
     const newErrors = {};
     const { no, date, details, income, expenses } = formData;
-
+  
     // Required fields
     if (!no) newErrors.no = 'No is required.';
+    if (no < 0) newErrors.no = 'No cannot be negative.'; // Ensure 'no' is non-negative
     if (!date) newErrors.date = 'Date is required.';
     if (!details) newErrors.details = 'Details are required.';
     if (!income) newErrors.income = 'Income is required.';
     if (!expenses) newErrors.expenses = 'Expenses are required.';
-
+  
     // Numeric validations
     if (income < 0) newErrors.income = 'Income must be a positive number.';
     if (expenses < 0) newErrors.expenses = 'Expenses must be a positive number.';
-
+  
     // Unique 'no' validation
     if (!isEdit && records.some(record => record.no === Number(no))) {
       newErrors.no = 'Record with this No already exists.';
     }
-
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Return true if no errors
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
