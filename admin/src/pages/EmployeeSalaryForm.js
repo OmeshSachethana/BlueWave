@@ -42,18 +42,32 @@ const EmployeeSalaryForm = () => {
 
   const validateForm = () => {
     const errors = {};
-
-    if (!formData.employeeID) errors.employeeID = 'Employee ID is required';
-    if (!formData.basicSalary || parseFloat(formData.basicSalary) <= 0) errors.basicSalary = 'Basic salary must be a positive number';
-    if (!formData.allowances || parseFloat(formData.allowances) < 0) errors.allowances = 'Allowances cannot be negative';
-    if (!formData.overtimeHours || parseFloat(formData.overtimeHours) < 0) errors.overtimeHours = 'Overtime hours cannot be negative';
-    if (!formData.overtimeRate || parseFloat(formData.overtimeRate) <= 0) errors.overtimeRate = 'Overtime rate must be a positive number';
-    if (!formData.deductions || parseFloat(formData.deductions) < 0) errors.deductions = 'Deductions cannot be negative';
-    if (!formData.epfRate || parseFloat(formData.epfRate) < 0) errors.epfRate = 'EPF rate cannot be negative';
-
+  
+    // Employee ID validation: must start with 'E' followed by 5 digits
+    const employeeIDPattern = /^E\d{5}$/;
+    if (!formData.employeeID) {
+      errors.employeeID = 'Employee ID is required';
+    } else if (!employeeIDPattern.test(formData.employeeID)) {
+      errors.employeeID = 'Employee ID must start with "E" followed by 5 digits';
+    }
+  
+    if (!formData.basicSalary || parseFloat(formData.basicSalary) <= 0) 
+      errors.basicSalary = 'Basic salary must be a positive number';
+    if (!formData.allowances || parseFloat(formData.allowances) < 0) 
+      errors.allowances = 'Allowances cannot be negative';
+    if (!formData.overtimeHours || parseFloat(formData.overtimeHours) < 0) 
+      errors.overtimeHours = 'Overtime hours cannot be negative';
+    if (!formData.overtimeRate || parseFloat(formData.overtimeRate) <= 0) 
+      errors.overtimeRate = 'Overtime rate must be a positive number';
+    if (!formData.deductions || parseFloat(formData.deductions) < 0) 
+      errors.deductions = 'Deductions cannot be negative';
+    if (!formData.epfRate || parseFloat(formData.epfRate) < 0) 
+      errors.epfRate = 'EPF rate cannot be negative';
+  
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
+  
 
   useEffect(() => {
     dispatch(fetchEmployeeSalaries());
