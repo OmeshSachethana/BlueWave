@@ -10,6 +10,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const [initialProduct, setInitialProduct] = useState(product);
   const [imagePreview, setImagePreview] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setEditedProduct(product);
@@ -26,6 +27,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     }
     setIsEditMode(!isEditMode);
     setIsSaved(false);
+    setErrors({});
   };
 
   const handleInputChange = (e) => {
@@ -44,6 +46,12 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
       ...prevProduct,
       [name]: updatedValue,
     }));
+
+    // Clear errors for the field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: undefined,
+    }));
   };
 
   const handleImageUpload = (e) => {
@@ -61,7 +69,43 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     }
   };
 
+  const validateInputs = () => {
+    const newErrors = {};
+
+    if (!editedProduct.name || editedProduct.name.length > 50) {
+      newErrors.name = "Product Name must be 1-50 characters long.";
+    }
+
+    if (
+      !editedProduct.category ||
+      !/^[a-zA-Z\s]{1,30}$/.test(editedProduct.category)
+    ) {
+      newErrors.category = "Category must be 1-30 letters and spaces only.";
+    }
+
+    if (!editedProduct.description || editedProduct.description.length > 500) {
+      newErrors.description = "Description must be up to 500 characters.";
+    }
+
+    if (!editedProduct.quantity || editedProduct.quantity < 1) {
+      newErrors.quantity = "Quantity must be at least 1.";
+    }
+
+    if (!editedProduct.price || editedProduct.price < 0.01) {
+      newErrors.price = "Price must be a positive value.";
+    }
+
+    return newErrors;
+  };
+
   const handleSaveClick = async () => {
+    const validationErrors = validateInputs();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors); // Set the validation errors
+      return; // Stop the save process if there are validation errors
+    }
+
     try {
       const updatedProductData = { ...editedProduct }; // Create a copy of the edited product
 
@@ -192,7 +236,11 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-xl font-bold tracking-tight text-gray-900 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Name"
+                required
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
               <input
                 type="text"
                 name="category"
@@ -200,14 +248,22 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-lg text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Category"
+                required
               />
+              {errors.category && (
+                <p className="text-red-500 text-sm">{errors.category}</p>
+              )}
               <textarea
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
                 className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Description"
+                required
               />
+              {errors.description && (
+                <p className="text-red-500 text-sm">{errors.description}</p>
+              )}
               <input
                 type="number"
                 name="quantity"
@@ -215,7 +271,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Quantity"
+                min="1"
+                max="1000"
+                required
               />
+              {errors.quantity && (
+                <p className="text-red-500 text-sm">{errors.quantity}</p>
+              )}
               <input
                 type="number"
                 name="price"
@@ -223,7 +285,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-3 font-normal text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Price"
+                min="0.01"
+                step="0.01"
+                required
               />
+              {errors.price && (
+                <p className="text-red-500 text-sm">{errors.price}</p>
+              )}
             </>
           ) : (
             <>
@@ -271,7 +339,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               </button>
               {/* Confirmation Modal */}
               {showConfirmModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                   <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
                     <h3 className="text-lg font-semibold mb-4">
                       Confirm Delete
