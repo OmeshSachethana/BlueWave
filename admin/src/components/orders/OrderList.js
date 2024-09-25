@@ -101,28 +101,52 @@ const OrderList = () => {
   };
 
   const generateReport = () => {
-    const doc = new jsPDF();
+    // Initialize jsPDF in landscape mode
+    const doc = new jsPDF({ orientation: "landscape" });
 
     // Add title to the document
     doc.text("Customer Orders Report", 14, 16);
 
-    // Prepare the data for the table
-    const orderData = filteredOrders.map((order) => ({
-      orderId: order._id,
-      orderDate: new Date(order.createdAt).toLocaleString("en-GB", {
-        hour12: false,
-      }),
-      paymentMethod: order.paymentMethod,
-      userName: order.user.name,
-      deliveryLocation: order.delivery.deliveryLocationName,
-      totalPrice: order.totalPrice,
-      paymentStatus: order.paymentStatus,
-      deliveryStatus: order.delivery.deliveryStatus,
-      approvalStatus: order.approvalStatus,
-      products: order.orderDetails
-        .map((item) => `${item.product.name} (Qty: ${item.quantity})`)
-        .join(", "),
-    }));
+    // Prepare the data for the table, filtering out incomplete orders
+    const orderData = filteredOrders
+      .map((order) => {
+        // Check if any essential order details are missing
+        if (
+          !order._id ||
+          !order.createdAt ||
+          !order.paymentMethod ||
+          !order.user?.name ||
+          !order.delivery?.deliveryLocationName ||
+          order.totalPrice == null || // Check for null or undefined
+          !order.paymentStatus ||
+          !order.delivery?.deliveryStatus ||
+          !order.approvalStatus ||
+          !order.orderDetails ||
+          order.orderDetails.length === 0
+        ) {
+          return null; // Return null for incomplete orders
+        }
+
+        // Return a complete order object if all details are present
+        return {
+          orderId: order._id,
+          orderDate: new Date(order.createdAt).toLocaleString("en-GB", {
+            hour12: false,
+          }),
+          paymentMethod: order.paymentMethod,
+          userName: order.user.name,
+          deliveryLocation: order.delivery.deliveryLocationName,
+          totalPrice: order.totalPrice,
+          paymentStatus: order.paymentStatus,
+          deliveryStatus: order.delivery.deliveryStatus,
+          approvalStatus: order.approvalStatus,
+          products: order.orderDetails
+            .filter((item) => item.product?.name && item.quantity != null) // Filter for valid product details
+            .map((item) => `${item.product.name} (Qty: ${item.quantity})`)
+            .join(", "), // Join the valid products into a string
+        };
+      })
+      .filter(Boolean); // Remove null values from the array
 
     // Use autoTable to add the order data
     doc.autoTable({
