@@ -7,7 +7,9 @@ const ScheduleForm = () => {
     name: '',
     quantity: 0,
     category: '',
-    location: ''
+    location: '',
+    driver: '',      // New field for Assigned Driver
+    duration: 0      // New field for Estimated Duration in days
   });
 
   const dispatch = useDispatch();
@@ -31,7 +33,9 @@ const ScheduleForm = () => {
       name: '',
       quantity: 0,
       category: '',
-      location: ''
+      location: '',
+      driver: '',      // Reset driver field
+      duration: 0      // Reset duration field
     });
   };
 
@@ -94,8 +98,31 @@ const ScheduleForm = () => {
               <option value="Colombo">Colombo</option>
             </select>
           </div>
+          <div className="mb-4">
+            <label className="block mb-1">Assigned Driver:</label>
+            <input
+              type="text"
+              name="driver"
+              value={formData.driver}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-400 rounded"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Estimated Duration (in days):</label>
+            <input
+              type="number"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-400 rounded"
+              required
+              min="1"
+            />
+          </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
-            Add Items
+            Add Schedule
           </button>
         </form>
       </div>
