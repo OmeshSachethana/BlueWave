@@ -164,7 +164,7 @@ const ScheduleTable = () => {
                       name="quantity"
                       value={editData.quantity}
                       onChange={handleChange}
-                      className="p-2 border border-gray-300 rounded"
+                      className="p-1 w-16 border border-gray-300 rounded" // Reduced padding and width
                     />
                   ) : (
                     schedule.quantity
@@ -179,7 +179,7 @@ const ScheduleTable = () => {
                       name="driver"
                       value={editData.driver}
                       onChange={handleChange}
-                      className="p-2 border border-gray-300 rounded"
+                      className="p-1 w-24 border border-gray-300 rounded" // Reduced padding and width
                     />
                   ) : (
                     schedule.driver
@@ -192,7 +192,7 @@ const ScheduleTable = () => {
                       name="duration"
                       value={editData.duration}
                       onChange={handleChange}
-                      className="p-2 border border-gray-300 rounded"
+                      className="p-1 w-16 border border-gray-300 rounded" // Reduced padding and width
                       min="1"
                     />
                   ) : (
