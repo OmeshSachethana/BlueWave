@@ -16,11 +16,9 @@ const incomeExpenditureSchema = new mongoose.Schema({
     },
     income: {
         type: Number,
-        required: true
     },
     expenses: {
-        type: Number,
-        required: true
+        type: Number,   
     },
     profit: {
         type: Number,
