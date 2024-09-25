@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSchedules, updateSchedule, deleteSchedule } from '../../features/schedule/scheduleSlice';
 import { Bar } from 'react-chartjs-2';
@@ -76,8 +76,8 @@ const ScheduleTable = () => {
       {
         label: 'Quantity',
         data: schedules.map(schedule => schedule.quantity),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: schedules.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`),
+        borderColor: schedules.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
         borderWidth: 1,
       },
     ],
