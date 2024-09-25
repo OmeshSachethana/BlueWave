@@ -6,7 +6,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
     name: "",
     description: "",
     price: "",
-    quantity: 0,
+    quantity: 1,
     category: "",
     image: null,
   });
@@ -60,7 +60,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
         name: "",
         description: "",
         price: "",
-        quantity: 0,
+        quantity: 1,
         category: "",
         image: null,
       }); // Clear form
