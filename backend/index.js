@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 const mongoose = require("mongoose");
 const employeeRoutes = require("./routes/employeeRoutes.js");
 const employeeSalaryRoutes = require("./routes/employeeSalaryRoutes.js");
@@ -14,14 +14,14 @@ const subscriptionPlanRoutes = require("./routes/subscriptionPlanRoutes.js");
 const discountRoutes = require("./routes/discountRoutes.js");
 const packageRoutes = require("./routes/packageRoutes.js");
 const paymentRoutes = require("./routes/paymentRoutes.js");
-const incomeExpenditureRoutes = require("./routes/incomeExpenditureRoutes.js")
+const incomeExpenditureRoutes = require("./routes/incomeExpenditureRoutes.js");
 require("dotenv").config();
 
 const app = express();
 
 app.use(cors());
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 // app.get('/', (req, res) => res.status(200).json({ message: 'Server Up and Running' }))
 app.use("/api/employees", employeeRoutes);

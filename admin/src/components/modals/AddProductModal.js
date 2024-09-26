@@ -6,7 +6,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
     name: "",
     description: "",
     price: "",
-    quantity: "",
+    quantity: 1,
     category: "",
     image: null,
   });
@@ -25,6 +25,12 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Prevent quantity from going negative
+    if (name === "quantity" && value < 0) {
+      return;
+    }
+
     setProductData({ ...productData, [name]: value });
   };
 
@@ -54,7 +60,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
         name: "",
         description: "",
         price: "",
-        quantity: "",
+        quantity: 1,
         category: "",
         image: null,
       }); // Clear form
@@ -64,7 +70,6 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
       }
 
       fetchProducts();
-      
     } catch (error) {
       setErrorMessage("Failed to create product. Please try again.");
       console.error("Error:", error);
@@ -143,6 +148,8 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               value={productData.name}
               onChange={handleInputChange}
               required
+              pattern="^[a-zA-Z0-9\s]{1,50}$" // Alphanumeric and spaces only, 1-50 characters
+              title="Product Name: 1-50 characters, alphanumeric and spaces only."
             />
           </div>
 
@@ -161,6 +168,8 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               value={productData.description}
               onChange={handleInputChange}
               required
+              maxLength={500} // Max length of 500 characters
+              title="Description: Up to 500 characters."
             />
           </div>
 
@@ -178,6 +187,8 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               value={productData.price}
               onChange={handleInputChange}
               required
+              min="0.01" // Price must be greater than 0
+              title="Price must be a positive number."
             />
           </div>
 
@@ -197,6 +208,9 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               value={productData.quantity}
               onChange={handleInputChange}
               required
+              min="1" // Quantity must be at least 1
+              max="1000" // Assuming max quantity is 1000
+              title="Quantity must be between 1 and 1000."
             />
           </div>
 
@@ -216,6 +230,8 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               value={productData.category}
               onChange={handleInputChange}
               required
+              pattern="^[a-zA-Z\s]{1,30}$" // Letters and spaces only, 1-30 characters
+              title="Category: 1-30 letters and spaces only."
             />
           </div>
 
