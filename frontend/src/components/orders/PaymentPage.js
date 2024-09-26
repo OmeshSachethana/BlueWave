@@ -9,7 +9,7 @@ const PaymentPage = () => {
   const { orderId, orderAmount, selectedCard } = location.state || {};
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();  // Use navigate hook for redirection
+  const navigate = useNavigate(); // Use navigate hook for redirection
 
   const [formData, setFormData] = useState({
     type: selectedCard?.type || "",
@@ -34,7 +34,9 @@ const PaymentPage = () => {
       // Update payment status to "Completed"
       await updatePaymentStatus(orderId, "Completed");
       alert(`Payment of Rs.${orderAmount} for Order #${orderId} completed!`);
-      navigate('/orders'); // Navigate to /orders after successful payment
+      setTimeout(() => {
+        window.history.back();
+      }, 500);
     } catch (error) {
       console.error("Payment processing failed:", error);
       alert("Error processing payment. Please try again.");
@@ -42,11 +44,10 @@ const PaymentPage = () => {
   };
 
   const handleViewCards = () => {
-    navigate('/cards', { state: { orderId, orderAmount } }); // Navigate to the CardListPage
+    navigate("/cards", { state: { orderId, orderAmount } }); // Navigate to the CardListPage
   };
 
   return (
-    
     <section className="bg-white py-8 antialiased">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         <div className="mx-auto max-w-5xl">
@@ -70,7 +71,7 @@ const PaymentPage = () => {
                   </label>
                   <select
                     id="type"
-					value={formData.type}
+                    value={formData.type}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     required
@@ -91,7 +92,7 @@ const PaymentPage = () => {
                   <input
                     type="text"
                     id="name"
-					value={formData.name}
+                    value={formData.name}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="Suresh Fernando"
@@ -109,7 +110,7 @@ const PaymentPage = () => {
                   <input
                     type="text"
                     id="cardNumber"
-					value={formData.cardNumber}
+                    value={formData.cardNumber}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="xxxx-xxxx-xxxx-xxxx"
@@ -145,7 +146,7 @@ const PaymentPage = () => {
                     <input
                       id="expiryDate"
                       type="text"
-					  value={formData.expiryDate}
+                      value={formData.expiryDate}
                       onChange={handleChange}
                       className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="12/23"
@@ -190,7 +191,7 @@ const PaymentPage = () => {
                   <input
                     type="number"
                     id="cvv"
-					value={formData.cvv}
+                    value={formData.cvv}
                     onChange={handleChange}
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                     placeholder="•••"
@@ -206,16 +207,15 @@ const PaymentPage = () => {
                 Pay now
               </button>
               <div className="mt-6 grow">
-              <button
-                onClick={handleViewCards}
-                className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
-              >
-                View Saved Cards
-              </button>
-            </div>
+                <button
+                  onClick={handleViewCards}
+                  className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  View Saved Cards
+                </button>
+              </div>
             </form>
             {/* View Cards Button */}
-            
 
             <div className="mt-6 grow sm:mt-8 lg:mt-0">
               <div className="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6">
@@ -230,9 +230,7 @@ const PaymentPage = () => {
                   </dl>
                 </div>
                 <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2">
-                  <dt className="text-base font-bold text-gray-900">
-                    Total
-                  </dt>
+                  <dt className="text-base font-bold text-gray-900">Total</dt>
                   <dd className="text-base font-bold text-gray-900">
                     Rs.{orderAmount}
                   </dd>

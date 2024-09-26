@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { clearSubscriptionCart } from "../../features/subscription/subscriptionCartSlice"
+import { useDispatch } from "react-redux";
 
 const PaymentPage = () => {
   const location = useLocation();
-  const { planID, planPrice } = location.state || {};
+  const dispatch = useDispatch();
+  const { paymentData, totalPrice } = location.state || {}; // Destructure paymentData and totalPrice
 
   const [formData, setFormData] = useState();
 
   const handleChange = (e) => {
-    setFormData({ [e.target.id]: e.target.value });
+    setFormData({ ...formData, [e.target.id]: e.target.value }); // Ensure formData merges existing fields
   };
 
   const handleSubmit = async (e) => {
@@ -18,7 +21,13 @@ const PaymentPage = () => {
     console.log("Form data submitted:", formData);
 
     try {
-      alert(`Payment of Rs.${planPrice} for Order #${planID} completed!`);
+      alert(
+        `Payment of Rs.${totalPrice} completed for ${paymentData.length} orders!`
+      );
+      setTimeout(() => {
+        window.history.back();
+      }, 500);
+      dispatch(clearSubscriptionCart());
     } catch (error) {
       console.error("Payment status update failed:", error);
       alert("Error processing payment. Please try again.");
@@ -39,6 +48,24 @@ const PaymentPage = () => {
               className="w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 lg:max-w-xl lg:p-8"
             >
               <div className="mb-6 grid grid-cols-2 gap-4">
+                <div className="col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="type"
+                    className="mb-2 block text-sm font-medium text-gray-900"
+                  >
+                    Card Type*
+                  </label>
+                  <select
+                    id="type"
+                    onChange={handleChange}
+                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pe-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
+                    required
+                  >
+                    <option value="">Select Card Type</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                  </select>
+                </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="full_name"
@@ -166,21 +193,13 @@ const PaymentPage = () => {
                 <div className="space-y-2">
                   <dl className="flex items-center justify-between gap-4">
                     <dt className="text-base font-normal text-gray-500">
-                      Original price
+                      Total for all plans
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      Rs.{planPrice}
+                      Rs.{totalPrice}
                     </dd>
                   </dl>
                 </div>
-                <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2">
-                  <dt className="text-base font-bold text-gray-900">
-                    Total
-                  </dt>
-                  <dd className="text-base font-bold text-gray-900">
-                    Rs.{planPrice}
-                  </dd>
-                </dl>
               </div>
 
               <div className="mt-6 flex items-center justify-center gap-8">
