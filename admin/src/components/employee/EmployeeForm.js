@@ -40,24 +40,34 @@ const EmployeeForm = ({ employeeToEdit }) => {
   const validate = () => {
     const errors = {};
 
+    // Validate Employee ID
     if (!/^E\d{5}$/.test(formData.employeeID)) {
       errors.employeeID = 'Employee ID must start with "E" followed by 5 digits.';
     }
 
+    // Validate NIC
     if (!/^\d{9}[Vv]|\d{12}$/.test(formData.nic)) {
       errors.nic = 'NIC must be either 12 digits or 9 digits followed by "v" or "V".';
     }
 
+    // Validate Email
     if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
       errors.email = 'Please enter a valid email address.';
     }
 
-    if (formData.firstName.length < 2 || formData.firstName.length > 50) {
-      errors.firstName = 'First name must be between 2 and 50 characters.';
+    // Validate First Name (only letters, between 2-50 characters)
+    if (!/^[a-zA-Z]{2,25}$/.test(formData.firstName)) {
+      errors.firstName = 'First name must only contain letters and be between 2 and 25 characters.';
     }
 
-    if (formData.lastName.length < 2 || formData.lastName.length > 50) {
-      errors.lastName = 'Last name must be between 2 and 50 characters.';
+    // Validate Last Name (only letters, between 2-50 characters)
+    if (!/^[a-zA-Z]{2,25}$/.test(formData.lastName)) {
+      errors.lastName = 'Last name must only contain letters and be between 2 and 25 characters.';
+    }
+
+    // Validate Position (only letters)
+    if (!/^[a-zA-Z\s]+$/.test(formData.position)) {
+      errors.position = 'Position must only contain letters.';
     }
 
     return errors;
@@ -150,6 +160,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
             required
             placeholder="Manager"
           />
+          {errors.position && <p className="text-red-500">{errors.position}</p>}
         </div>
 
         <div className="mb-3">
