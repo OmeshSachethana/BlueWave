@@ -26,6 +26,7 @@ const employeeSchema = new mongoose.Schema({
   },
   department: {
     type: String,
+    enum: ['Sales', 'HR', 'Marketing', 'Production', 'Finance'], // Restrict department values
     required: true
   },
   gender: {
