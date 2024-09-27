@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { getPlans } from "../../services/subscriptionPlanService";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToSubscriptionCart } from "../../features/subscription/subscriptionCartSlice";
 
 const SubscriptionPlans = () => {
+  const dispatch = useDispatch();
   const [plans, setPlans] = useState([]);
   const [filteredPlans, setFilteredPlans] = useState([]); // State to hold filtered plans
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleAddToCart = (plan) => {
+    console.log("Adding to cart:", plan);
+    dispatch(addToSubscriptionCart(plan));
+  };
 
   useEffect(() => {
     // Fetch subscription plans on component mount
@@ -42,11 +48,6 @@ const SubscriptionPlans = () => {
       setFilteredPlans(plans); // If no search term, show all plans
     }
   }, [searchTerm, plans]);
-
-  const handlePaymentClick = (planID, planPrice) => {
-    navigate("/payment-subscriptions", { state: { planID, planPrice } });
-    console.log(planPrice);
-  };
 
   if (error) return <div>{error}</div>;
 
@@ -141,7 +142,11 @@ const SubscriptionPlans = () => {
                     </li>
                   </ul>
                   <button
-                    onClick={() => handlePaymentClick(plan._id, plan.pricing)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent modal from opening
+                      handleAddToCart(plan);
+                      e.preventDefault();
+                    }}
                     className="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                   >
                     Get started
