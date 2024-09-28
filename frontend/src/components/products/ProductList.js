@@ -33,20 +33,24 @@ const ProductList = ({ filteredProducts, searchTerm }) => {
         </p>
       )}
 
-      {/* Display the products based on filteredProducts */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <LoadingSpinner />
-          </div>
-        ) : (
-          filteredProducts
-            .slice()
-            .map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))
-        )}
-      </div>
+      {/* Display loading spinner while fetching */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <LoadingSpinner />
+        </div>
+      ) : // Check if there are any filtered products
+      filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredProducts.slice().map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </div>
+      ) : (
+        // If no products are found, show nothing
+        <div className="flex justify-center items-center h-64">
+          <p className="text-gray-700">No products found.</p>
+        </div>
+      )}
     </div>
   );
 };
