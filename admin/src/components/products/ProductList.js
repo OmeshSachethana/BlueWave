@@ -40,21 +40,47 @@ const ProductList = () => {
         return (
           count +
           order.orderDetails.filter(
-            (item) => item.product._id.toString() === product._id.toString()
+            (item) =>
+              item.product &&
+              item.product._id.toString() === product._id.toString()
           ).length
         );
       }, 0);
       return {
-        productName: product.name,
+        productName: product.name || "Unknown Product",
+        quantity: product.quantity || "N/A",
+        description: product.description || "N/A",
         orderCount,
       };
+    });
+
+    // Handle cases where a product is in an order but not in the products list (deleted product)
+    orders.forEach((order) => {
+      order.orderDetails.forEach((item) => {
+        const productExists = products.some(
+          (product) => product._id.toString() === item.product?._id?.toString()
+        );
+        if (!productExists && item.product) {
+          orderSummary.push({
+            productName: "Unknown Product",
+            quantity: "N/A",
+            description: "This product was deleted",
+            orderCount: 1, // Counting this as one order for the deleted product
+          });
+        }
+      });
     });
 
     // Add title to the document
     doc.text("Products Report", 14, 16);
     doc.autoTable({
-      head: [["Product Name", "Order Count"]],
-      body: orderSummary.map((item) => [item.productName, item.orderCount]),
+      head: [["Product Name", "Quantity", "Description", "Order Count"]],
+      body: orderSummary.map((item) => [
+        item.productName,
+        item.quantity,
+        item.description,
+        item.orderCount,
+      ]),
       startY: 20,
     });
 
