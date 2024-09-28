@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 
 const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
@@ -11,11 +11,12 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
     expenses: '',
   });
 
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  const records = useSelector((state) => state.incomeExpenditure.records); 
 
   useEffect(() => {
     if (isEdit && currentRecord) {
-        // Ensure date is in YYYY-MM-DD format
       const formattedDate = new Date(currentRecord.date).toISOString().split('T')[0];
       setFormData({
         no: currentRecord.no,
@@ -35,19 +36,40 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
     }
   }, [isEdit, currentRecord]);
 
+  const validate = () => {
+    const newErrors = {};
+    const { no, date, details, income, expenses } = formData;
+  
+    if (!no) newErrors.no = 'No is required.';
+    if (no < 0) newErrors.no = 'No cannot be negative.'; 
+    if (!date) newErrors.date = 'Date is required.';
+    if (!details) newErrors.details = 'Details are required.';
+    if (!income && !expenses) newErrors.income = 'Either income or expenses must be provided.';
+  
+    if (income < 0) newErrors.income = 'Income must be a positive number.';
+    if (expenses < 0) newErrors.expenses = 'Expenses must be a positive number.';
+  
+    if (!isEdit && records.some(record => record.no === Number(no))) {
+      newErrors.no = 'Record with this No already exists.';
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
+    if (!validate()) return;
+
     const profit = formData.income - formData.expenses;
-  
+
     if (isEdit) {
-      // Dispatch with id and updatedRecord
       await dispatch(updateRecord({ id: currentRecord._id, updatedRecord: { ...formData, profit } }));
     } else {
       await dispatch(addRecord({ ...formData, profit }));
     }
-  
-    // Reset form after submission
+
     setFormData({
       no: '',
       date: '',
@@ -55,14 +77,25 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
       income: '',
       expenses: '',
     });
-    onCancel(); // Clear the edit mode and current record after submission
-  };  
+    onCancel();
+  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    if (name === 'income' && value !== '') {
+      setFormData((prevState) => ({ ...prevState, expenses: '' }));
+    }
+
+    if (name === 'expenses' && value !== '') {
+      setFormData((prevState) => ({ ...prevState, income: '' }));
+    }
+
+    setErrors({ ...errors, [name]: null });
   };
 
   return (
@@ -76,9 +109,10 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
             name="no"
             value={formData.no}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.no ? 'border-red-500' : ''}`}
             required
           />
+          {errors.no && <p className="text-red-500 text-xs">{errors.no}</p>}
         </div>
 
         <div className="mb-4">
@@ -88,9 +122,10 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.date ? 'border-red-500' : ''}`}
             required
           />
+          {errors.date && <p className="text-red-500 text-xs">{errors.date}</p>}
         </div>
 
         <div className="mb-4">
@@ -100,9 +135,10 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
             name="details"
             value={formData.details}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={`w-full p-2 border rounded ${errors.details ? 'border-red-500' : ''}`}
             required
           />
+          {errors.details && <p className="text-red-500 text-xs">{errors.details}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -113,9 +149,11 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
               name="income"
               value={formData.income}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
-              required
+              className={`w-full p-2 border rounded ${errors.income ? 'border-red-500' : ''}`}
+              required={!formData.expenses} 
+              disabled={!!formData.expenses} // Disable if expenses is filled
             />
+            {errors.income && <p className="text-red-500 text-xs">{errors.income}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Expenses</label>
@@ -124,9 +162,11 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
               name="expenses"
               value={formData.expenses}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
-              required
+              className={`w-full p-2 border rounded ${errors.expenses ? 'border-red-500' : ''}`}
+              required={!formData.income} 
+              disabled={!!formData.income} // Disable if income is filled
             />
+            {errors.expenses && <p className="text-red-500 text-xs">{errors.expenses}</p>}
           </div>
         </div>
 

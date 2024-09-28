@@ -19,6 +19,20 @@ const AdminSubscriptionPlans = () => {
     updateId: null,
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    duration: "",
+    pricing: "",
+    deliveryFrequency: "",
+  });
+
+  const maxWords = 50;
+
+  // Function to count words
+  const countWords = (text) => {
+    return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  };
 
   useEffect(() => {
     const fetchAllPlans = async () => {
@@ -35,11 +49,65 @@ const AdminSubscriptionPlans = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+
+    // Check if the field being updated is 'description'
+    if (id === "description") {
+      const wordsUsed = countWords(value);
+
+      // If words are less than or equal to the max limit, update formData
+      if (wordsUsed <= maxWords) {
+        setFormData({ ...formData, [id]: value });
+      }
+    } else {
+      // For other fields, update the form data normally
+      setFormData({ ...formData, [id]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let formErrors = { ...errors };
+    let hasError = false;
+
+    // Validate each field and set error messages
+    if (!formData.name) {
+      formErrors.name = "Plan Name is required";
+      hasError = true;
+    } else {
+      formErrors.name = "";
+    }
+
+    if (!formData.description || countWords(formData.description) > maxWords) {
+      formErrors.description = `Description is required and must be under ${maxWords} words`;
+      hasError = true;
+    } else {
+      formErrors.description = "";
+    }
+
+    if (!formData.duration) {
+      formErrors.duration = "Duration is required";
+      hasError = true;
+    } else {
+      formErrors.duration = "";
+    }
+
+    if (!formData.pricing) {
+      formErrors.pricing = "Pricing is required";
+      hasError = true;
+    } else {
+      formErrors.pricing = "";
+    }
+
+    if (!formData.deliveryFrequency) {
+      formErrors.deliveryFrequency = "Delivery Frequency is required";
+      hasError = true;
+    } else {
+      formErrors.deliveryFrequency = "";
+    }
+
+    setErrors(formErrors); // Update the errors state
+
+    if (hasError) return; // If there are errors, don't submit the form
     try {
       if (isEditing) {
         await updatePlan(formData.updateId, {
@@ -66,6 +134,13 @@ const AdminSubscriptionPlans = () => {
         pricing: "",
         deliveryFrequency: "",
         updateId: null,
+      });
+      setErrors({
+        name: "",
+        description: "",
+        duration: "",
+        pricing: "",
+        deliveryFrequency: "",
       });
       const updatedPlans = await getPlans();
       setPlans(updatedPlans);
@@ -129,98 +204,137 @@ const AdminSubscriptionPlans = () => {
       </div>
 
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-      <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
-        <div className="mb-5">
-          <label
-            htmlFor="name"
-            className="block mb-2 text-sm font-medium text-gray-900"
+        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit} noValidate>
+          <div className="mb-5">
+            <label
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Plan Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={(e) => {
+                const regex = /^[A-Za-z\s]*$/;
+                if (regex.test(e.target.value) || e.target.value === "") {
+                  handleChange(e);
+                }
+              }}
+              className={`bg-gray-50 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
+              placeholder="Enter plan name"
+              required
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name}</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="description"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={handleChange}
+              className={`bg-gray-50 border ${
+                errors.description ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
+              placeholder="Enter plan description"
+              required
+            />
+            {errors.description && (
+              <p className="text-red-500 text-xs">{errors.description}</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="duration"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Duration
+            </label>
+            <input
+              type="text"
+              id="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className={`bg-gray-50 border ${
+                errors.duration ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
+              placeholder="Enter duration"
+              required
+            />
+            {errors.duration && (
+              <p className="text-red-500 text-xs">{errors.duration}</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="pricing"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Pricing
+            </label>
+            <input
+              type="text"
+              id="pricing"
+              value={formData.pricing}
+              onChange={(e) => {
+                const regex = /^\d*\.?\d*$/; // Regex for numbers including decimal point
+                if (regex.test(e.target.value) || e.target.value === "") {
+                  handleChange(e);
+                }
+              }}
+              className={`bg-gray-50 border ${
+                errors.pricing ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
+              placeholder="Enter pricing"
+              required
+            />
+            {errors.pricing && (
+              <p className="text-red-500 text-xs">{errors.pricing}</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="deliveryFrequency"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Delivery Frequency
+            </label>
+            <input
+              type="text"
+              id="deliveryFrequency"
+              value={formData.deliveryFrequency}
+              onChange={handleChange}
+              className={`bg-gray-50 border ${
+                errors.deliveryFrequency ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
+              placeholder="Enter delivery frequency"
+              required
+            />
+            {errors.deliveryFrequency && (
+              <p className="text-red-500 text-xs">{errors.deliveryFrequency}</p>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
-            Plan Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter plan name"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="description"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Description
-          </label>
-          <textarea
-            id="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter plan description"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="duration"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Duration
-          </label>
-          <input
-            type="text"
-            id="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter duration"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="pricing"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Pricing
-          </label>
-          <input
-            type="text"
-            id="pricing"
-            value={formData.pricing}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter pricing"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="deliveryFrequency"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Delivery Frequency
-          </label>
-          <input
-            type="text"
-            id="deliveryFrequency"
-            value={formData.deliveryFrequency}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="Enter delivery frequency"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-        >
-          {isEditing ? "Update Plan" : "Add Plan"}
-        </button>
-      </form>
+            {isEditing ? "Update Plan" : "Add Plan"}
+          </button>
+        </form>
       </div>
 
       <div className="overflow-x-auto mt-2">
@@ -237,10 +351,7 @@ const AdminSubscriptionPlans = () => {
           </thead>
           <tbody>
             {plans.map((plan) => (
-              <tr
-                key={plan._id}
-                className="bg-white border-b"
-              >
+              <tr key={plan._id} className="bg-white border-b">
                 <td className="px-6 py-4">{plan.name}</td>
                 <td className="px-6 py-4">{plan.description}</td>
                 <td className="px-6 py-4">{plan.duration}</td>

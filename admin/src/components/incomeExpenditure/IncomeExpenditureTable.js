@@ -57,7 +57,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                         <th className="px-4 py-2">Details</th>
                         <th className="px-4 py-2">Income</th>
                         <th className="px-4 py-2">Expenses</th>
-                        <th className="px-4 py-2">Profit</th>
+                        <th className="px-4 py-2">Profit/Loss</th>
                         <th className="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
@@ -69,7 +69,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                             <td className="px-4 py-2">{record.details}</td>
                             <td className="px-4 py-2">{record.income}</td>
                             <td className="px-4 py-2">{record.expenses}</td>
-                            <td className="px-4 py-2">{record.profit}</td>
+                            <td className="px-4 py-2">{}</td>
                             <td className="px-4 py-2">
                                 <button 
                                   onClick={() => onEdit(record)}

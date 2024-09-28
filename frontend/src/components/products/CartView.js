@@ -242,13 +242,14 @@ const CartView = ({ toggleCart }) => {
                                 className="h-full w-full object-cover object-center"
                                 src={
                                   item.image
-                                    ? `http://localhost:5000${item.image}`
-                                    : "https://via.placeholder.com/150"
+                                    ? item.image.startsWith("data:image")
+                                      ? item.image // If the image string already starts with "data:image"
+                                      : `data:image/jpeg;base64,${item.image}` // Prepend the base64 prefix if missing
+                                    : "https://via.placeholder.com/140" // Default placeholder if no image
                                 }
                                 alt={item.name}
                                 onError={(e) => {
-                                  e.target.src =
-                                    "https://via.placeholder.com/140";
+                                  e.target.src = "https://via.placeholder.com/140";
                                 }}
                               />
                             </div>

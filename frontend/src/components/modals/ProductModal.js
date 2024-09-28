@@ -29,8 +29,10 @@ const ProductModal = ({ product, isOpen, onClose, singleProduct }) => {
                     className="max-lg:mx-auto lg:ml-auto h-full object-cover"
                     src={
                       product.image
-                        ? `http://localhost:5000${product.image}`
-                        : "https://via.placeholder.com/150"
+                        ? product.image.startsWith("data:image")
+                          ? product.image // If the image string already starts with "data:image"
+                          : `data:image/jpeg;base64,${product.image}` // Prepend the base64 prefix if missing
+                        : "https://via.placeholder.com/140" // Default placeholder if no image
                     }
                     alt={product.name}
                     onError={(e) => {

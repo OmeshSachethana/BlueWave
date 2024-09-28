@@ -3,15 +3,8 @@ const path = require("path");
 const fs = require("fs");
 const Product = require("../models/Product");
 
-// Set up multer for file storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Save images to 'uploads' folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to the original filename
-  },
-});
+// Set up multer for file storage in memory (no need to store the actual file)
+const storage = multer.memoryStorage(); // Store the file in memory instead of on disk
 
 // File filter to only accept image types
 const fileFilter = (req, file, cb) => {
@@ -38,11 +31,12 @@ exports.createProduct = [
   async (req, res) => {
     try {
       const { name, description, price, quantity, category } = req.body;
-      let imageUrl = "";
+      let imageBase64 = "";
 
       // Check if an image was uploaded
       if (req.file) {
-        imageUrl = `/uploads/${req.file.filename}`; // Store the path to the image
+        // Encode the image as a Base64 string
+        imageBase64 = req.file.buffer.toString("base64");
       }
 
       // Create the product object
@@ -52,7 +46,7 @@ exports.createProduct = [
         price,
         quantity,
         category,
-        image: imageUrl,
+        image: imageBase64, // Store the Base64 encoded image
       });
 
       // Save the product to the database
@@ -88,52 +82,37 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-exports.updateProduct = [
-  upload.single("image"), // Handle image upload for updating
-  async (req, res) => {
-    try {
-      const productId = req.params.id;
-      let updatedData = req.body;
+exports.updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updatedData = req.body;
 
-      // Find the product first to check for the existing image
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ error: "Product not found" });
-      }
-
-      // If a new image is uploaded
-      if (req.file) {
-        const existingImagePath = path.join(__dirname, "../", product.image);
-        const newImageName = `${Date.now()}_${req.file.originalname}`;
-        const newImagePath = `/uploads/${newImageName}`;
-
-        // Check if the existing image file exists and remove it
-        if (fs.existsSync(existingImagePath)) {
-          fs.unlinkSync(existingImagePath);
-        }
-
-        // Move the new image to the correct location
-        fs.renameSync(req.file.path, path.join(__dirname, "../", newImagePath));
-        updatedData.image = newImagePath;
-      }
-
-      // Update the product with the new data
-      const updatedProduct = await Product.findByIdAndUpdate(
-        productId,
-        updatedData,
-        { new: true }
-      );
-
-      res.status(200).json({
-        message: "Product updated successfully",
-        product: updatedProduct,
-      });
-    } catch (error) {
-      console.error("Error updating product:", error);
-      res.status(500).json({ error: "Error updating product" });
+    // Find the product first to check for the existing image
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
-  },
-];
+
+    // If the incoming request contains a base64 image
+    if (updatedData.image && updatedData.image.startsWith("data:image")) {
+      product.image = updatedData.image;
+    }
+
+    // Update the rest of the product fields
+    Object.assign(product, updatedData);
+
+    // Save the updated product
+    const updatedProduct = await product.save();
+
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ error: "Error updating product" });
+  }
+};
 
 // Delete a product by ID
 exports.deleteProduct = async (req, res) => {
@@ -215,4 +194,3 @@ exports.searchProducts = async (req, res) => {
       .json({ error: "Error fetching products", details: error.message });
   }
 };
-

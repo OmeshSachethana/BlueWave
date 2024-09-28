@@ -5,7 +5,6 @@ import { addEmployee, updateEmployee } from '../../features/employee/employeeSli
 const EmployeeForm = ({ employeeToEdit }) => {
   const dispatch = useDispatch();
   
-  // Form state
   const [formData, setFormData] = useState({
     employeeID: '',
     firstName: '',
@@ -17,7 +16,8 @@ const EmployeeForm = ({ employeeToEdit }) => {
     email: '',
   });
 
-  // Load employee data into the form if editing
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (employeeToEdit) {
       setFormData({
@@ -33,22 +33,60 @@ const EmployeeForm = ({ employeeToEdit }) => {
     }
   }, [employeeToEdit]);
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
+  const validate = () => {
+    const errors = {};
+
+    // Validate Employee ID
+    if (!/^E\d{5}$/.test(formData.employeeID)) {
+      errors.employeeID = 'Employee ID must start with "E" followed by 5 digits.';
+    }
+
+    // Validate NIC
+    if (!/^\d{9}[Vv]|\d{12}$/.test(formData.nic)) {
+      errors.nic = 'NIC must be either 12 digits or 9 digits followed by "v" or "V".';
+    }
+
+    // Validate Email
+    if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    // Validate First Name (only letters, between 2-50 characters)
+    if (!/^[a-zA-Z]{2,25}$/.test(formData.firstName)) {
+      errors.firstName = 'First name must only contain letters and be between 2 and 25 characters.';
+    }
+
+    // Validate Last Name (only letters, between 2-50 characters)
+    if (!/^[a-zA-Z]{2,25}$/.test(formData.lastName)) {
+      errors.lastName = 'Last name must only contain letters and be between 2 and 25 characters.';
+    }
+
+    // Validate Position (only letters)
+    if (!/^[a-zA-Z\s]+$/.test(formData.position)) {
+      errors.position = 'Position must only contain letters.';
+    }
+
+    return errors;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     if (employeeToEdit) {
-      // If editing, update the employee
       dispatch(updateEmployee({ id: employeeToEdit._id, updatedEmployee: formData }));
     } else {
-      // Otherwise, add a new employee
       dispatch(addEmployee(formData));
     }
-    // Reset the form after submission
+
     setFormData({
       employeeID: '',
       firstName: '',
@@ -59,6 +97,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
       nic: '',
       email: '',
     });
+    setErrors({});
   };
 
   return (
@@ -76,7 +115,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
             value={formData.employeeID}
             onChange={handleChange}
             required
+            placeholder="E12345"
           />
+          {errors.employeeID && <p className="text-red-500">{errors.employeeID}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-3">
@@ -89,7 +130,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
               value={formData.firstName}
               onChange={handleChange}
               required
+              placeholder="Nalin"
             />
+            {errors.firstName && <p className="text-red-500">{errors.firstName}</p>}
           </div>
           <div>
             <label className="block text-gray-700">Last Name:</label>
@@ -100,7 +143,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
               value={formData.lastName}
               onChange={handleChange}
               required
+              placeholder="Fernando"
             />
+            {errors.lastName && <p className="text-red-500">{errors.lastName}</p>}
           </div>
         </div>
 
@@ -113,7 +158,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
             value={formData.position}
             onChange={handleChange}
             required
+            placeholder="Manager"
           />
+          {errors.position && <p className="text-red-500">{errors.position}</p>}
         </div>
 
         <div className="mb-3">
@@ -126,9 +173,11 @@ const EmployeeForm = ({ employeeToEdit }) => {
             required
           >
             <option value="">Select Department</option>
-            <option value="HR">HR</option>
-            <option value="Engineering">Engineering</option>
             <option value="Sales">Sales</option>
+            <option value="HR">HR</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Production">Production</option>
+            <option value="Finance">Finance</option>
           </select>
         </div>
 
@@ -157,7 +206,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
             value={formData.nic}
             onChange={handleChange}
             required
+            placeholder="20013471229 or 857825532V"
           />
+          {errors.nic && <p className="text-red-500">{errors.nic}</p>}
         </div>
 
         <div className="mb-3">
@@ -169,7 +220,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
             value={formData.email}
             onChange={handleChange}
             required
+            placeholder="example@mail.com"
           />
+          {errors.email && <p className="text-red-500">{errors.email}</p>}
         </div>
 
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">

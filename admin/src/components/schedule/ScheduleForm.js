@@ -7,13 +7,15 @@ const ScheduleForm = () => {
     name: '',
     quantity: 0,
     category: '',
-    location: ''
+    location: '',
+    driver: '',
+    duration: 0
   });
 
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fetch schedules when the component is mounted
     dispatch(fetchSchedules());
   }, [dispatch]);
 
@@ -24,21 +26,57 @@ const ScheduleForm = () => {
     });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Name validation: must be at least 3 characters long and contain only letters
+    const nameRegex = /^[A-Za-z]+$/;
+    if (formData.name.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.name)) {
+      newErrors.name = 'Name must contain only letters';
+    }
+  
+    if (formData.quantity <= 0) {
+      newErrors.quantity = 'Quantity must be a positive number';
+    }
+  
+    // Driver validation: must be at least 3 characters long and contain only letters
+    if (formData.driver.length < 3) {
+      newErrors.driver = 'Assigned driver name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.driver)) {
+      newErrors.driver = 'Driver name must contain only letters';
+    }
+  
+    if (formData.duration <= 0) {
+      newErrors.duration = 'Duration must be at least 1 day';
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addSchedule(formData));
-    setFormData({
-      name: '',
-      quantity: 0,
-      category: '',
-      location: ''
-    });
+    if (validateForm()) {
+      dispatch(addSchedule(formData));
+      setFormData({
+        name: '',
+        quantity: 0,
+        category: '',
+        location: '',
+        driver: '',
+        duration: 0
+      });
+      setErrors({});
+    }
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mt-6">
       {/* Schedule Form Section */}
-      <div className="max-w-lg mx-auto bg-gray-200 p-6 rounded-md mb-10">
+      <div className="max-w-lg mx-auto bg-blue-100 p-6 rounded-md mb-10">
         <h2 className="text-xl font-bold mb-4">Scheduling Section</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -49,8 +87,10 @@ const ScheduleForm = () => {
               value={formData.name}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter item name (e.g., Equipment)"
               required
             />
+            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
           </div>
           <div className="mb-4">
             <label className="block mb-1">Quantity:</label>
@@ -60,9 +100,11 @@ const ScheduleForm = () => {
               value={formData.quantity}
               onChange={handleChange}
               className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter quantity (e.g., 5)"
               required
-              min="0"
+              min="1"
             />
+            {errors.quantity && <span className="text-red-500 text-sm">{errors.quantity}</span>}
           </div>
           <div className="mb-4">
             <label className="block mb-1">Category:</label>
@@ -94,17 +136,38 @@ const ScheduleForm = () => {
               <option value="Colombo">Colombo</option>
             </select>
           </div>
+          <div className="mb-4">
+            <label className="block mb-1">Assigned Driver:</label>
+            <input
+              type="text"
+              name="driver"
+              value={formData.driver}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter driver's name"
+              required
+            />
+            {errors.driver && <span className="text-red-500 text-sm">{errors.driver}</span>}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Estimated Duration (in days):</label>
+            <input
+              type="number"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-400 rounded"
+              placeholder="Enter duration in days"
+              required
+              min="1"
+            />
+            {errors.duration && <span className="text-red-500 text-sm">{errors.duration}</span>}
+          </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
-            Add Items
+            Add Schedule
           </button>
         </form>
       </div>
-
-      {/* Separate Schedule Table Section */}
-      {/* <div className="max-w-5xl mx-auto bg-gray-100 p-6 rounded-md shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Schedule Table</h2>
-        <ScheduleTable />
-      </div> */}
     </div>
   );
 };

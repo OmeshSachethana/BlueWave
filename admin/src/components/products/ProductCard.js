@@ -10,6 +10,8 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const [initialProduct, setInitialProduct] = useState(product);
   const [imagePreview, setImagePreview] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
+  const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     setEditedProduct(product);
@@ -26,6 +28,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     }
     setIsEditMode(!isEditMode);
     setIsSaved(false);
+    setErrors({});
   };
 
   const handleInputChange = (e) => {
@@ -35,26 +38,102 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
     const updatedValue =
       name === "price" || name === "quantity" ? parseFloat(value) : value;
 
+    // Prevent quantity from going negative
+    if (name === "quantity" && value < 0) {
+      return;
+    }
+
     setEditedProduct((prevProduct) => ({
       ...prevProduct,
       [name]: updatedValue,
+    }));
+
+    // Clear errors for the field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: undefined,
     }));
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setImagePreview(URL.createObjectURL(file));
+    const validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+    if (!file) {
+      setErrorMessage("No file selected. Please upload an image."); // Error for empty file
+      return;
     }
+
+    if (!validImageTypes.includes(file.type)) {
+      setErrorMessage("Invalid file type. Please upload a JPEG or PNG image."); // Error for invalid file type
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const base64String = reader.result;
+      setSelectedFile(base64String); // Set the base64 image string to the state
+      setImagePreview(base64String); // Use the base64 image string for preview
+      setErrorMessage(""); // Clear error message if file is valid
+    };
+
+    reader.readAsDataURL(file); // Convert image to base64
+  };
+
+  const validateInputs = () => {
+    const newErrors = {};
+
+    // Check if image file is valid
+    if (!selectedFile) {
+      newErrors.image = "Image file is required.";
+    }
+
+    if (!editedProduct.name || editedProduct.name.length > 50) {
+      newErrors.name = "Product Name must be 1-50 characters long.";
+    }
+
+    if (
+      !editedProduct.category ||
+      !/^[a-zA-Z\s]{1,30}$/.test(editedProduct.category)
+    ) {
+      newErrors.category = "Category must be 1-30 letters and spaces only.";
+    }
+
+    if (!editedProduct.description || editedProduct.description.length > 500) {
+      newErrors.description = "Description must be up to 500 characters.";
+    }
+
+    if (!editedProduct.quantity || editedProduct.quantity < 1) {
+      newErrors.quantity = "Quantity must be at least 1.";
+    }
+
+    if (!editedProduct.price || editedProduct.price < 0.01) {
+      newErrors.price = "Price must be a positive value.";
+    }
+
+    return newErrors;
   };
 
   const handleSaveClick = async () => {
+    const validationErrors = validateInputs(); // Validate all inputs, including image upload
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors); // Set the validation errors
+      return; // Stop the save process if there are validation errors
+    }
+
     try {
+      const updatedProductData = { ...editedProduct }; // Create a copy of the edited product
+
+      // If there's a selected file (base64 image), add it to the updated product
+      if (selectedFile) {
+        updatedProductData.image = selectedFile; // Add base64 image to product data
+      }
+
       const updatedProduct = await updateProduct(
         product._id,
-        editedProduct,
-        selectedFile
+        updatedProductData
       );
 
       setEditedProduct((prevProduct) => ({
@@ -62,7 +141,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
         ...updatedProduct,
         price: updatedProduct.price ?? prevProduct.price,
         quantity: updatedProduct.quantity ?? prevProduct.quantity,
-        image: updatedProduct.image ?? prevProduct.image, // Ensure updated image URL
+        image: updatedProduct.image ?? prevProduct.image,
       }));
 
       setIsSaved(true);
@@ -73,6 +152,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
       fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
+      setErrors({ submit: "Failed to update the product. Please try again." });
     }
   };
 
@@ -106,9 +186,14 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
           {isEditMode ? (
             <label
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50hover:bg-gray-100 text-center"
+              className="flex flex-col items-center justify-center w-[200px] h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50 hover:bg-gray-100 text-center"
               style={{
-                backgroundImage: `url(${imagePreview || editedProduct.image})`,
+                backgroundImage: `url(${
+                  imagePreview ||
+                  (editedProduct.image.startsWith("data:image")
+                    ? editedProduct.image
+                    : `data:image/jpeg;base64,${editedProduct.image}`)
+                })`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -135,14 +220,19 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                   and drop
                 </p>
                 <p className="text-xs text-gray-500">
-                  SVG, PNG, JPG or GIF (MAX. 800x400px)
+                  SVG, PNG, or JPG (MAX. 800x400px)
                 </p>
+                {errorMessage && (
+                  <p className="text-red-500 text-xs">{errorMessage}</p>
+                )}{" "}
+                {/* Display error message */}
               </div>
               <input
                 id="dropzone-file"
                 type="file"
                 className="hidden"
                 onChange={handleImageUpload}
+                accept=".jpg, .jpeg, .png"
               />
             </label>
           ) : (
@@ -151,8 +241,10 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               key={editedProduct.image} // Use image URL as key to force re-render
               src={
                 editedProduct.image
-                  ? `http://localhost:5000${editedProduct.image}`
-                  : "https://via.placeholder.com/150"
+                  ? editedProduct.image.startsWith("data:image")
+                    ? editedProduct.image // If the image string already starts with "data:image"
+                    : `data:image/jpeg;base64,${editedProduct.image}` // Prepend the base64 prefix if missing
+                  : "https://via.placeholder.com/140" // Default placeholder if no image
               }
               alt={editedProduct.name}
               onError={(e) => {
@@ -172,7 +264,11 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-xl font-bold tracking-tight text-gray-900 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Name"
+                required
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
               <input
                 type="text"
                 name="category"
@@ -180,14 +276,22 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-lg text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Category"
+                required
               />
+              {errors.category && (
+                <p className="text-red-500 text-sm">{errors.category}</p>
+              )}
               <textarea
                 name="description"
                 value={editedProduct.description}
                 onChange={handleInputChange}
                 className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Description"
+                required
               />
+              {errors.description && (
+                <p className="text-red-500 text-sm">{errors.description}</p>
+              )}
               <input
                 type="number"
                 name="quantity"
@@ -195,7 +299,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Quantity"
+                min="1"
+                max="1000"
+                required
               />
+              {errors.quantity && (
+                <p className="text-red-500 text-sm">{errors.quantity}</p>
+              )}
               <input
                 type="number"
                 name="price"
@@ -203,7 +313,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-3 font-normal text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Price"
+                min="0"
+                step="1"
+                required
               />
+              {errors.price && (
+                <p className="text-red-500 text-sm">{errors.price}</p>
+              )}
             </>
           ) : (
             <>
@@ -251,7 +367,7 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               </button>
               {/* Confirmation Modal */}
               {showConfirmModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                   <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
                     <h3 className="text-lg font-semibold mb-4">
                       Confirm Delete

@@ -19,6 +19,14 @@ const scheduleSchema = new mongoose.Schema({
     type: String,
     enum: ['Dankotuwa', 'Negombo', 'Colombo'],  // Restricted to these 3 locations
     required: true
+  },
+  driver: {
+    type: String,  // Driver's name or ID
+    required: true
+  },
+  duration: {
+    type: Number,  // Estimated duration in days
+    required: true
   }
 }, { timestamps: true });
 

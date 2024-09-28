@@ -20,7 +20,7 @@ function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-800 text-white py-6 mt-8 w-full px-0">
+    <footer className="bg-blue-900 text-white py-6 mt-8 w-full px-0">
       <div className="text-center">
         <div className="mb-4">
           <h5 className="font-bold text-lg">Quick Links</h5>
