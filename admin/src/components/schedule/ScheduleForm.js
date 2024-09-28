@@ -36,20 +36,26 @@ const ScheduleForm = () => {
     } else if (!nameRegex.test(formData.name)) {
       newErrors.name = 'Name must contain only letters';
     }
-
+  
     if (formData.quantity <= 0) {
       newErrors.quantity = 'Quantity must be a positive number';
     }
+  
+    // Driver validation: must be at least 3 characters long and contain only letters
     if (formData.driver.length < 3) {
       newErrors.driver = 'Assigned driver name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.driver)) {
+      newErrors.driver = 'Driver name must contain only letters';
     }
+  
     if (formData.duration <= 0) {
       newErrors.duration = 'Duration must be at least 1 day';
     }
-    
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
