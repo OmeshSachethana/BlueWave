@@ -1,27 +1,28 @@
 export const downloadCSV = (records) => {
-    const headers = ['No', 'Date', 'Details', 'Income', 'Expenses']; // Remove 'Profit'
+    const headers = ['No', 'Date', 'Details', 'Income', 'Expenses', 'Profit/Loss']; // Added 'Profit/Loss'
     
     // Calculate totals
-    const { totalIncome, totalExpenses, totalProfit } = records.reduce((totals, record) => {
+    const { totalIncome, totalExpenses, totalProfitLoss } = records.reduce((totals, record) => {
         const income = record.income || 0;
         const expenses = record.expenses || 0;
         return {
             totalIncome: totals.totalIncome + income,
             totalExpenses: totals.totalExpenses + expenses,
-            totalProfit: totals.totalProfit + (income - expenses),
+            totalProfitLoss: totals.totalProfitLoss + (income - expenses), // Calculate profit/loss for the total
         };
-    }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
+    }, { totalIncome: 0, totalExpenses: 0, totalProfitLoss: 0 });
 
     const rows = records.map((record, index) => [
         index + 1,
         new Date(record.date).toLocaleDateString(),
         record.details,
         record.income,
-        record.expenses
+        record.expenses,
+        //record.income - record.expenses // Calculate 'Profit/Loss' for each record
     ]);
 
     // Add totals row at the end
-    rows.push(['', '', 'Total', totalIncome, totalExpenses]);
+    rows.push(['', '', 'Total', totalIncome, totalExpenses, totalProfitLoss]);
 
     const csvContent = [headers, ...rows]
         .map(e => e.join(","))
