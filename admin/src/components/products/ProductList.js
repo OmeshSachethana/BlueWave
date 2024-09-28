@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../services/productService";
 import { getAllOrders } from "../../services/orderService"; // Make sure to create this service
 import { setProducts } from "../../features/products/productsSlice";
+import LoadingSpinner from "../LoadingSpinner";
 import ProductCard from "./ProductCard";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -12,13 +13,16 @@ const ProductList = () => {
   const products = useSelector((state) => state.products.products);
   const [orders, setOrders] = useState([]);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchProducts = async () => {
     try {
       const productsData = await getAllProducts();
       dispatch(setProducts(productsData));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setLoading(false);
     }
   };
 
@@ -76,7 +80,9 @@ const ProductList = () => {
     // Add title to the document
     doc.text("Products Report", 14, 16);
     doc.autoTable({
-      head: [["Product Name", "Category", "Quantity", "Description", "Order Count"]],
+      head: [
+        ["Product Name", "Category", "Quantity", "Description", "Order Count"],
+      ],
       body: orderSummary.map((item) => [
         item.productName,
         item.category,
@@ -136,18 +142,25 @@ const ProductList = () => {
           </div>
         </div>
       )}
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.slice().map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              fetchProducts={fetchProducts}
-              setDeleteSuccess={setDeleteSuccess}
-            />
-          ))}
+      {/* Show Loading Spinner while fetching data */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64 relative">
+          <LoadingSpinner />
         </div>
-      </div>
+      ) : (
+        <div className="container mx-auto p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.slice().map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                fetchProducts={fetchProducts}
+                setDeleteSuccess={setDeleteSuccess}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
