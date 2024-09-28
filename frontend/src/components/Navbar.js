@@ -4,6 +4,7 @@ import CartView from "./products/CartView";
 import ProductSearch from "./products/ProductSearch";
 import { useSelector } from "react-redux";
 import CartViewSubscription from "./subcriptionPlans/CartViewSubscription";
+import logo from "../assets/bluewave_logo.png";
 
 const Navbar = ({ onSearch }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -36,8 +37,16 @@ const Navbar = ({ onSearch }) => {
       <nav className="bg-blue-600 p-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo Section */}
-          <div className="text-white font-bold text-lg">
-            <Link to="/">BlueWave</Link>
+          <div className="flex items-center">
+            {/* Logo Image */}
+            <Link to="/" className="flex items-center space-x-2">
+              <img
+                src={logo} // Update the path to your logo
+                alt="BlueWave Logo"
+                className="h-20 w-26" // Adjust size as needed
+              />
+              <span className="text-white font-bold text-lg"></span>
+            </Link>
           </div>
 
           {/* Buttons Section */}
