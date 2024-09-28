@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
 import { Chart, registerables } from 'chart.js';
 
@@ -38,6 +40,34 @@ const MaintenanceList = () => {
     const matchesSearch = maintenance.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  // Generate PDF function
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text('Maintenance List', 14, 16);
+
+    const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
+    const tableRows = [];
+
+    filteredMaintenanceList.forEach(maintenance => {
+      const maintenanceData = [
+        maintenance.name,
+        maintenance.description,
+        maintenance.status,
+        maintenance.priority,
+        maintenance.technician
+      ];
+      tableRows.push(maintenanceData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.save('maintenance_list.pdf');
+  };
 
   // Count the occurrences of each status
   const statusCounts = maintenanceList.reduce(
@@ -82,6 +112,7 @@ const MaintenanceList = () => {
       <div className="mb-8">
         <Bar data={data} options={options} />
       </div>
+
       {/* Search Input */}
       <div className="mb-4">
         <input
@@ -89,7 +120,7 @@ const MaintenanceList = () => {
           placeholder="Search by Name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-1/2 p-2 border border-gray-300 rounded" // Adjust width as needed
+          className="w-1/2 p-2 border border-gray-300 rounded"
         />
       </div>
 
@@ -107,6 +138,16 @@ const MaintenanceList = () => {
           <option value="In Progress">In Progress</option>
           <option value="Completed">Completed</option>
         </select>
+      </div>
+
+      {/* Generate PDF Button */}
+      <div className="mb-4">
+        <button
+          onClick={generatePDF}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          Generate PDF
+        </button>
       </div>
 
       {filteredMaintenanceList.length > 0 ? (
