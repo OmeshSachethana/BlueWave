@@ -44,7 +44,19 @@ const AdminSubscriptionPlans = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+
+    // Check if the field being updated is 'description'
+    if (id === "description") {
+      const wordsUsed = countWords(value);
+
+      // If words are less than or equal to the max limit, update formData
+      if (wordsUsed <= maxWords) {
+        setFormData({ ...formData, [id]: value });
+      }
+    } else {
+      // For other fields, update the form data normally
+      setFormData({ ...formData, [id]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -178,7 +190,7 @@ const AdminSubscriptionPlans = () => {
               required
             />
             <p className="text-sm text-gray-500">
-              {maxWords - wordsUsed} words remaining
+              {maxWords - countWords(formData.description)} words remaining
             </p>
           </div>
           <div className="mb-5">
