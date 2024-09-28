@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../services/productService";
 import { getAllOrders } from "../../services/orderService"; // Make sure to create this service
 import { setProducts } from "../../features/products/productsSlice";
+import LoadingSpinner from "../LoadingSpinner";
 import ProductCard from "./ProductCard";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -12,13 +13,16 @@ const ProductList = () => {
   const products = useSelector((state) => state.products.products);
   const [orders, setOrders] = useState([]);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchProducts = async () => {
     try {
       const productsData = await getAllProducts();
       dispatch(setProducts(productsData));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setLoading(false);
     }
   };
 
@@ -40,21 +44,52 @@ const ProductList = () => {
         return (
           count +
           order.orderDetails.filter(
-            (item) => item.product._id.toString() === product._id.toString()
+            (item) =>
+              item.product &&
+              item.product._id.toString() === product._id.toString()
           ).length
         );
       }, 0);
       return {
-        productName: product.name,
+        productName: product.name || "Unknown Product",
+        category: product.category || "N/A",
+        quantity: product.quantity || "N/A",
+        description: product.description || "N/A",
         orderCount,
       };
+    });
+
+    // Handle cases where a product is in an order but not in the products list (deleted product)
+    orders.forEach((order) => {
+      order.orderDetails.forEach((item) => {
+        const productExists = products.some(
+          (product) => product._id.toString() === item.product?._id?.toString()
+        );
+        if (!productExists && item.product) {
+          orderSummary.push({
+            productName: "Unknown Product",
+            category: "N/A",
+            quantity: "N/A",
+            description: "This product was deleted",
+            orderCount: 1, // Counting this as one order for the deleted product
+          });
+        }
+      });
     });
 
     // Add title to the document
     doc.text("Products Report", 14, 16);
     doc.autoTable({
-      head: [["Product Name", "Order Count"]],
-      body: orderSummary.map((item) => [item.productName, item.orderCount]),
+      head: [
+        ["Product Name", "Category", "Quantity", "Description", "Order Count"],
+      ],
+      body: orderSummary.map((item) => [
+        item.productName,
+        item.category,
+        item.quantity,
+        item.description,
+        item.orderCount,
+      ]),
       startY: 20,
     });
 
@@ -107,18 +142,25 @@ const ProductList = () => {
           </div>
         </div>
       )}
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.slice().map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              fetchProducts={fetchProducts}
-              setDeleteSuccess={setDeleteSuccess}
-            />
-          ))}
+      {/* Show Loading Spinner while fetching data */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64 relative">
+          <LoadingSpinner />
         </div>
-      </div>
+      ) : (
+        <div className="container mx-auto p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.slice().map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                fetchProducts={fetchProducts}
+                setDeleteSuccess={setDeleteSuccess}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
