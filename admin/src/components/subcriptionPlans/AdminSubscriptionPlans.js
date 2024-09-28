@@ -19,6 +19,13 @@ const AdminSubscriptionPlans = () => {
     updateId: null,
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    duration: "",
+    pricing: "",
+    deliveryFrequency: "",
+  });
 
   const maxWords = 50;
 
@@ -26,8 +33,6 @@ const AdminSubscriptionPlans = () => {
   const countWords = (text) => {
     return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
   };
-
-  const wordsUsed = countWords(formData.description);
 
   useEffect(() => {
     const fetchAllPlans = async () => {
@@ -61,6 +66,48 @@ const AdminSubscriptionPlans = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let formErrors = { ...errors };
+    let hasError = false;
+
+    // Validate each field and set error messages
+    if (!formData.name) {
+      formErrors.name = "Plan Name is required";
+      hasError = true;
+    } else {
+      formErrors.name = "";
+    }
+
+    if (!formData.description || countWords(formData.description) > maxWords) {
+      formErrors.description = `Description is required and must be under ${maxWords} words`;
+      hasError = true;
+    } else {
+      formErrors.description = "";
+    }
+
+    if (!formData.duration) {
+      formErrors.duration = "Duration is required";
+      hasError = true;
+    } else {
+      formErrors.duration = "";
+    }
+
+    if (!formData.pricing) {
+      formErrors.pricing = "Pricing is required";
+      hasError = true;
+    } else {
+      formErrors.pricing = "";
+    }
+
+    if (!formData.deliveryFrequency) {
+      formErrors.deliveryFrequency = "Delivery Frequency is required";
+      hasError = true;
+    } else {
+      formErrors.deliveryFrequency = "";
+    }
+
+    setErrors(formErrors); // Update the errors state
+
+    if (hasError) return; // If there are errors, don't submit the form
     try {
       if (isEditing) {
         await updatePlan(formData.updateId, {
@@ -87,6 +134,13 @@ const AdminSubscriptionPlans = () => {
         pricing: "",
         deliveryFrequency: "",
         updateId: null,
+      });
+      setErrors({
+        name: "",
+        description: "",
+        duration: "",
+        pricing: "",
+        deliveryFrequency: "",
       });
       const updatedPlans = await getPlans();
       setPlans(updatedPlans);
@@ -150,7 +204,7 @@ const AdminSubscriptionPlans = () => {
       </div>
 
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit}>
+        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit} noValidate>
           <div className="mb-5">
             <label
               htmlFor="name"
@@ -163,17 +217,22 @@ const AdminSubscriptionPlans = () => {
               id="name"
               value={formData.name}
               onChange={(e) => {
-                // Allow only alphabetic characters
-                const regex = /^[A-Za-z\s]*$/; // Regex for alphabetic characters and spaces
+                const regex = /^[A-Za-z\s]*$/;
                 if (regex.test(e.target.value) || e.target.value === "") {
                   handleChange(e);
                 }
               }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
               placeholder="Enter plan name"
               required
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name}</p>
+            )}
           </div>
+
           <div className="mb-5">
             <label
               htmlFor="description"
@@ -185,14 +244,17 @@ const AdminSubscriptionPlans = () => {
               id="description"
               value={formData.description}
               onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.description ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
               placeholder="Enter plan description"
               required
             />
-            <p className="text-sm text-gray-500">
-              {maxWords - countWords(formData.description)} words remaining
-            </p>
+            {errors.description && (
+              <p className="text-red-500 text-xs">{errors.description}</p>
+            )}
           </div>
+
           <div className="mb-5">
             <label
               htmlFor="duration"
@@ -205,11 +267,17 @@ const AdminSubscriptionPlans = () => {
               id="duration"
               value={formData.duration}
               onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.duration ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
               placeholder="Enter duration"
               required
             />
+            {errors.duration && (
+              <p className="text-red-500 text-xs">{errors.duration}</p>
+            )}
           </div>
+
           <div className="mb-5">
             <label
               htmlFor="pricing"
@@ -222,17 +290,22 @@ const AdminSubscriptionPlans = () => {
               id="pricing"
               value={formData.pricing}
               onChange={(e) => {
-                // Allow only valid numeric inputs (digits and optional decimal point)
                 const regex = /^\d*\.?\d*$/; // Regex for numbers including decimal point
                 if (regex.test(e.target.value) || e.target.value === "") {
                   handleChange(e);
                 }
               }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.pricing ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
               placeholder="Enter pricing"
               required
             />
+            {errors.pricing && (
+              <p className="text-red-500 text-xs">{errors.pricing}</p>
+            )}
           </div>
+
           <div className="mb-5">
             <label
               htmlFor="deliveryFrequency"
@@ -245,10 +318,15 @@ const AdminSubscriptionPlans = () => {
               id="deliveryFrequency"
               value={formData.deliveryFrequency}
               onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={`bg-gray-50 border ${
+                errors.deliveryFrequency ? "border-red-500" : "border-gray-300"
+              } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
               placeholder="Enter delivery frequency"
               required
             />
+            {errors.deliveryFrequency && (
+              <p className="text-red-500 text-xs">{errors.deliveryFrequency}</p>
+            )}
           </div>
           <button
             type="submit"

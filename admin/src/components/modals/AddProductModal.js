@@ -12,37 +12,135 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // New state for success message
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errors, setErrors] = useState({});
 
-  const fileInputRef = useRef(null); // Create a ref for the file input
+  const maxWords = 50;
+
+  // Function to count words
+  const countWords = (text) => {
+    return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  };
+
+  const fileInputRef = useRef(null); // Ref for the file input
 
   useEffect(() => {
     if (isOpen) {
       setErrorMessage("");
       setSuccessMessage("");
+      setErrors({}); // Clear errors when modal opens
+    } else {
+      // Reset product data when modal closes
+      setProductData({
+        name: "",
+        description: "",
+        price: "",
+        quantity: 1,
+        category: "",
+        image: null,
+      });
     }
   }, [isOpen]);
 
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "name":
+        if (!/^[a-zA-Z0-9\s]{1,50}$/.test(value)) {
+          error =
+            "Product Name must be 1-50 characters, alphanumeric and spaces only.";
+        }
+        break;
+      case "price":
+        if (value <= 0) {
+          error = "Price must be greater than 0.";
+        }
+        break;
+      case "quantity":
+        if (value < 1 || value > 1000) {
+          error = "Quantity must be between 1 and 1000.";
+        }
+        break;
+      case "category":
+        if (!/^[a-zA-Z\s]{1,30}$/.test(value)) {
+          error = "Category must be 1-30 letters and spaces only.";
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Validate field as user types
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
 
     // Prevent quantity from going negative
     if (name === "quantity" && value < 0) {
       return;
     }
 
-    setProductData({ ...productData, [name]: value });
+    if (name === "description") {
+      const wordsUsed = countWords(value);
+      // If words are less than or equal to the max limit, update formData
+      if (wordsUsed <= maxWords) {
+        setProductData({ ...productData, [name]: value });
+      }
+    } else {
+      // For other fields, update the form data normally
+      setProductData({ ...productData, [name]: value });
+    }
   };
 
   const handleImageChange = (e) => {
-    setProductData({ ...productData, image: e.target.files[0] });
+    const file = e.target.files[0];
+    const validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+    if (!file) {
+      setErrors({ ...errors, image: "Please upload a valid image." });
+    } else if (!validImageTypes.includes(file.type)) {
+      setErrors({
+        ...errors,
+        image: "Invalid file type. Please upload a JPEG or PNG image.",
+      });
+    } else {
+      setErrors({ ...errors, image: "" });
+      setProductData({ ...productData, image: file });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage("");
-    setSuccessMessage(""); // Reset success message
+    setSuccessMessage("");
+
+    // Final validation on submit
+    let hasError = false;
+    const newErrors = {};
+
+    for (const field in productData) {
+      const error = validateField(field, productData[field]);
+      if (error) {
+        hasError = true;
+        newErrors[field] = error;
+      }
+    }
+
+    if (errors.image) {
+      hasError = true;
+      newErrors.image = errors.image;
+    }
+
+    setErrors(newErrors);
+    if (hasError) {
+      setIsSubmitting(false);
+      return;
+    }
 
     // Prepare form data to send, including the image
     const formData = new FormData();
@@ -55,7 +153,7 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
 
     try {
       await createProduct(formData); // Use the API function to create the product
-      setSuccessMessage("Product added successfully!"); // Set success message
+      setSuccessMessage("Product added successfully!");
       setProductData({
         name: "",
         description: "",
@@ -63,12 +161,10 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
         quantity: 1,
         category: "",
         image: null,
-      }); // Clear form
-      // Clear file input manually
+      });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-
       fetchProducts();
     } catch (error) {
       setErrorMessage("Failed to create product. Please try again.");
@@ -144,13 +240,18 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               name="name"
               type="text"
               placeholder="Bottled Water 500ml"
-              className="w-full p-2 border border-gray-300 rounded"
+              className={`w-full p-2 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } rounded`}
               value={productData.name}
               onChange={handleInputChange}
               required
               pattern="^[a-zA-Z0-9\s]{1,50}$" // Alphanumeric and spaces only, 1-50 characters
               title="Product Name: 1-50 characters, alphanumeric and spaces only."
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -169,8 +270,11 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               onChange={handleInputChange}
               required
               maxLength={500} // Max length of 500 characters
-              title="Description: Up to 500 characters."
+              title="Description: Up to 50 words."
             />
+            <p className="text-sm text-gray-500">
+              {maxWords - countWords(productData.description)} words remaining
+            </p>
           </div>
 
           <div className="mb-4">
@@ -183,13 +287,18 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               type="number"
               step="0.01"
               placeholder="5.99"
-              className="w-full p-2 border border-gray-300 rounded"
+              className={`w-full p-2 border ${
+                errors.price ? "border-red-500" : "border-gray-300"
+              } rounded`}
               value={productData.price}
               onChange={handleInputChange}
               required
-              min="0.01" // Price must be greater than 0
+              min="0.01"
               title="Price must be a positive number."
             />
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -204,14 +313,19 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               name="quantity"
               type="number"
               placeholder="120"
-              className="w-full p-2 border border-gray-300 rounded"
+              className={`w-full p-2 border ${
+                errors.quantity ? "border-red-500" : "border-gray-300"
+              } rounded`}
               value={productData.quantity}
               onChange={handleInputChange}
               required
-              min="1" // Quantity must be at least 1
-              max="1000" // Assuming max quantity is 1000
+              min="1"
+              max="1000"
               title="Quantity must be between 1 and 1000."
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -226,13 +340,18 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               name="category"
               type="text"
               placeholder="Beverages"
-              className="w-full p-2 border border-gray-300 rounded"
+              className={`w-full p-2 border ${
+                errors.category ? "border-red-500" : "border-gray-300"
+              } rounded`}
               value={productData.category}
               onChange={handleInputChange}
               required
               pattern="^[a-zA-Z\s]{1,30}$" // Letters and spaces only, 1-30 characters
               title="Category: 1-30 letters and spaces only."
             />
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -244,11 +363,16 @@ const AddProductModal = ({ isOpen, toggleModal, fetchProducts }) => {
               name="image"
               type="file"
               ref={fileInputRef}
-              className="w-full p-2 border border-gray-300 rounded"
-              accept="image/*"
+              className={`w-full p-2 border ${
+                errors.image ? "border-red-500" : "border-gray-300"
+              } rounded`}
+              accept=".jpg, .jpeg, .png"
               onChange={handleImageChange}
               required
             />
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-4">
