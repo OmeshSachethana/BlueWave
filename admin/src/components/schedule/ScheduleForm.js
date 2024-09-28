@@ -28,9 +28,15 @@ const ScheduleForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    
+    // Name validation: must be at least 3 characters long and contain only letters
+    const nameRegex = /^[A-Za-z]+$/;
     if (formData.name.length < 3) {
       newErrors.name = 'Name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.name)) {
+      newErrors.name = 'Name must contain only letters';
     }
+
     if (formData.quantity <= 0) {
       newErrors.quantity = 'Quantity must be a positive number';
     }
@@ -40,6 +46,7 @@ const ScheduleForm = () => {
     if (formData.duration <= 0) {
       newErrors.duration = 'Duration must be at least 1 day';
     }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
