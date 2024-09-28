@@ -88,9 +88,11 @@ const EmployeeList = ({ onEdit }) => {
         <label htmlFor="department-filter" className="mr-2">Filter by Department:</label>
         <select id="department-filter" value={filter} onChange={handleFilterChange} className="p-2 border border-gray-300 rounded">
           <option value="All">All</option>
-          <option value="HR">HR</option>
-          <option value="Engineering">Engineering</option>
           <option value="Sales">Sales</option>
+          <option value="HR">HR</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Production">Production</option>
+          <option value="Finance">Finance</option>
         </select>
       </div>
 
