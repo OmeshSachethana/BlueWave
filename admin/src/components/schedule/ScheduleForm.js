@@ -28,21 +28,34 @@ const ScheduleForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    
+    // Name validation: must be at least 3 characters long and contain only letters
+    const nameRegex = /^[A-Za-z]+$/;
     if (formData.name.length < 3) {
       newErrors.name = 'Name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.name)) {
+      newErrors.name = 'Name must contain only letters';
     }
+  
     if (formData.quantity <= 0) {
       newErrors.quantity = 'Quantity must be a positive number';
     }
+  
+    // Driver validation: must be at least 3 characters long and contain only letters
     if (formData.driver.length < 3) {
       newErrors.driver = 'Assigned driver name must be at least 3 characters long';
+    } else if (!nameRegex.test(formData.driver)) {
+      newErrors.driver = 'Driver name must contain only letters';
     }
+  
     if (formData.duration <= 0) {
       newErrors.duration = 'Duration must be at least 1 day';
     }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -61,9 +74,9 @@ const ScheduleForm = () => {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mt-6">
       {/* Schedule Form Section */}
-      <div className="max-w-lg mx-auto bg-gray-200 p-6 rounded-md mb-10">
+      <div className="max-w-lg mx-auto bg-blue-100 p-6 rounded-md mb-10">
         <h2 className="text-xl font-bold mb-4">Scheduling Section</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

@@ -242,13 +242,13 @@ const EmployeeSalaryForm = () => {
                   <td className="p-2 border border-gray-300">
                     <button
                       onClick={() => handleEdit(employee)}
-                      className="p-1 text-blue-500 hover:underline"
+                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(employee.employeeID)}
-                      className="p-1 text-red-500 hover:underline"
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2"
                     >
                       Delete
                     </button>
