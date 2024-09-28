@@ -168,9 +168,14 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
           {isEditMode ? (
             <label
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50hover:bg-gray-100 text-center"
+              className="flex flex-col items-center justify-center w-[200px] h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer relative bg-gray-50hover:bg-gray-100 text-center"
               style={{
-                backgroundImage: `url(${imagePreview || editedProduct.image})`,
+                backgroundImage: `url(${
+                  imagePreview ||
+                  (editedProduct.image.startsWith("data:image")
+                    ? editedProduct.image
+                    : `data:image/jpeg;base64,${editedProduct.image}`)
+                })`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -285,8 +290,8 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-3 font-normal text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Price"
-                min="0.01"
-                step="0.01"
+                min="0"
+                step="1"
                 required
               />
               {errors.price && (
