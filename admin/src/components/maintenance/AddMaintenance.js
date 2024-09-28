@@ -39,7 +39,7 @@ const AddMaintenance = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
+    <div className="max-w-lg mx-auto p-6 bg-blue-100 shadow-lg rounded-lg">
       <h2 className="text-xl font-bold mb-4 text-blue-600">Add Maintenance</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
