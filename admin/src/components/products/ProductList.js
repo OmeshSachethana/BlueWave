@@ -48,6 +48,7 @@ const ProductList = () => {
       }, 0);
       return {
         productName: product.name || "Unknown Product",
+        category: product.category || "N/A",
         quantity: product.quantity || "N/A",
         description: product.description || "N/A",
         orderCount,
@@ -63,6 +64,7 @@ const ProductList = () => {
         if (!productExists && item.product) {
           orderSummary.push({
             productName: "Unknown Product",
+            category: "N/A",
             quantity: "N/A",
             description: "This product was deleted",
             orderCount: 1, // Counting this as one order for the deleted product
@@ -74,9 +76,10 @@ const ProductList = () => {
     // Add title to the document
     doc.text("Products Report", 14, 16);
     doc.autoTable({
-      head: [["Product Name", "Quantity", "Description", "Order Count"]],
+      head: [["Product Name", "Category", "Quantity", "Description", "Order Count"]],
       body: orderSummary.map((item) => [
         item.productName,
+        item.category,
         item.quantity,
         item.description,
         item.orderCount,
