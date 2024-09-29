@@ -30,17 +30,21 @@ const ProductList = () => {
     try {
       const ordersData = await getAllOrders();
       setOrders(ordersData);
+      return ordersData;
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
 
-  const generateReport = () => {
+  const generateReport = async () => {
+    // Fetch the latest orders before generating the PDF
+    const latestOrders = await fetchOrders();
+
     const doc = new jsPDF();
 
-    // Aggregate order data
+    // Aggregate order data using latestOrders (instead of state orders)
     const orderSummary = products.map((product) => {
-      const orderCount = orders.reduce((count, order) => {
+      const orderCount = latestOrders.reduce((count, order) => {
         return (
           count +
           order.orderDetails.filter(
@@ -60,7 +64,7 @@ const ProductList = () => {
     });
 
     // Handle cases where a product is in an order but not in the products list (deleted product)
-    orders.forEach((order) => {
+    latestOrders.forEach((order) => {
       order.orderDetails.forEach((item) => {
         const productExists = products.some(
           (product) => product._id.toString() === item.product?._id?.toString()

@@ -204,7 +204,11 @@ const AdminSubscriptionPlans = () => {
       </div>
 
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit} noValidate>
+        <form
+          className="max-w-sm mx-auto mb-8"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <div className="mb-5">
             <label
               htmlFor="name"
@@ -250,6 +254,9 @@ const AdminSubscriptionPlans = () => {
               placeholder="Enter plan description"
               required
             />
+            <p className="text-sm text-gray-500 mb-2">
+              {maxWords - countWords(formData.description)} words remaining
+            </p>
             {errors.description && (
               <p className="text-red-500 text-xs">{errors.description}</p>
             )}
