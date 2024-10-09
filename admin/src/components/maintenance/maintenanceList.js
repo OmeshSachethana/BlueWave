@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
 import { Chart, registerables } from 'chart.js';
+import logo from '../../assets/bluewave_logo.png'; // Adjust the path to your logo image
 
 Chart.register(...registerables); // Register necessary chart.js components
 
@@ -56,7 +57,17 @@ const MaintenanceList = () => {
   // Generate PDF function
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.text('Maintenance List', 14, 16);
+    
+    // Add logo
+    doc.addImage(logo, 'PNG', 10, 10, 50, 20); // Adjust position and size as needed
+
+    // Add company name
+    doc.setFontSize(20);
+    doc.text('BlueWave', 90, 20); // Adjust position as needed
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text('Maintenance List', 14, 40);
 
     const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
     const tableRows = [];
@@ -75,7 +86,7 @@ const MaintenanceList = () => {
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
+      startY: 45, // Adjust starting Y position to avoid overlap with the header
     });
 
     doc.save('maintenance_list.pdf');
@@ -216,31 +227,25 @@ const MaintenanceList = () => {
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   onClick={() => handleStatusUpdate(maintenance._id)}
                 >
-                  Save
+                  Update
                 </button>
                 <button
-                  className="ml-2 px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
+                  className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
                   onClick={() => setEditingId(null)}
                 >
                   Cancel
                 </button>
               </div>
             ) : (
-              <div className="flex justify-between mt-4">
+              <div className="mt-4">
                 <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  onClick={() => handleStatusEdit(
-                    maintenance._id,
-                    maintenance.status,
-                    maintenance.date,
-                    maintenance.priority,
-                    maintenance.technician
-                  )}
+                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+                  onClick={() => handleStatusEdit(maintenance._id, maintenance.status, maintenance.date, maintenance.priority, maintenance.technician)}
                 >
                   Update
                 </button>
                 <button
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
                   onClick={() => handleDelete(maintenance._id)}
                 >
                   Delete
@@ -250,7 +255,7 @@ const MaintenanceList = () => {
           </div>
         ))
       ) : (
-        <p className="text-gray-500">No maintenance records available</p>
+        <p className="text-gray-500">No maintenance records found.</p>
       )}
     </div>
   );
