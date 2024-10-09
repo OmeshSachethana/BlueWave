@@ -11,6 +11,8 @@ import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscript
 import SchedulePage from "./pages/Schedule/SchedulePage";
 import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePage";
 import ScheduleTable from "./components/schedule/ScheduleTable";
+import PettyCashForm from "./components/pettyCash/PettyCashForm";
+import PettyCashView from "./components/pettyCash/PettyCashView";
 
 function Footer() {
   const links = [
@@ -82,6 +84,8 @@ function App() {
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/income-expenditure" element={<IncomeExpenditurePage />} />
             <Route path="/schedulelist" element={<ScheduleTable />} />
+            <Route path="/pettycash-form" element={<PettyCashForm />} />
+            <Route path="/pettycash-view" element={<PettyCashView />} />
             
           </Routes>
         </main>
