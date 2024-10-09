@@ -128,6 +128,16 @@ const Navbar = () => {
             >
               Income & Expenditure
             </Link>
+            <Link
+              to="/pettycash-form"
+              className={`px-4 py-2 rounded ${
+                isActive("/pettycash-form")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Petty Cash
+            </Link>
           </div>
 
           {/* Cart Button Section */}

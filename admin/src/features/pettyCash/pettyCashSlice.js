@@ -1,31 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const apiUrl = process.env.REACT_APP_BACKEND_URL + '/api/pettycash';
+const initialState = {
+  entries: [],
+  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null,
+};
 
-// Async actions
+// Fetch all entries from the backend
 export const fetchEntries = createAsyncThunk('pettyCash/fetchEntries', async () => {
-  const response = await axios.get(apiUrl);
+  const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/pettyCash`);
+  return response.data; // Assuming the response is an array of entries
+});
+
+// Add an entry to the backend
+export const addEntry = createAsyncThunk('pettyCash/addEntry', async (newEntry) => {
+  const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/pettyCash`, newEntry);
   return response.data;
 });
 
-export const addEntry = createAsyncThunk('pettyCash/addEntry', async (entry) => {
-  const response = await axios.post(apiUrl, entry);
-  return response.data;
-});
-
+// Delete an entry from the backend
 export const deleteEntry = createAsyncThunk('pettyCash/deleteEntry', async (id) => {
-  await axios.delete(`${apiUrl}/${id}`);
+  await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/pettyCash/${id}`);
   return id;
 });
 
 const pettyCashSlice = createSlice({
   name: 'pettyCash',
-  initialState: {
-    entries: [],
-    status: 'idle',
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -34,6 +36,7 @@ const pettyCashSlice = createSlice({
       })
       .addCase(fetchEntries.fulfilled, (state, action) => {
         state.status = 'succeeded';
+        // Add entries to the state
         state.entries = action.payload;
       })
       .addCase(fetchEntries.rejected, (state, action) => {
@@ -41,10 +44,12 @@ const pettyCashSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addEntry.fulfilled, (state, action) => {
+        // Add new entry to the state
         state.entries.push(action.payload);
       })
       .addCase(deleteEntry.fulfilled, (state, action) => {
-        state.entries = state.entries.filter(entry => entry._id !== action.payload);
+        // Remove deleted entry from the state
+        state.entries = state.entries.filter((entry) => entry._id !== action.payload);
       });
   },
 });

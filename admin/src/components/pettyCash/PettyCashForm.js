@@ -56,7 +56,7 @@ function PettyCashForm() {
           <button
             type="button"
             className="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors duration-300"
-            onClick={() => navigate('/pettycash-list')}
+            onClick={() => navigate('/pettycash-view')}
           >
             View Petty Cash
           </button>
