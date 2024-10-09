@@ -145,6 +145,8 @@ const ScheduleTable = () => {
     schedule.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const locations = ['Negombo', 'Dankotuwa', 'Colombo'];
+
   return (
     <div className="max-w-6xl mx-auto mt-6">
       <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
@@ -239,18 +241,24 @@ const ScheduleTable = () => {
                     )}
                   </td>
                   <td className="py-2 px-4">
-                    {editItem === schedule._id ? (
-                      <input
-                        type="text"
-                        name="location"
-                        value={editData.location}
-                        onChange={handleChange}
-                        className="p-1 w-24 border border-gray-300 rounded"
-                      />
-                    ) : (
-                      schedule.location
-                    )}
-                  </td>
+  {editItem === schedule._id ? (
+    <select
+      name="location"
+      value={editData.location}
+      onChange={handleChange}
+      className="p-1 w-24 border border-gray-300 rounded"
+    >
+      {locations.map((loc) => (
+        <option key={loc} value={loc}>
+          {loc}
+        </option>
+      ))}
+    </select>
+  ) : (
+    schedule.location
+  )}
+</td>
+
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
                       <input
