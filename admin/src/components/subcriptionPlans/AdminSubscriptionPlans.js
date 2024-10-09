@@ -7,6 +7,7 @@ import {
 } from "../../services/subscriptionPlanService";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from "../../assets/bluewave_logo.png";
 
 const AdminSubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -189,8 +190,31 @@ const AdminSubscriptionPlans = () => {
 
   const generateReport = () => {
     const doc = new jsPDF();
-    doc.setFontSize(20);
-    doc.text("Subscription Plans Report", 14, 22);
+
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, "PNG", logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text("Subscription Plans Report", 14, 40);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
+
+    // Add table with subscription plans data
     doc.autoTable({
       head: [
         ["Name", "Description", "Duration", "Pricing", "Delivery Frequency"],
@@ -202,8 +226,9 @@ const AdminSubscriptionPlans = () => {
         plan.pricing,
         plan.deliveryFrequency,
       ]),
-      startY: 30,
+      startY: 60, // Start table below title and date
     });
+
     doc.save("subscription-plans-report.pdf");
   };
 

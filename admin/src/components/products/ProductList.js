@@ -7,6 +7,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import ProductCard from "./ProductCard";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from '../../assets/bluewave_logo.png'; 
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -48,6 +49,28 @@ const ProductList = () => {
 
     const doc = new jsPDF();
 
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
+    // Add title
+    doc.setFontSize(16);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
+
     // Aggregate order data using latestOrders (instead of state orders)
     const orderSummary = products.map((product) => {
       const orderCount = latestOrders.reduce((count, order) => {
@@ -88,7 +111,8 @@ const ProductList = () => {
     });
 
     // Add title to the document
-    doc.text("Products Report", 14, 16);
+    doc.setFontSize(16);
+    doc.text('Products Report', 14, 40);
     doc.autoTable({
       head: [
         ["Product Name", "Category", "Quantity", "Description", "Order Count"],
@@ -100,7 +124,7 @@ const ProductList = () => {
         item.description,
         item.orderCount,
       ]),
-      startY: 20,
+      startY: 60,
     });
 
     // Save the PDF

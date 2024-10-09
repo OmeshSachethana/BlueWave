@@ -8,6 +8,7 @@ import {
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import LoadingSpinner from "../LoadingSpinner";
+import logo from '../../assets/bluewave_logo.png'; 
 
 const OrderList = () => {
   const dispatch = useDispatch();
@@ -105,8 +106,28 @@ const OrderList = () => {
     // Initialize jsPDF in landscape mode
     const doc = new jsPDF({ orientation: "landscape" });
 
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, "PNG", logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
     // Add title to the document
-    doc.text("Customer Orders Report", 14, 16);
+    doc.setFontSize(16);
+    doc.text("Customer Orders Report", 14, 40);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
 
     // Prepare the data for the table, filtering out incomplete orders
     const orderData = filteredOrders
@@ -177,7 +198,7 @@ const OrderList = () => {
         item.approvalStatus,
         item.products,
       ]),
-      startY: 30,
+      startY: 60, // Start the table below the title and date
     });
 
     // Save the PDF
@@ -188,7 +209,7 @@ const OrderList = () => {
   const sortedOrders = filteredOrders.sort((a, b) => {
     return new Date(b.updatedAt) - new Date(a.updatedAt); // Sort by updatedAt in descending order
   });
-  
+
   if (error) return <p>Error loading orders: {error.message}</p>;
 
   return (
