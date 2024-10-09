@@ -17,6 +17,7 @@ const ScheduleTable = () => {
   const [editItem, setEditItem] = useState(null);
   const [editData, setEditData] = useState({ quantity: 0, driver: '', duration: 0, name: '', category: '', location: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(''); // State for selected location
 
   useEffect(() => {
     dispatch(fetchSchedules());
@@ -153,10 +154,12 @@ const ScheduleTable = () => {
     },
   };
 
-  // Filter schedules based on search term
-  const filteredSchedules = schedules.filter(schedule =>
-    schedule.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter schedules based on search term and selected location
+  const filteredSchedules = schedules.filter(schedule => {
+    const matchesSearch = schedule.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = selectedLocation ? schedule.location === selectedLocation : true;
+    return matchesSearch && matchesLocation;
+  });
 
   const locations = ['Negombo', 'Dankotuwa', 'Colombo'];
 
@@ -178,6 +181,23 @@ const ScheduleTable = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="p-2 border border-gray-300 rounded"
         />
+      </div>
+
+      {/* Location Filter */}
+      <div className="mb-4">
+      Filter by Location: 
+        <select
+          value={selectedLocation}
+          onChange={(e) => setSelectedLocation(e.target.value)}
+          className="p-2 border border-gray-300 rounded"
+        >
+          <option value="">All</option>
+          {locations.map((loc) => (
+            <option key={loc} value={loc}>
+              {loc}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Button to download the table as PDF */}
@@ -246,19 +266,16 @@ const ScheduleTable = () => {
                         name="category"
                         value={editData.category}
                         onChange={handleChange}
-                        className="p-1 w-24 border border-gray-300 rounded"
+                        className="p-1 border border-gray-300 rounded"
                       >
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
+                        <option value="Electronics">Electronics</option>
+                        <option value="Chemicals">Chemicals</option>
+                        <option value="Other">Other</option>
                       </select>
                     ) : (
                       schedule.category
                     )}
                   </td>
-
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
                       <select
@@ -277,7 +294,6 @@ const ScheduleTable = () => {
                       schedule.location
                     )}
                   </td>
-
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
                       <input
@@ -306,7 +322,7 @@ const ScheduleTable = () => {
                   </td>
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
-                      <>
+                      <div>
                         <button
                           onClick={() => handleSave(schedule._id)}
                           className="bg-green-500 text-white px-2 py-1 rounded mr-2"
@@ -319,9 +335,9 @@ const ScheduleTable = () => {
                         >
                           Cancel
                         </button>
-                      </>
+                      </div>
                     ) : (
-                      <>
+                      <div>
                         <button
                           onClick={() => handleEdit(schedule)}
                           className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
@@ -334,7 +350,7 @@ const ScheduleTable = () => {
                         >
                           Delete
                         </button>
-                      </>
+                      </div>
                     )}
                   </td>
                 </tr>
