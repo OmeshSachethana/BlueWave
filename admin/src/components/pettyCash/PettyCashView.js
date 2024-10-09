@@ -90,7 +90,7 @@ const PettyCashView = () => {
       >
         Back
       </button>
-      <h2 className="text-xl font-bold mb-4">Petty Cash Book</h2> {/* Title for the table */}
+      <h2 className="text-2xl font-bold mb-4 text-center">Petty Cash Book</h2> {/* Title for the table */}
       {entryStatus === 'loading' && <p>Loading entries...</p>}
       {entryStatus === 'failed' && <p>Error: {error}</p>}
       {entries.length === 0 ? (
