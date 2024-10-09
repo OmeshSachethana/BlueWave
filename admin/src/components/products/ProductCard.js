@@ -351,9 +351,9 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               <p className="mb-1 text-lg font-semibold text-gray-600">
                 Category: {editedProduct.category}
               </p>
-              <p className="mb-3 font-normal text-gray-700">
+              {/* <p className="mb-3 font-normal text-gray-700">
                 {editedProduct.description}
-              </p>
+              </p> */}
               <p className="mb-1 text-sm font-semibold text-gray-600">
                 Quantity: {editedProduct.quantity}
               </p>
