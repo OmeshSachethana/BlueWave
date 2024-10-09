@@ -18,7 +18,13 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       const productsData = await getAllProducts();
-      dispatch(setProducts(productsData));
+
+      // Sort products by updatedAt in descending order
+      const sortedProducts = productsData.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+
+      dispatch(setProducts(sortedProducts));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
