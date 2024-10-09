@@ -79,15 +79,19 @@ const PettyCashView = () => {
             </tr>
             {/* Display balance c/d row */}
             <tr className="font-bold bg-gray-200">
+              <td className="py-2 px-4 border"></td>
+              <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border">Balance c/d</td>
-              <td className="py-2 px-4 border" colSpan="3"></td>
+              <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border">{balanceCD}</td>
               <td className="py-2 px-4 border" colSpan="4"></td>
             </tr>
             {/* Display grand total row */}
             <tr className="font-bold bg-gray-300">
+              <td className="py-2 px-4 border"></td>
+              <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border">Grand Total</td>
-              <td className="py-2 px-4 border" colSpan="3"></td>
+              <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border">{grandTotal}</td>
               <td className="py-2 px-4 border" colSpan="4"></td>
             </tr>
