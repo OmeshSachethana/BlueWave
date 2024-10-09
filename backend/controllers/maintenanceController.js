@@ -57,19 +57,22 @@ exports.getMaintenanceById = async (req, res) => {
 // Update a maintenance record by ID
 exports.updateMaintenance = async (req, res) => {
   try {
+    const { status, date, priority, technician } = req.body; // Destructure the fields from the request body
     const maintenance = await Maintenance.findByIdAndUpdate(
       req.params.id,
-      { status: req.body.status }, // Update only the status field
-      { new: true }
+      { status, date, priority, technician }, // Update multiple fields
+      { new: true } // Return the updated document
     );
+
     if (!maintenance) {
       return res.status(404).json({
         message: 'Maintenance record not found',
       });
     }
+
     res.status(200).json({
       message: 'Maintenance record updated successfully',
-      data: maintenance,
+      data: maintenance, // Return the updated record
     });
   } catch (error) {
     res.status(400).json({
@@ -78,6 +81,7 @@ exports.updateMaintenance = async (req, res) => {
     });
   }
 };
+
 
 
 // Delete a maintenance record by ID
