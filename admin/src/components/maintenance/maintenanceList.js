@@ -203,7 +203,7 @@ const MaintenanceList = () => {
                   <option value="Medium">Medium</option>
                   <option value="Low">Low</option>
                 </select>
-
+                <br/>
                 <label>Technician:</label>
                 <input
                   type="text"
