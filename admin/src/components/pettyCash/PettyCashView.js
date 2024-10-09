@@ -28,6 +28,9 @@ const PettyCashView = () => {
   // Calculate balance c/d
   const balanceCD = receiptTotal - totalSum;
 
+  // Calculate total of totalsum + balanceCD
+  const grandTotal = totalSum + balanceCD;
+
   // Render the table
   return (
     <div className="p-5">
@@ -79,6 +82,13 @@ const PettyCashView = () => {
               <td className="py-2 px-4 border">Balance c/d</td>
               <td className="py-2 px-4 border" colSpan="3"></td>
               <td className="py-2 px-4 border">{balanceCD}</td>
+              <td className="py-2 px-4 border" colSpan="4"></td>
+            </tr>
+            {/* Display grand total row */}
+            <tr className="font-bold bg-gray-300">
+              <td className="py-2 px-4 border">Grand Total</td>
+              <td className="py-2 px-4 border" colSpan="3"></td>
+              <td className="py-2 px-4 border">{grandTotal}</td>
               <td className="py-2 px-4 border" colSpan="4"></td>
             </tr>
           </tbody>
