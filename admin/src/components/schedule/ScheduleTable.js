@@ -58,15 +58,28 @@ const ScheduleTable = () => {
     });
   };
 
-  // Prepare data for the chart
+  // Prepare data for the chart based on unique categories
+  const categories = ['Electronics', 'Chemicals', 'Other'];
+  const statusCounts = {
+    Electronics: 0,
+    Chemicals: 0,
+    Other: 0,
+  };
+
+  schedules.forEach(schedule => {
+    if (statusCounts[schedule.category] !== undefined) {
+      statusCounts[schedule.category] += schedule.quantity;
+    }
+  });
+
   const chartData = {
-    labels: schedules.map(schedule => schedule.category),
+    labels: categories,
     datasets: [
       {
         label: 'Quantity',
-        data: schedules.map(schedule => schedule.quantity),
-        backgroundColor: schedules.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`),
-        borderColor: schedules.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
+        data: [statusCounts.Electronics, statusCounts.Chemicals, statusCounts.Other],
+        backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(75, 192, 192, 0.6)'],
+        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
         borderWidth: 1,
       },
     ],
@@ -146,7 +159,6 @@ const ScheduleTable = () => {
   );
 
   const locations = ['Negombo', 'Dankotuwa', 'Colombo'];
-  const categories = ['Electronics', 'Chemicals', 'Other'];
 
   return (
     <div className="max-w-6xl mx-auto mt-6">
@@ -294,12 +306,20 @@ const ScheduleTable = () => {
                   </td>
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
-                      <button
-                        onClick={() => handleSave(schedule._id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                      >
-                        Save
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleSave(schedule._id)}
+                          className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditItem(null)}
+                          className="bg-red-500 text-white px-2 py-1 rounded mr-2"
+                        >
+                          Cancel
+                        </button>
+                      </>
                     ) : (
                       <>
                         <button

@@ -10,6 +10,7 @@ import MaintenanceList from "./components/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
 import SchedulePage from "./pages/Schedule/SchedulePage";
 import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePage";
+import ScheduleTable from "./components/schedule/ScheduleTable";
 
 function Footer() {
   const links = [
@@ -80,6 +81,8 @@ function App() {
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/income-expenditure" element={<IncomeExpenditurePage />} />
+            <Route path="/schedulelist" element={<ScheduleTable />} />
+            
           </Routes>
         </main>
         <Footer />

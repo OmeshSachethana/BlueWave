@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { addSchedule, fetchSchedules } from '../../features/schedule/scheduleSlice';
 
 const ScheduleForm = () => {
@@ -14,6 +15,7 @@ const ScheduleForm = () => {
 
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     dispatch(fetchSchedules());
@@ -55,7 +57,6 @@ const ScheduleForm = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -167,6 +168,13 @@ const ScheduleForm = () => {
             Add Schedule
           </button>
         </form>
+        {/* Schedule List Button */}
+        <button
+          onClick={() => navigate('/schedulelist')}
+          className="mt-4 w-full bg-green-600 text-white py-2 rounded"
+        >
+          Schedule List
+        </button>
       </div>
     </div>
   );
