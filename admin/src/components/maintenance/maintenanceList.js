@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
 import { Chart, registerables } from 'chart.js';
 import logo from '../../assets/bluewave_logo.png'; // Adjust the path to your logo image
@@ -55,56 +56,67 @@ const MaintenanceList = () => {
   });
 
 
-  // Generate PDF function
-// Generate PDF function
-const generatePDF = () => {
-  const doc = new jsPDF();
-
-  // Logo properties
-  const logoWidth = 50; // Width of the logo
-  const logoHeight = 20; // Height of the logo
-
-  // Centering the logo
-  const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
-  const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
-
-  // Add logo
-  doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
-
-  // Add title
-  doc.setFontSize(16);
-  doc.text('Maintenance List', 14, 40);
-
-  // Get the current date and time
-  const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleString(); // Format date and time
-
-  // Add date of report generation
-  doc.setFontSize(12);
-  doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Adjust position as needed
-
-  const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
-  const tableRows = [];
-
-  filteredMaintenanceList.forEach(maintenance => {
-    const maintenanceData = [
-      maintenance.name,
-      maintenance.description,
-      maintenance.status,
-      maintenance.priority,
-      maintenance.technician
-    ];
-    tableRows.push(maintenanceData);
-  });
-
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 55, // Adjust starting Y position to avoid overlap with the header
-  });
-
-  doc.save('maintenance_list.pdf');
-};
+  const generatePDF = () => {
+    const doc = new jsPDF();
+  
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+  
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+  
+    // Add logo
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
+  
+    // Add title
+    doc.setFontSize(16);
+    doc.text('Maintenance List', 14, 40);
+  
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString(); // Format date and time
+  
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Adjust position as needed
+  
+    // Calculate Y position for the chart directly after the date text
+    const chartStartY = 60; // Set the Y position just below the report generation text
+  
+    // Generate the chart as an image
+    const chartContainer = document.getElementById('bar-chart'); // Get the chart container
+    html2canvas(chartContainer).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      doc.addImage(imgData, 'PNG', 10, chartStartY, 190, 100); // Add the chart image to the PDF
+  
+      // Add table after the chart
+      const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
+      const tableRows = [];
+  
+      filteredMaintenanceList.forEach(maintenance => {
+        const maintenanceData = [
+          maintenance.name,
+          maintenance.description,
+          maintenance.status,
+          maintenance.priority,
+          maintenance.technician
+        ];
+        tableRows.push(maintenanceData);
+      });
+  
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: chartStartY + 110, // Start the table below the chart, adjust as needed
+      });
+  
+      // Save the PDF after adding the chart and table
+      doc.save('maintenance_list.pdf');
+    });
+  };
+  
 
 
   // Count the occurrences of each status
@@ -147,7 +159,7 @@ const generatePDF = () => {
       <h2 className="text-xl font-bold mb-4 text-blue-600">Maintenance List</h2>
 
       {/* Bar Chart */}
-      <div className="mb-8">
+      <div className="mb-8" id="bar-chart">
         <Bar data={data} options={options} />
       </div>
 
