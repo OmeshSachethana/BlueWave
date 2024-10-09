@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize navigate
 
   // State for tracking the edit mode and form data
   const [editId, setEditId] = useState(null);
@@ -82,6 +84,13 @@ const PettyCashView = () => {
 
   return (
     <div className="p-5">
+      <button 
+        onClick={() => navigate('/pettycash-form')} // Navigate to petty cash form
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Back
+      </button>
+      <h2 className="text-xl font-bold mb-4">Petty Cash Book</h2> {/* Title for the table */}
       {entryStatus === 'loading' && <p>Loading entries...</p>}
       {entryStatus === 'failed' && <p>Error: {error}</p>}
       {entries.length === 0 ? (
@@ -211,7 +220,7 @@ const PettyCashView = () => {
                     <td className="py-2 px-4 border flex space-x-2">
                       <button
                         onClick={() => handleEditClick(entry)}
-                        className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="px-4 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                       >
                         Edit
                       </button>
@@ -226,8 +235,8 @@ const PettyCashView = () => {
                 )}
               </tr>
             ))}
-            {/* Display total row */}
-            <tr className="font-bold bg-gray-300">
+          {/* Display total row */}
+          <tr className="font-bold bg-gray-300">
               <td className="py-2 px-4 border" colSpan="4"></td>
               <td className="py-2 px-4 border">{totalSum}</td>
               <td className="py-2 px-4 border">{officeExpenseSum}</td>
