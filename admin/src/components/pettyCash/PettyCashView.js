@@ -45,12 +45,12 @@ const PettyCashView = () => {
               <th className="py-2 px-4 border">Receipt</th>
               <th className="py-2 px-4 border">Date</th>
               <th className="py-2 px-4 border">Details</th>
-              <th className="py-2 px-4 border">Voucher Number</th>
+              <th className="py-2 px-4 border">Voucher <br/>Number</th>
               <th className="py-2 px-4 border">Total</th>
-              <th className="py-2 px-4 border">Office Expense</th>
-              <th className="py-2 px-4 border">Van Expense</th>
-              <th className="py-2 px-4 border">Cleaning Expense</th>
-              <th className="py-2 px-4 border">Sundry Expense</th>
+              <th className="py-2 px-4 border">Office <br/>Expense</th>
+              <th className="py-2 px-4 border">Travelling <br/> Expense</th>
+              <th className="py-2 px-4 border">Cleaning <br/>Expense</th>
+              <th className="py-2 px-4 border">Sundry <br/>Expense</th>
             </tr>
           </thead>
           <tbody>
@@ -69,8 +69,8 @@ const PettyCashView = () => {
             ))}
             {/* Display total row */}
             <tr className="font-bold bg-gray-300">
-              <td className="py-2 px-4 border">{receiptTotal}</td>
-              <td className="py-2 px-4 border" colSpan="3"></td>
+              {/* <td className="py-2 px-4 border">{receiptTotal}</td> */}
+              <td className="py-2 px-4 border" colSpan="4"></td>
               <td className="py-2 px-4 border">{totalSum}</td>
               <td className="py-2 px-4 border">{officeExpenseSum}</td>
               <td className="py-2 px-4 border">{vanExpenseSum}</td>
@@ -86,11 +86,11 @@ const PettyCashView = () => {
               <td className="py-2 px-4 border">{balanceCD}</td>
               <td className="py-2 px-4 border" colSpan="4"></td>
             </tr>
-            {/* Display grand total row */}
+            {/* Display grand total row without the name */}
             <tr className="font-bold bg-gray-300">
+              <td className="py-2 px-4 border">{receiptTotal}</td>
               <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border"></td>
-              <td className="py-2 px-4 border">Grand Total</td>
               <td className="py-2 px-4 border"></td>
               <td className="py-2 px-4 border">{grandTotal}</td>
               <td className="py-2 px-4 border" colSpan="4"></td>
