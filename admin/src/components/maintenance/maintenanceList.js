@@ -14,6 +14,9 @@ const MaintenanceList = () => {
 
   const [editingId, setEditingId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedPriority, setSelectedPriority] = useState('');
+  const [selectedTechnician, setSelectedTechnician] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
@@ -25,13 +28,22 @@ const MaintenanceList = () => {
     dispatch(deleteMaintenance(id));
   };
 
-  const handleStatusEdit = (id, currentStatus) => {
+  const handleStatusEdit = (id, currentStatus, currentDate, currentPriority, currentTechnician) => {
     setEditingId(id);
     setSelectedStatus(currentStatus);
+    setSelectedDate(new Date(currentDate).toISOString().split('T')[0]);
+    setSelectedPriority(currentPriority);
+    setSelectedTechnician(currentTechnician);
   };
 
   const handleStatusUpdate = (id) => {
-    dispatch(updateMaintenanceStatus({ id, status: selectedStatus }));
+    dispatch(updateMaintenanceStatus({
+      id,
+      status: selectedStatus,
+      date: selectedDate,
+      priority: selectedPriority,
+      technician: selectedTechnician,
+    }));
     setEditingId(null);
   };
 
@@ -162,6 +174,7 @@ const MaintenanceList = () => {
 
             {editingId === maintenance._id ? (
               <div className="mt-4">
+                <label>Status:</label>
                 <select
                   className="px-4 py-2 border border-gray-300 rounded-lg"
                   value={selectedStatus}
@@ -171,6 +184,31 @@ const MaintenanceList = () => {
                   <option value="In Progress">In Progress</option>
                   <option value="Completed">Completed</option>
                 </select>
+
+                <label>Date:</label>
+                <input
+                  type="date"
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+
+                <label>Priority:</label>
+                <input
+                  type="text"
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  value={selectedPriority}
+                  onChange={(e) => setSelectedPriority(e.target.value)}
+                />
+
+                <label>Technician:</label>
+                <input
+                  type="text"
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  value={selectedTechnician}
+                  onChange={(e) => setSelectedTechnician(e.target.value)}
+                />
+
                 <button
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   onClick={() => handleStatusUpdate(maintenance._id)}
@@ -188,9 +226,15 @@ const MaintenanceList = () => {
               <div className="flex justify-between mt-4">
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  onClick={() => handleStatusEdit(maintenance._id, maintenance.status)}
+                  onClick={() => handleStatusEdit(
+                    maintenance._id,
+                    maintenance.status,
+                    maintenance.date,
+                    maintenance.priority,
+                    maintenance.technician
+                  )}
                 >
-                  Update Status
+                  Update
                 </button>
                 <button
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
