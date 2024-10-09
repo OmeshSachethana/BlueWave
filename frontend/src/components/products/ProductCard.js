@@ -75,7 +75,6 @@ const ProductCard = ({ product }) => {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v6m10-6v6m-6-6v6"
               />
             </svg>
-            &nbsp; Add to Cart
           </button>
         </div>
       </a>

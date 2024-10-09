@@ -41,16 +41,19 @@ function Footer() {
         <div className="text-sm text-gray-400">
           <p>© 2024 BlueWave | All rights reserved.</p>
           <p>
-            Follow us on 
+            Follow us on
             <a href="https://twitter.com" className="ml-1 hover:underline">
               Twitter
-            </a>, 
+            </a>
+            ,
             <a href="https://facebook.com" className="ml-1 hover:underline">
               Facebook
-            </a>, and 
+            </a>
+            , and
             <a href="https://instagram.com" className="ml-1 hover:underline">
               Instagram
-            </a>.
+            </a>
+            .
           </p>
         </div>
       </div>
@@ -65,13 +68,19 @@ function App() {
   useEffect(() => {
     const fetchInitialProducts = async () => {
       try {
+        let products;
         if (!searchTerm) {
-          const products = await getAllProducts();
-          setFilteredProducts(products);
+          products = await getAllProducts();
         } else {
-          const searchResults = await searchProducts({ name: searchTerm });
-          setFilteredProducts(searchResults);
+          products = await searchProducts({ name: searchTerm });
         }
+
+        // Sort the products by updatedAt in descending order
+        const sortedProducts = products.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
+
+        setFilteredProducts(sortedProducts);
       } catch (error) {
         console.error("Error fetching or searching products:", error);
       }
@@ -87,7 +96,10 @@ function App() {
   return (
     <Router>
       <Navbar onSearch={handleSearch} />
-      <MainContent searchTerm={searchTerm} filteredProducts={filteredProducts} />
+      <MainContent
+        searchTerm={searchTerm}
+        filteredProducts={filteredProducts}
+      />
       <Footer />
     </Router>
   );
