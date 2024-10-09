@@ -17,6 +17,17 @@ const PettyCashView = () => {
     }
   }, [entryStatus, dispatch]);
 
+  // Calculate totals for each column
+  const receiptTotal = entries.reduce((acc, entry) => acc + (entry.receipt || 0), 0);
+  const totalSum = entries.reduce((acc, entry) => acc + (entry.total || 0), 0);
+  const officeExpenseSum = entries.reduce((acc, entry) => acc + (entry.officeExpense || 0), 0);
+  const vanExpenseSum = entries.reduce((acc, entry) => acc + (entry.vanExpense || 0), 0);
+  const cleaningExpenseSum = entries.reduce((acc, entry) => acc + (entry.cleaningExpense || 0), 0);
+  const sundryExpenseSum = entries.reduce((acc, entry) => acc + (entry.sundryExpense || 0), 0);
+  
+  // Calculate balance c/d
+  const balanceCD = receiptTotal - totalSum;
+
   // Render the table
   return (
     <div className="p-5">
@@ -53,6 +64,23 @@ const PettyCashView = () => {
                 <td className="py-2 px-4 border">{entry.sundryExpense}</td>
               </tr>
             ))}
+            {/* Display total row */}
+            <tr className="font-bold bg-gray-300">
+              <td className="py-2 px-4 border">{receiptTotal}</td>
+              <td className="py-2 px-4 border" colSpan="3"></td>
+              <td className="py-2 px-4 border">{totalSum}</td>
+              <td className="py-2 px-4 border">{officeExpenseSum}</td>
+              <td className="py-2 px-4 border">{vanExpenseSum}</td>
+              <td className="py-2 px-4 border">{cleaningExpenseSum}</td>
+              <td className="py-2 px-4 border">{sundryExpenseSum}</td>
+            </tr>
+            {/* Display balance c/d row */}
+            <tr className="font-bold bg-gray-200">
+              <td className="py-2 px-4 border">Balance c/d</td>
+              <td className="py-2 px-4 border" colSpan="3"></td>
+              <td className="py-2 px-4 border">{balanceCD}</td>
+              <td className="py-2 px-4 border" colSpan="4"></td>
+            </tr>
           </tbody>
         </table>
       )}
