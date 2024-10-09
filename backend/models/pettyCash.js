@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const pettyCashSchema = new mongoose.Schema({
   receipt: {
     type: Number,
-    required: true,
   },
   date: {
     type: Date,
@@ -15,11 +14,9 @@ const pettyCashSchema = new mongoose.Schema({
   },
   voucherNumber: {
     type: Number,
-    required: true,
   },
   total: {
     type: Number,
-    required: true,
   },
   officeExpense: {
     type: Number,

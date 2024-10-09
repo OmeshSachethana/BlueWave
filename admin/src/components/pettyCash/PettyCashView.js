@@ -1,40 +1,33 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { fetchEntries, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
+import { fetchEntries } from '../../features/pettyCash/pettyCashSlice';
 
-function PettyCashView() {
+const PettyCashView = () => {
   const dispatch = useDispatch();
+  
+  // Get the petty cash entries from the Redux store
   const entries = useSelector((state) => state.pettyCash.entries);
   const entryStatus = useSelector((state) => state.pettyCash.status);
   const error = useSelector((state) => state.pettyCash.error);
 
+  // Fetch the entries when the component mounts
   useEffect(() => {
     if (entryStatus === 'idle') {
       dispatch(fetchEntries());
     }
   }, [entryStatus, dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deleteEntry(id));
-  };
-
+  // Render the table
   return (
-    <div>
-      <div className="mb-4">
-        <Link to="/form" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Add New Entry
-        </Link>
-      </div>
-
-      {entryStatus === 'loading' ? (
-        <p>Loading...</p>
-      ) : entryStatus === 'failed' ? (
-        <p>Error: {error}</p>
+    <div className="p-5">
+      {entryStatus === 'loading' && <p>Loading entries...</p>}
+      {entryStatus === 'failed' && <p>Error: {error}</p>}
+      {entries.length === 0 ? (
+        <p>No petty cash entries found.</p>
       ) : (
-        <table className="min-w-full bg-white border">
+        <table className="min-w-full table-auto bg-white border-collapse border border-gray-300">
           <thead>
-            <tr>
+            <tr className="bg-gray-200">
               <th className="py-2 px-4 border">Receipt</th>
               <th className="py-2 px-4 border">Date</th>
               <th className="py-2 px-4 border">Details</th>
@@ -44,7 +37,6 @@ function PettyCashView() {
               <th className="py-2 px-4 border">Van Expense</th>
               <th className="py-2 px-4 border">Cleaning Expense</th>
               <th className="py-2 px-4 border">Sundry Expense</th>
-              <th className="py-2 px-4 border">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -59,11 +51,6 @@ function PettyCashView() {
                 <td className="py-2 px-4 border">{entry.vanExpense}</td>
                 <td className="py-2 px-4 border">{entry.cleaningExpense}</td>
                 <td className="py-2 px-4 border">{entry.sundryExpense}</td>
-                <td className="py-2 px-4 border">
-                  <button className="text-red-500" onClick={() => handleDelete(entry._id)}>
-                    Delete
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
@@ -71,6 +58,6 @@ function PettyCashView() {
       )}
     </div>
   );
-}
+};
 
 export default PettyCashView;
