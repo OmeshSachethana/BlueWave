@@ -131,10 +131,10 @@ const ScheduleTable = () => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto mt-6">
+    <div className="max-w-6xl mx-auto mt-6"> {/* Increased max-width */}
       <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
 
-      {/* Render Bar chart */}
+      {/* Chart Container */}
       <div className="mb-6 chart-container">
         <Bar data={chartData} options={chartOptions} />
       </div>
@@ -161,99 +161,103 @@ const ScheduleTable = () => {
       </div>
 
       {/* Schedule Table */}
-      <table className="min-w-full bg-gray-100 border border-gray-300">
-        <thead>
-          <tr className="bg-blue-600 text-white">
-            <th className="py-2 px-4">ID</th>
-            <th className="py-2 px-4 w-1/4">Name</th>
-            <th className="py-2 px-4 w-1/12">Quantity</th>
-            <th className="py-2 px-4 w-1/6">Category</th>
-            <th className="py-2 px-4 w-1/6">Location</th>
-            <th className="py-2 px-4 w-1/6">Assigned Driver</th>
-            <th className="py-2 px-4 w-1/12">Duration</th>
-            <th className="py-2 px-4 w-1/4">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="8" className="text-center py-4">Loading...</td>
+      <div className="overflow-x-auto"> {/* This allows horizontal scrolling if necessary */}
+        <table className="min-w-full bg-gray-100 border border-gray-300 w-full"> {/* Set width to full */}
+          <thead>
+            <tr className="bg-blue-600 text-white">
+              <th className="py-2 px-4">ID</th>
+              <th className="py-2 px-4 w-1/4">Name</th>
+              <th className="py-2 px-4 w-1/12">Quantity</th>
+              <th className="py-2 px-4 w-1/6">Category</th>
+              <th className="py-2 px-4 w-1/6">Location</th>
+              <th className="py-2 px-4 w-1/6">Assigned Driver</th>
+              <th className="py-2 px-4 w-1/12">Duration</th>
+              <th className="py-2 px-4 w-1/4">Actions</th>
             </tr>
-          ) : (
-            filteredSchedules.map((schedule, index) => (
-              <tr key={schedule._id} className="border-b">
-                <td className="py-2 px-4">{index + 1}</td>
-                <td className="py-2 px-4">{schedule.name}</td>
-                <td className="py-2 px-4">
-                  {editItem === schedule._id ? (
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={editData.quantity}
-                      onChange={handleChange}
-                      className="p-1 w-16 border border-gray-300 rounded"
-                    />
-                  ) : (
-                    schedule.quantity
-                  )}
-                </td>
-                <td className="py-2 px-4">{schedule.category}</td>
-                <td className="py-2 px-4">{schedule.location}</td>
-                <td className="py-2 px-4">
-                  {editItem === schedule._id ? (
-                    <input
-                      type="text"
-                      name="driver"
-                      value={editData.driver}
-                      onChange={handleChange}
-                      className="p-1 w-24 border border-gray-300 rounded"
-                    />
-                  ) : (
-                    schedule.driver
-                  )}
-                </td>
-                <td className="py-2 px-4">
-                  {editItem === schedule._id ? (
-                    <input
-                      type="number"
-                      name="duration"
-                      value={editData.duration}
-                      onChange={handleChange}
-                      className="p-1 w-16 border border-gray-300 rounded"
-                      min="1"
-                    />
-                  ) : (
-                    schedule.duration
-                  )}
-                </td>
-                <td className="py-2 px-4">
-                  {editItem === schedule._id ? (
-                    <button
-                      onClick={() => handleSave(schedule._id)}
-                      className="bg-blue-500 text-white px-2 py-1 rounded"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleEdit(schedule)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDelete(schedule._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded ml-2"
-                  >
-                    Delete
-                  </button>
-                </td>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="8" className="text-center py-4">Loading...</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filteredSchedules.map((schedule, index) => (
+                <tr key={schedule._id} className="border-b">
+                  <td className="py-2 px-4">{index + 1}</td>
+                  <td className="py-2 px-4">{schedule.name}</td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={editData.quantity}
+                        onChange={handleChange}
+                        className="p-1 w-16 border border-gray-300 rounded"
+                      />
+                    ) : (
+                      schedule.quantity
+                    )}
+                  </td>
+                  <td className="py-2 px-4">{schedule.category}</td>
+                  <td className="py-2 px-4">{schedule.location}</td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="text"
+                        name="driver"
+                        value={editData.driver}
+                        onChange={handleChange}
+                        className="p-1 w-24 border border-gray-300 rounded"
+                      />
+                    ) : (
+                      schedule.driver
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="number"
+                        name="duration"
+                        value={editData.duration}
+                        onChange={handleChange}
+                        className="p-1 w-16 border border-gray-300 rounded"
+                        min="1"
+                      />
+                    ) : (
+                      schedule.duration
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <button
+                        onClick={() => handleSave(schedule._id)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                      >
+                        Save
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleEdit(schedule)}
+                          className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(schedule._id)}
+                          className="bg-red-500 text-white px-2 py-1 rounded"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
