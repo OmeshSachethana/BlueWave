@@ -54,43 +54,58 @@ const MaintenanceList = () => {
     return matchesStatus && matchesSearch;
   });
 
+
   // Generate PDF function
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    
-    // Add logo
-    doc.addImage(logo, 'PNG', 10, 10, 50, 20); // Adjust position and size as needed
+// Generate PDF function
+const generatePDF = () => {
+  const doc = new jsPDF();
 
-    // Add company name
-    doc.setFontSize(20);
-    doc.text('BlueWave', 90, 20); // Adjust position as needed
+  // Logo properties
+  const logoWidth = 50; // Width of the logo
+  const logoHeight = 20; // Height of the logo
 
-    // Add title
-    doc.setFontSize(16);
-    doc.text('Maintenance List', 14, 40);
+  // Centering the logo
+  const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+  const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
 
-    const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
-    const tableRows = [];
+  // Add logo
+  doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
 
-    filteredMaintenanceList.forEach(maintenance => {
-      const maintenanceData = [
-        maintenance.name,
-        maintenance.description,
-        maintenance.status,
-        maintenance.priority,
-        maintenance.technician
-      ];
-      tableRows.push(maintenanceData);
-    });
+  // Add title
+  doc.setFontSize(16);
+  doc.text('Maintenance List', 14, 40);
 
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 45, // Adjust starting Y position to avoid overlap with the header
-    });
+  // Get the current date and time
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleString(); // Format date and time
 
-    doc.save('maintenance_list.pdf');
-  };
+  // Add date of report generation
+  doc.setFontSize(12);
+  doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Adjust position as needed
+
+  const tableColumn = ['Name', 'Description', 'Status', 'Priority', 'Technician'];
+  const tableRows = [];
+
+  filteredMaintenanceList.forEach(maintenance => {
+    const maintenanceData = [
+      maintenance.name,
+      maintenance.description,
+      maintenance.status,
+      maintenance.priority,
+      maintenance.technician
+    ];
+    tableRows.push(maintenanceData);
+  });
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 55, // Adjust starting Y position to avoid overlap with the header
+  });
+
+  doc.save('maintenance_list.pdf');
+};
+
 
   // Count the occurrences of each status
   const statusCounts = maintenanceList.reduce(
