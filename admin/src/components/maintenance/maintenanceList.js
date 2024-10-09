@@ -194,12 +194,15 @@ const MaintenanceList = () => {
                 />
 
                 <label>Priority:</label>
-                <input
-                  type="text"
+                <select
                   className="px-4 py-2 border border-gray-300 rounded-lg"
                   value={selectedPriority}
                   onChange={(e) => setSelectedPriority(e.target.value)}
-                />
+                >
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
 
                 <label>Technician:</label>
                 <input
