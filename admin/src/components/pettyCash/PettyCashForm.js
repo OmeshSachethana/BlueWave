@@ -21,9 +21,8 @@ function PettyCashForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addEntry(formData)).then(() => {
-      navigate('/');
-    });
+    dispatch(addEntry(formData));
+    // No navigation on submit
   };
 
   return (
@@ -47,12 +46,19 @@ function PettyCashForm() {
             </div>
           ))}
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center space-x-4">
           <button
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-colors duration-300"
             type="submit"
           >
             Add Entry
+          </button>
+          <button
+            type="button"
+            className="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors duration-300"
+            onClick={() => navigate('/pettycash-list')}
+          >
+            View Petty Cash
           </button>
         </div>
       </form>
