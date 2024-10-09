@@ -26,6 +26,8 @@ const AdminSubscriptionPlans = () => {
     pricing: "",
     deliveryFrequency: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const maxWords = 50;
 
@@ -117,6 +119,13 @@ const AdminSubscriptionPlans = () => {
           pricing: formData.pricing,
           deliveryFrequency: formData.deliveryFrequency,
         });
+        setSuccessMessage("Plan updated successfully!");
+        setIsModalOpen(true);
+
+        setTimeout(() => {
+          setIsModalOpen(false);
+        }, 3000);
+
         setIsEditing(false);
       } else {
         await addPlan({
@@ -126,6 +135,12 @@ const AdminSubscriptionPlans = () => {
           pricing: formData.pricing,
           deliveryFrequency: formData.deliveryFrequency,
         });
+        setSuccessMessage("Plan added successfully!");
+        setIsModalOpen(true);
+
+        setTimeout(() => {
+          setIsModalOpen(false);
+        }, 3000);
       }
       setFormData({
         name: "",
@@ -144,6 +159,7 @@ const AdminSubscriptionPlans = () => {
       });
       const updatedPlans = await getPlans();
       setPlans(updatedPlans);
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       console.error("Error submitting form", error);
     }
@@ -203,6 +219,14 @@ const AdminSubscriptionPlans = () => {
         </button>
       </div>
 
+      {/* Success Message */}
+      {isModalOpen && (
+        <Modal
+          message={successMessage}
+          onClose={() => setIsModalOpen(false)} // Close modal function
+        />
+      )}
+
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
         <form
           className="max-w-sm mx-auto mb-8"
@@ -261,7 +285,6 @@ const AdminSubscriptionPlans = () => {
               <p className="text-red-500 text-xs">{errors.description}</p>
             )}
           </div>
-
           <div className="mb-5">
             <label
               htmlFor="duration"
@@ -274,6 +297,13 @@ const AdminSubscriptionPlans = () => {
               id="duration"
               value={formData.duration}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                const invalidChars =
+                  /^[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+                if (invalidChars.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
               className={`bg-gray-50 border ${
                 errors.duration ? "border-red-500" : "border-gray-300"
               } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
@@ -284,7 +314,6 @@ const AdminSubscriptionPlans = () => {
               <p className="text-red-500 text-xs">{errors.duration}</p>
             )}
           </div>
-
           <div className="mb-5">
             <label
               htmlFor="pricing"
@@ -388,3 +417,14 @@ const AdminSubscriptionPlans = () => {
 };
 
 export default AdminSubscriptionPlans;
+
+const Modal = ({ message, onClose }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
+        <h2 className="text-lg font-bold">Success</h2>
+        <p className="mt-2">{message}</p>
+      </div>
+    </div>
+  );
+};
