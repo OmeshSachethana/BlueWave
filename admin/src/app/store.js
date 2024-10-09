@@ -5,6 +5,7 @@ import productsReducer from '../features/products/productsSlice';
 import maintenanceReducer  from '../features/maintenance/maintenanceSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 import incomeExpenditureReducer from '../features/incomeExpenditure/incomeExpenditureSlice';
+import pettyCashReducer from '../features/pettyCash/pettyCashSlice';
 
 // Save cart state to localStorage
 const saveState = (state) => {
@@ -24,6 +25,7 @@ const store = configureStore({
     maintenance: maintenanceReducer,
     schedules: scheduleReducer,
     incomeExpenditure: incomeExpenditureReducer,
+    pettyCash: pettyCashReducer,
   },
 });
 
