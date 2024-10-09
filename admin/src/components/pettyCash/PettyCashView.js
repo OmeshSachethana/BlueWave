@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchEntries, deleteEntry } from '../features/pettyCash/pettyCashSlice';
+import { fetchEntries, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
 
 function PettyCashView() {
   const dispatch = useDispatch();
