@@ -15,7 +15,7 @@ const ScheduleTable = () => {
   const dispatch = useDispatch();
   const { schedules, loading } = useSelector((state) => state.schedules);
   const [editItem, setEditItem] = useState(null);
-  const [editData, setEditData] = useState({ quantity: 0, driver: '', duration: 0 });
+  const [editData, setEditData] = useState({ quantity: 0, driver: '', duration: 0, name: '', category: '', location: '' });
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -24,7 +24,14 @@ const ScheduleTable = () => {
 
   const handleEdit = (schedule) => {
     setEditItem(schedule._id);
-    setEditData({ quantity: schedule.quantity, driver: schedule.driver, duration: schedule.duration });
+    setEditData({
+      quantity: schedule.quantity,
+      driver: schedule.driver,
+      duration: schedule.duration,
+      name: schedule.name,
+      category: schedule.category,
+      location: schedule.location
+    });
   };
 
   const handleDelete = (id) => {
@@ -32,7 +39,15 @@ const ScheduleTable = () => {
   };
 
   const handleSave = (id) => {
-    dispatch(updateSchedule({ id, quantity: editData.quantity, driver: editData.driver, duration: editData.duration }));
+    dispatch(updateSchedule({ 
+      id, 
+      quantity: editData.quantity, 
+      driver: editData.driver, 
+      duration: editData.duration,
+      name: editData.name,
+      category: editData.category,
+      location: editData.location
+    }));
     setEditItem(null);
   };
 
@@ -131,7 +146,7 @@ const ScheduleTable = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto mt-6"> {/* Increased max-width */}
+    <div className="max-w-6xl mx-auto mt-6">
       <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
 
       {/* Chart Container */}
@@ -161,8 +176,8 @@ const ScheduleTable = () => {
       </div>
 
       {/* Schedule Table */}
-      <div className="overflow-x-auto"> {/* This allows horizontal scrolling if necessary */}
-        <table className="min-w-full bg-gray-100 border border-gray-300 w-full"> {/* Set width to full */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-gray-100 border border-gray-300 w-full">
           <thead>
             <tr className="bg-blue-600 text-white">
               <th className="py-2 px-4">ID</th>
@@ -184,7 +199,19 @@ const ScheduleTable = () => {
               filteredSchedules.map((schedule, index) => (
                 <tr key={schedule._id} className="border-b">
                   <td className="py-2 px-4">{index + 1}</td>
-                  <td className="py-2 px-4">{schedule.name}</td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="text"
+                        name="name"
+                        value={editData.name}
+                        onChange={handleChange}
+                        className="p-1 w-24 border border-gray-300 rounded"
+                      />
+                    ) : (
+                      schedule.name
+                    )}
+                  </td>
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
                       <input
@@ -198,8 +225,32 @@ const ScheduleTable = () => {
                       schedule.quantity
                     )}
                   </td>
-                  <td className="py-2 px-4">{schedule.category}</td>
-                  <td className="py-2 px-4">{schedule.location}</td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="text"
+                        name="category"
+                        value={editData.category}
+                        onChange={handleChange}
+                        className="p-1 w-24 border border-gray-300 rounded"
+                      />
+                    ) : (
+                      schedule.category
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {editItem === schedule._id ? (
+                      <input
+                        type="text"
+                        name="location"
+                        value={editData.location}
+                        onChange={handleChange}
+                        className="p-1 w-24 border border-gray-300 rounded"
+                      />
+                    ) : (
+                      schedule.location
+                    )}
+                  </td>
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
                       <input
@@ -221,7 +272,6 @@ const ScheduleTable = () => {
                         value={editData.duration}
                         onChange={handleChange}
                         className="p-1 w-16 border border-gray-300 rounded"
-                        min="1"
                       />
                     ) : (
                       schedule.duration
@@ -231,7 +281,7 @@ const ScheduleTable = () => {
                     {editItem === schedule._id ? (
                       <button
                         onClick={() => handleSave(schedule._id)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                        className="bg-green-500 text-white px-2 py-1 rounded"
                       >
                         Save
                       </button>
@@ -239,7 +289,7 @@ const ScheduleTable = () => {
                       <>
                         <button
                           onClick={() => handleEdit(schedule)}
-                          className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                          className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
                         >
                           Edit
                         </button>
