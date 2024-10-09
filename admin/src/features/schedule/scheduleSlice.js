@@ -30,15 +30,23 @@ export const fetchSchedules = createAsyncThunk(
 // Update a schedule by ID
 export const updateSchedule = createAsyncThunk(
   'schedules/updateSchedule',
-  async ({ id, quantity, driver, duration }, { rejectWithValue }) => {
+  async ({ id, quantity, driver, duration, name, category, location }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/schedule/${id}`, { quantity, driver, duration });
+      const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/schedule/${id}`, { 
+        quantity, 
+        driver, 
+        duration, 
+        name, 
+        category, 
+        location 
+      });
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
   }
 );
+
 
 // Delete a schedule by ID
 export const deleteSchedule = createAsyncThunk(
