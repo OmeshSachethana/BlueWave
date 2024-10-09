@@ -146,6 +146,7 @@ const ScheduleTable = () => {
   );
 
   const locations = ['Negombo', 'Dankotuwa', 'Colombo'];
+  const categories = ['Electronics', 'Chemicals', 'Other'];
 
   return (
     <div className="max-w-6xl mx-auto mt-6">
@@ -229,35 +230,41 @@ const ScheduleTable = () => {
                   </td>
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
-                      <input
-                        type="text"
+                      <select
                         name="category"
                         value={editData.category}
                         onChange={handleChange}
                         className="p-1 w-24 border border-gray-300 rounded"
-                      />
+                      >
+                        {categories.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
                     ) : (
                       schedule.category
                     )}
                   </td>
+
                   <td className="py-2 px-4">
-  {editItem === schedule._id ? (
-    <select
-      name="location"
-      value={editData.location}
-      onChange={handleChange}
-      className="p-1 w-24 border border-gray-300 rounded"
-    >
-      {locations.map((loc) => (
-        <option key={loc} value={loc}>
-          {loc}
-        </option>
-      ))}
-    </select>
-  ) : (
-    schedule.location
-  )}
-</td>
+                    {editItem === schedule._id ? (
+                      <select
+                        name="location"
+                        value={editData.location}
+                        onChange={handleChange}
+                        className="p-1 w-24 border border-gray-300 rounded"
+                      >
+                        {locations.map((loc) => (
+                          <option key={loc} value={loc}>
+                            {loc}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      schedule.location
+                    )}
+                  </td>
 
                   <td className="py-2 px-4">
                     {editItem === schedule._id ? (
