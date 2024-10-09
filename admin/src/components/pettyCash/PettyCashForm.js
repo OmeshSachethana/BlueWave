@@ -20,6 +20,7 @@ function PettyCashForm() {
   });
 
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
 
   // Validation function to check required fields
   const validateForm = () => {
@@ -36,15 +37,29 @@ function PettyCashForm() {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setSuccessMessage(''); // Clear success message on validation error
     } else {
       dispatch(addEntry(formData));
-      setErrors({});
+      setSuccessMessage('Entry added successfully!'); // Set success message
+      setErrors({}); // Clear errors
+      setFormData({ // Clear form
+        receipt: '',
+        date: '',
+        details: '',
+        voucherNumber: '',
+        total: '',
+        officeExpense: '',
+        vanExpense: '',
+        cleaningExpense: '',
+        sundryExpense: '',
+      });
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">Add New Petty Cash Entry</h2>
+      {successMessage && <p className="text-green-500 text-center">{successMessage}</p>} {/* Display success message */}
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Receipt field: Accept only numbers */}
