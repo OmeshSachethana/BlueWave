@@ -42,7 +42,9 @@ function PettyCashForm() {
       dispatch(addEntry(formData));
       setSuccessMessage('Entry added successfully!'); // Set success message
       setErrors({}); // Clear errors
-      setFormData({ // Clear form
+
+      // Clear form
+      setFormData({
         receipt: '',
         date: '',
         details: '',
@@ -53,6 +55,11 @@ function PettyCashForm() {
         cleaningExpense: '',
         sundryExpense: '',
       });
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
     }
   };
 
