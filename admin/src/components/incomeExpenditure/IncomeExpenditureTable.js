@@ -95,7 +95,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     // Function to generate PDF
     const generatePDF = () => {
         const doc = new jsPDF();
-        doc.setFontSize(20);
+        doc.setFontSize(14);
         doc.text('Income & Expenditure Report', 14, 22);
         
         const chartElement = document.getElementById('chart-container');
