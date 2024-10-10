@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { addRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
+import { addRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 
-const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
+const IncomeExpenditureForm = ({ isEdit, currentRecord }) => {
   const [formData, setFormData] = useState({
     no: '',
     date: '',
@@ -17,26 +17,26 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
   const records = useSelector((state) => state.incomeExpenditure.records);
   const navigate = useNavigate(); // Initialize useNavigate
 
-  useEffect(() => {
-    if (isEdit && currentRecord) {
-      const formattedDate = new Date(currentRecord.date).toISOString().split('T')[0];
-      setFormData({
-        no: currentRecord.no,
-        date: formattedDate,
-        details: currentRecord.details,
-        income: currentRecord.income,
-        expenses: currentRecord.expenses,
-      });
-    } else {
-      setFormData({
-        no: '',
-        date: '',
-        details: '',
-        income: '',
-        expenses: '',
-      });
-    }
-  }, [isEdit, currentRecord]);
+  // useEffect(() => {
+  //   if (isEdit && currentRecord) {
+  //     const formattedDate = new Date(currentRecord.date).toISOString().split('T')[0];
+  //     setFormData({
+  //       no: currentRecord.no,
+  //       date: formattedDate,
+  //       details: currentRecord.details,
+  //       income: currentRecord.income,
+  //       expenses: currentRecord.expenses,
+  //     });
+  //   } else {
+  //     setFormData({
+  //       no: '',
+  //       date: '',
+  //       details: '',
+  //       income: '',
+  //       expenses: '',
+  //     });
+  //   }
+  // }, [isEdit, currentRecord]);
 
   const validate = () => {
     const newErrors = {};
@@ -66,11 +66,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
 
     const profit = formData.income - formData.expenses;
 
-    if (isEdit) {
-      await dispatch(updateRecord({ id: currentRecord._id, updatedRecord: { ...formData, profit } }));
-    } else {
-      await dispatch(addRecord({ ...formData, profit }));
-    }
+    await dispatch(addRecord({ ...formData, profit }));
 
     setFormData({
       no: '',
@@ -79,7 +75,6 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
       income: '',
       expenses: '',
     });
-    onCancel();
   };
 
   const handleChange = (e) => {
@@ -102,7 +97,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
 
   return (
     <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6">{isEdit ? 'Edit Record' : 'Add New Record'}</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">Add New Record</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">No</label>
@@ -177,14 +172,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition w-full"
           >
-            {isEdit ? 'Update' : 'Add'} Record
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="ml-4 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition w-full"
-          >
-            Cancel
+            Add Record
           </button>
         </div>
       </form>
