@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRecords, deleteRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
+import { useNavigate } from 'react-router-dom';
 
 const IncomeExpenditureTable = ({ onEdit }) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate(); // Add useNavigate hook
     const records = useSelector((state) => state.incomeExpenditure.records);
     const [searchTerm, setSearchTerm] = useState('');
     const [editableRow, setEditableRow] = useState(null);
@@ -17,7 +19,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         dispatch(deleteRecord(id));
     };
 
-    // Calculate total income, expenses, and profit
     const { totalIncome, totalExpenses, totalProfit } = useMemo(() => {
         return records.reduce((totals, record) => {
             const income = record.income || 0;
@@ -31,7 +32,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
     }, [records]);
 
-    // Filter records based on search term
     const filteredRecords = records.filter(record =>
         record.details.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -57,9 +57,16 @@ const IncomeExpenditureTable = ({ onEdit }) => {
 
     return (
         <div className="container mx-auto mt-8">
+            {/* Back Button */}
+            <button
+                onClick={() => navigate('/income-expenditure')}
+                className="bg-gray-500 text-white px-3 py-2 rounded mb-4"
+            >
+                Back
+            </button>
+
             <h2 className="text-2xl font-bold mb-6">Income & Expenditure Statement</h2>
 
-            {/* Search Input */}
             <div className="mb-4">
                 <input
                     type="text"
