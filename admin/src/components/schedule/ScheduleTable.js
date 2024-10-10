@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { fetchSchedules, updateSchedule, deleteSchedule } from '../../features/schedule/scheduleSlice';
 import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -13,6 +14,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ScheduleTable = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { schedules, loading } = useSelector((state) => state.schedules);
   const [editItem, setEditItem] = useState(null);
   const [editData, setEditData] = useState({ quantity: 0, driver: '', duration: 0, name: '', category: '', location: '' });
@@ -165,8 +167,15 @@ const ScheduleTable = () => {
 
   return (
     <div className="max-w-6xl mx-auto mt-6">
+      <div className="mb-4">
+        <button
+          onClick={() => navigate('/schedule')} // Navigate to '/schedule'
+          className="bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          Back
+        </button>
+      </div>
       <h2 className="text-center text-2xl font-bold mb-6">Schedule Management</h2>
-
       {/* Chart Container */}
       <div className="mb-6 chart-container">
         <Bar data={chartData} options={chartOptions} />
