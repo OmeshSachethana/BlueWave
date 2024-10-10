@@ -36,6 +36,12 @@ const EmployeeForm = ({ employeeToEdit }) => {
   }, [employeeToEdit]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Allow only letters in firstName, lastName, and position fields
+    if ((name === 'firstName' || name === 'lastName' || name === 'position') && /[^a-zA-Z\s]/.test(value)) {
+      return; // Prevent updating the state if value contains non-letter characters
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
