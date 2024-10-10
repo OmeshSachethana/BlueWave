@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { clearSubscriptionCart } from "../../features/subscription/subscriptionCartSlice"
 import { useDispatch } from "react-redux";
 
 const PaymentPage = () => {
@@ -27,7 +26,7 @@ const PaymentPage = () => {
       setTimeout(() => {
         window.history.back();
       }, 500);
-      dispatch(clearSubscriptionCart());
+      // dispatch(clearSubscriptionCart());
     } catch (error) {
       console.error("Payment status update failed:", error);
       alert("Error processing payment. Please try again.");

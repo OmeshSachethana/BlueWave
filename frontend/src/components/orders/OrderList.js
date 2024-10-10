@@ -260,24 +260,24 @@ const OrderList = () => {
                       </div>
                     </div>
 
+                    {/* Mapping for products in order.orderDetails */}
                     {order.orderDetails.map((item, index) => (
                       <div
                         key={index}
                         className="w-full px-3 min-[400px]:px-6 py-6 border-b border-gray-200 gap-6 flex flex-col lg:flex-row items-center"
                       >
+                        {/* Product details */}
                         <div className="w-1/4">
                           <img
                             className="aspect-square w-full lg:max-w-[140px] rounded-xl object-cover"
                             src={
-                              item.product && item.product.image
+                              item.product.image
                                 ? item.product.image.startsWith("data:image")
-                                  ? item.product.image // If the image string already starts with "data:image"
-                                  : `data:image/jpeg;base64,${item.product.image}` // Prepend the base64 prefix if missing
-                                : "https://via.placeholder.com/140" // Default placeholder if no image
+                                  ? item.product.image
+                                  : `data:image/jpeg;base64,${item.product.image}`
+                                : "https://via.placeholder.com/140"
                             }
-                            alt={
-                              item.product ? item.product.name : "Product Image"
-                            }
+                            alt={item.product.name || "Product Image"}
                             onError={(e) => {
                               e.target.src = "https://via.placeholder.com/140";
                             }}
@@ -287,11 +287,11 @@ const OrderList = () => {
                           <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
                             <div className="flex items-center">
                               <div>
+                                {/* Product Name */}
                                 <h2 className="font-semibold text-xl leading-8 text-black mb-3">
-                                  {item.product
-                                    ? item.product.name
-                                    : "Product Unavailable"}
+                                  {item.product.name || "Product Unavailable"}
                                 </h2>
+                                {/* Product Quantity & Category */}
                                 <div className="flex items-center">
                                   <p className="font-medium text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
                                     Qty:{" "}
@@ -302,24 +302,24 @@ const OrderList = () => {
                                   <p className="font-medium text-base leading-7 text-black pr-4 mr-4">
                                     Category:{" "}
                                     <span className="text-gray-500">
-                                      {item.product
-                                        ? item.product.category
-                                        : "N/A"}
+                                      {item.product.category || "N/A"}
                                     </span>
                                   </p>
                                 </div>
                               </div>
                             </div>
                             <div className="flex justify-end items-center w-full">
+                              {/* Product Price */}
                               <div className="flex gap-3 lg:block">
                                 <p className="font-medium text-sm leading-7 text-black">
                                   Price
                                 </p>
                                 <p className="lg:mt-4 font-medium text-sm leading-7 text-indigo-600">
-                                  Rs.
-                                  {item.product ? item.product.price || 0 : 0}
+                                  Rs. {item.product.price || 0}
                                 </p>
                               </div>
+
+                              {/* Delivery Status */}
                               <div className="flex gap-3 lg:block ml-6">
                                 <p className="font-medium text-sm leading-7 text-black">
                                   Delivery Status
@@ -334,6 +334,90 @@ const OrderList = () => {
                                   {order.delivery.deliveryStatus}
                                 </p>
                               </div>
+
+                              {/* Approval Status */}
+                              <div className="flex gap-3 lg:block ml-6">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Approval Status
+                                </p>
+                                <p
+                                  className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 ${
+                                    order.approvalStatus === "Approved"
+                                      ? "bg-emerald-50 text-emerald-600"
+                                      : order.approvalStatus === "Pending"
+                                      ? "bg-amber-50 text-amber-600"
+                                      : "bg-red-50 text-red-600"
+                                  }`}
+                                >
+                                  {order.approvalStatus}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Display for subscriptionPlan if exists */}
+                    {order.subscriptionPlan.map((sp, value) => (
+                      <div className="w-full px-3 min-[400px]:px-6 py-6 border-b border-gray-200 gap-6 flex flex-col lg:flex-row items-center">
+                        <div className="flex flex-row items-center w-full">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
+                            <div className="flex items-center">
+                              <div>
+                                {/* Subscription Name */}
+                                <h2 className="font-semibold text-xl leading-8 mb-3">
+                                  <span style={{ color: "grey" }}>
+                                    Subscription Selected |{" "}
+                                  </span>
+                                  {sp.name ||
+                                    "Subscription Unavailable"}
+                                </h2>
+                                {/* Subscription Duration & Delivery Frequency */}
+                                <div className="flex items-center">
+                                  <p className="font-medium text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
+                                    Duration:{" "}
+                                    <span className="text-gray-500">
+                                      {sp.duration || "N/A"}
+                                    </span>
+                                  </p>
+                                  <p className="font-medium text-base leading-7 text-black pr-4 mr-4">
+                                    Delivery Frequency:{" "}
+                                    <span className="text-gray-500">
+                                      {sp.deliveryFrequency || "N/A"}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex justify-end items-center w-full">
+                              {/* Subscription Price */}
+                              <div className="flex gap-3 lg:block">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Price
+                                </p>
+                                <p className="lg:mt-4 font-medium text-sm leading-7 text-indigo-600">
+                                  Rs. {sp.pricing || 0}
+                                </p>
+                              </div>
+
+                              {/* Delivery Status */}
+                              <div className="flex gap-3 lg:block ml-6">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Delivery Status
+                                </p>
+                                <p
+                                  className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 ${
+                                    order.delivery.deliveryStatus === "Shipped"
+                                      ? "bg-emerald-50 text-emerald-600"
+                                      : "bg-red-50 text-red-600"
+                                  }`}
+                                >
+                                  {order.delivery.deliveryStatus}
+                                </p>
+                              </div>
+
+                              {/* Approval Status */}
                               <div className="flex gap-3 lg:block ml-6">
                                 <p className="font-medium text-sm leading-7 text-black">
                                   Approval Status

@@ -59,24 +59,48 @@ const CartView = ({ toggleCart }) => {
 
   const calculateSubtotal = () => {
     return cartItems
-      .reduce((total, item) => total + item.price * item.quantity, 0)
-      .toFixed(2);
+      .reduce((total, item) => {
+        if (item.type === "product") {
+          return total + item.price * item.quantity; // For products, price * quantity
+        } else if (item.type === "subscription") {
+          return total + item.pricing; // For subscriptions, add the pricing directly
+        }
+        return total;
+      }, 0)
+      .toFixed(2); // Keep two decimal places
   };
 
   const getOrderData = (name, location) => {
+    const orderDetails = [];
+    const subscriptionPlans = []; // Array to hold only subscriptionPlanIds
+
+    cartItems.forEach((item) => {
+      if (item.type === "product") {
+        orderDetails.push({
+          product: item._id, // Reference to the product ID
+          quantity: item.quantity,
+        });
+      } else if (item.type === "subscription") {
+        // Only push the subscription plan ID to the array
+        subscriptionPlans.push(item._id); // Only push the subscriptionPlanId, not other details
+      }
+    });
+
+    console.log("Order Details:", orderDetails); // Debugging line to check order details
+
     return {
-      orderDetails: cartItems.map((item) => ({
-        product: item._id,
-        quantity: item.quantity,
-      })),
+      orderDetails,
       totalPrice: parseFloat(calculateSubtotal()),
       paymentMethod,
       user: {
         name: name,
+        email: userDetails.email, // Ensure email is included
+        phone: userDetails.phone, // Ensure phone is included
       },
       delivery: {
         deliveryLocationName: location.name,
       },
+      subscriptionPlanIds: subscriptionPlans, // Send array of subscriptionPlanIds
     };
   };
 
@@ -93,6 +117,7 @@ const CartView = ({ toggleCart }) => {
 
       try {
         const response = await placeOrder(orderData);
+        console.log("Order:", orderData);
         console.log("Order placed successfully:", response);
 
         // Get orderId from response if applicable
@@ -101,9 +126,6 @@ const CartView = ({ toggleCart }) => {
         // If payment method is "Cash on Delivery", mark payment as completed
         if (paymentMethod === "Cash on Delivery") {
           await updatePaymentStatus(orderId, "Completed");
-          console.log(
-            "Payment status updated to Completed for Cash on Delivery"
-          );
         }
 
         setOrderSuccess(true);
@@ -237,71 +259,112 @@ const CartView = ({ toggleCart }) => {
                       >
                         {cartItems.map((item) => (
                           <li key={item._id} className="flex py-6">
-                            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                              <img
-                                className="h-full w-full object-cover object-center"
-                                src={
-                                  item.image
-                                    ? item.image.startsWith("data:image")
-                                      ? item.image // If the image string already starts with "data:image"
-                                      : `data:image/jpeg;base64,${item.image}` // Prepend the base64 prefix if missing
-                                    : "https://via.placeholder.com/140" // Default placeholder if no image
-                                }
-                                alt={item.name}
-                                onError={(e) => {
-                                  e.target.src = "https://via.placeholder.com/140";
-                                }}
-                              />
-                            </div>
+                            {/* Conditional rendering for product vs subscription */}
+                            {item.type === "product" ? (
+                              <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                <img
+                                  className="h-full w-full object-cover object-center"
+                                  src={
+                                    item.image
+                                      ? item.image.startsWith("data:image")
+                                        ? item.image
+                                        : `data:image/jpeg;base64,${item.image}`
+                                      : "https://via.placeholder.com/140"
+                                  }
+                                  alt={item.name}
+                                  onError={(e) => {
+                                    e.target.src =
+                                      "https://via.placeholder.com/140";
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex-1">
+                                {/* Subscription details */}
+                                <div className="flex flex-col justify-between">
+                                  <h3 className="text-lg font-medium text-gray-900">
+                                    {item.name}
+                                  </h3>
+                                  <p className="text-sm text-gray-700">
+                                    Duration: {item.duration}
+                                  </p>
+                                  <p className="text-sm text-gray-700">
+                                    Delivery Frequency: {item.deliveryFrequency}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="ml-4 flex flex-1 flex-col">
                               <div className="flex justify-between text-base font-medium text-gray-900">
-                                <h3>
-                                  <a href="#">{item.name}</a>
-                                </h3>
-                                <p className="ml-4">
-                                  Rs: {(item.price * item.quantity).toFixed(2)}
-                                </p>
+                                {item.type === "product" && (
+                                  <h3>
+                                    <a href="#">{item.name}</a>
+                                  </h3>
+                                )}
+                                <div className="flex items-center">
+                                  {item.type === "product" ? (
+                                    <p className="ml-4">
+                                      Rs:{" "}
+                                      {(
+                                        item.price * (item.quantity || 1)
+                                      ).toFixed(2)}
+                                    </p>
+                                  ) : (
+                                    <p className="ml-4">
+                                      Rs: {item.pricing.toFixed(2)}
+                                    </p>
+                                  )}
+                                  <div className="flex ml-4">
+                                    <button
+                                      type="button"
+                                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                                      onClick={() =>
+                                        handleRemoveFromCart(item._id)
+                                      }
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
                               <p className="mt-1 text-sm text-gray-500">
                                 {item.category}
                               </p>
-                              <div className="flex flex-1 items-end justify-between text-sm">
-                                <div className="flex items-center space-x-2">
-                                  <button
-                                    type="button"
-                                    className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
-                                    onClick={() =>
-                                      handleDecreaseQuantity(item._id)
-                                    }
-                                  >
-                                    -
-                                  </button>
-                                  <p className="text-gray-500">
-                                    Qty {item.quantity}
-                                  </p>
-                                  <button
-                                    type="button"
-                                    className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
-                                    onClick={() =>
-                                      handleIncreaseQuantity(item._id)
-                                    }
-                                  >
-                                    +
-                                  </button>
-                                </div>
 
-                                <div className="flex">
-                                  <button
-                                    type="button"
-                                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                                    onClick={() =>
-                                      handleRemoveFromCart(item._id)
-                                    }
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
+                              {/* Conditional rendering for quantity controls or subscription */}
+                              <div className="flex flex-1 items-end justify-between text-sm">
+                                {item.type === "product" ? (
+                                  <div className="flex items-center space-x-2">
+                                    <button
+                                      type="button"
+                                      className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
+                                      onClick={() =>
+                                        handleDecreaseQuantity(item._id)
+                                      }
+                                    >
+                                      -
+                                    </button>
+                                    <p className="text-gray-500">
+                                      Qty {item.quantity}
+                                    </p>
+                                    <button
+                                      type="button"
+                                      className="p-1 text-sm text-gray-700 bg-gray-200 rounded"
+                                      onClick={() =>
+                                        handleIncreaseQuantity(item._id)
+                                      }
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                ) : null}
                               </div>
+                              {item.type === "subscription" && (
+                                <p className="text-sm font-bold text-indigo-600 mt-2">
+                                  Subscription Active
+                                </p>
+                              )}
                             </div>
                           </li>
                         ))}
