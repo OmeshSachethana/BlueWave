@@ -141,7 +141,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                 className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
             >
                 Generate PDF
-            </button>
+            </button> <br/>
 
             {/* Button to download CSV */}
             <button
