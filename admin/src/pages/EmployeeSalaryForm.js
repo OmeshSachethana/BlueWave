@@ -113,17 +113,18 @@ const EmployeeSalaryForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const employeeExists = salaryList.some(salary => salary.employeeID === formData.employeeID);
-    if (employeeExists) {
-      setDuplicateError(`Employee ID ${formData.employeeID} is already added.`);
-      return;
-    } else {
-      setDuplicateError(''); // Clear any previous error
-    }
-
+  
     if (!validateForm()) return; // Prevent form submission if validation fails
-
+  
+    // Check if the employee ID already exists in the salary list when adding a new employee
+    if (!isEditing) {
+      const existingEmployee = salaryList.find(emp => emp.employeeID === formData.employeeID);
+      if (existingEmployee) {
+        setFormErrors({ employeeID: `Employee ID ${formData.employeeID} is already added` });
+        return; // Prevent form submission if employee ID is already added
+      }
+    }
+  
     const netSalary = calculateNetSalary();
     const salaryData = {
       employeeID: formData.employeeID,
@@ -135,12 +136,15 @@ const EmployeeSalaryForm = () => {
       epfRate: parseFloat(formData.epfRate),
       netSalary,
     };
+  
     if (isEditing) {
       dispatch(updateEmployeeSalary(salaryData));
       setIsEditing(false);
     } else {
       dispatch(createEmployeeSalary(salaryData));
     }
+  
+    // Clear form data after submission
     setFormData({
       employeeID: '',
       basicSalary: '',
@@ -150,7 +154,11 @@ const EmployeeSalaryForm = () => {
       deductions: '',
       epfRate: '',
     });
+  
+    // Clear form errors after successful submission
+    setFormErrors({});
   };
+  
 
   const handleEdit = (employee) => {
     setFormData({
