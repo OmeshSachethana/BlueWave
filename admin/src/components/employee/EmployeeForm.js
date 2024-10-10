@@ -4,7 +4,7 @@ import { addEmployee, updateEmployee } from '../../features/employee/employeeSli
 
 const EmployeeForm = ({ employeeToEdit }) => {
   const dispatch = useDispatch();
-  
+
   const [formData, setFormData] = useState({
     employeeID: '',
     firstName: '',
@@ -14,6 +14,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
     gender: '',
     nic: '',
     email: '',
+    basicSalary: '', // Added Basic Salary
   });
 
   const [errors, setErrors] = useState({});
@@ -29,6 +30,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
         gender: employeeToEdit.gender || '',
         nic: employeeToEdit.nic || '',
         email: employeeToEdit.email || '',
+        basicSalary: employeeToEdit.basicSalary || '', // Added Basic Salary
       });
     }
   }, [employeeToEdit]);
@@ -70,6 +72,11 @@ const EmployeeForm = ({ employeeToEdit }) => {
       errors.position = 'Position must only contain letters.';
     }
 
+    // Validate Basic Salary (numeric value)
+    if (!/^\d+(\.\d{1,2})?$/.test(formData.basicSalary)) {
+      errors.basicSalary = 'Basic salary must be a valid number (up to two decimal places).';
+    }
+
     return errors;
   };
 
@@ -96,6 +103,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
       gender: '',
       nic: '',
       email: '',
+      basicSalary: '', // Reset Basic Salary
     });
     setErrors({});
   };
@@ -223,6 +231,20 @@ const EmployeeForm = ({ employeeToEdit }) => {
             placeholder="example@mail.com"
           />
           {errors.email && <p className="text-red-500">{errors.email}</p>}
+        </div>
+
+        <div className="mb-3">
+          <label className="block text-gray-700">Basic Salary:</label>
+          <input
+            type="text"
+            name="basicSalary"
+            className="w-full px-2 py-1 border rounded-md"
+            value={formData.basicSalary}
+            onChange={handleChange}
+            required
+            placeholder="Enter basic salary"
+          />
+          {errors.basicSalary && <p className="text-red-500">{errors.basicSalary}</p>}
         </div>
 
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
