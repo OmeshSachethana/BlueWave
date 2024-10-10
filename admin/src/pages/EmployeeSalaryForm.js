@@ -368,9 +368,9 @@ const EmployeeSalaryForm = () => {
             onClick={handleDownloadReport}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
-            Download Salary Report as CSV
+            Download CSV
           </button> <br />
-          <button onClick={handleDownloadPDF} className="p-2 bg-green-500 text-white rounded">
+          <button onClick={handleDownloadPDF} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
             Download PDF
           </button>
         </div>
