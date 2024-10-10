@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // for tables
 import html2canvas from 'html2canvas';
+import { downloadCSV } from '../../utils/downloadUtils'; // Adjust the path based on your project structure
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -122,7 +123,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
             doc.save('income_expenditure_report.pdf');
         });
     };
-    
 
     return (
         <div className="container mx-auto mt-8">
@@ -143,11 +143,18 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                 Generate PDF
             </button>
 
+            {/* Button to download CSV */}
+            <button
+                onClick={() => downloadCSV(filteredRecords)}
+                className="bg-green-500 text-white px-4 py-2 rounded mb-4"
+            >
+                Download CSV
+            </button>
+
             {/* Bar Chart for Total Income and Total Expenses */}
             <div id="chart-container" className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
-    <Bar data={chartData} options={{ ...chartOptions, responsive: true, maintainAspectRatio: false }} height={400} width={600} />
-</div>
-
+                <Bar data={chartData} options={{ ...chartOptions, responsive: true, maintainAspectRatio: false }} height={400} width={600} />
+            </div>
 
             {/* Filter dropdown */}
             <div className="mb-4">
