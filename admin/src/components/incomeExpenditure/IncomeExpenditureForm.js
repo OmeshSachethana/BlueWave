@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { addRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 
 const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
@@ -13,7 +14,8 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
 
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
-  const records = useSelector((state) => state.incomeExpenditure.records); 
+  const records = useSelector((state) => state.incomeExpenditure.records);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     if (isEdit && currentRecord) {
@@ -39,27 +41,27 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
   const validate = () => {
     const newErrors = {};
     const { no, date, details, income, expenses } = formData;
-  
+
     if (!no) newErrors.no = 'No is required.';
-    if (no < 0) newErrors.no = 'No cannot be negative.'; 
+    if (no < 0) newErrors.no = 'No cannot be negative.';
     if (!date) newErrors.date = 'Date is required.';
     if (!details) newErrors.details = 'Details are required.';
     if (!income && !expenses) newErrors.income = 'Either income or expenses must be provided.';
-  
+
     if (income < 0) newErrors.income = 'Income must be a positive number.';
     if (expenses < 0) newErrors.expenses = 'Expenses must be a positive number.';
-  
+
     if (!isEdit && records.some(record => record.no === Number(no))) {
       newErrors.no = 'Record with this No already exists.';
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
 
     const profit = formData.income - formData.expenses;
@@ -150,7 +152,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
               value={formData.income}
               onChange={handleChange}
               className={`w-full p-2 border rounded ${errors.income ? 'border-red-500' : ''}`}
-              required={!formData.expenses} 
+              required={!formData.expenses}
               disabled={!!formData.expenses} // Disable if expenses is filled
             />
             {errors.income && <p className="text-red-500 text-xs">{errors.income}</p>}
@@ -163,7 +165,7 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
               value={formData.expenses}
               onChange={handleChange}
               className={`w-full p-2 border rounded ${errors.expenses ? 'border-red-500' : ''}`}
-              required={!formData.income} 
+              required={!formData.income}
               disabled={!!formData.income} // Disable if income is filled
             />
             {errors.expenses && <p className="text-red-500 text-xs">{errors.expenses}</p>}
@@ -186,6 +188,15 @@ const IncomeExpenditureForm = ({ isEdit, currentRecord, onCancel }) => {
           </button>
         </div>
       </form>
+      {/* Add the View Statement button */}
+      <div className="mt-4">
+        <button
+          onClick={() => navigate('/in-exp-table')} // Navigate to the in-ex-table route
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition w-full"
+        >
+          View Statement
+        </button>
+      </div>
     </div>
   );
 };
