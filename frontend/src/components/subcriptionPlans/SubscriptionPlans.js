@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getPlans } from "../../services/subscriptionPlanService";
 import { useDispatch } from "react-redux";
-import { addToSubscriptionCart } from "../../features/subscription/subscriptionCartSlice";
+import { addToCart } from "../../features/products/cartSlice";
 
 const SubscriptionPlans = () => {
   const dispatch = useDispatch();
@@ -11,8 +11,18 @@ const SubscriptionPlans = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddToCart = (plan) => {
-    console.log("Adding to cart:", plan);
-    dispatch(addToSubscriptionCart(plan));
+    const subscriptionItem = {
+      _id: plan._id,
+      name: plan.name,
+      description: plan.description,
+      pricing: plan.pricing,
+      duration: plan.duration,
+      deliveryFrequency: plan.deliveryFrequency,
+      type: "subscription", // To differentiate it from product items
+    };
+
+    console.log("Adding subscription to cart:", subscriptionItem);
+    dispatch(addToCart(subscriptionItem)); // Dispatch action to add the subscription plan to the cart
   };
 
   useEffect(() => {

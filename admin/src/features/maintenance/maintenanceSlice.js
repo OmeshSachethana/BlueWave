@@ -43,9 +43,9 @@ export const deleteMaintenance = createAsyncThunk(
   // Async thunk to update the maintenance status
 export const updateMaintenanceStatus = createAsyncThunk(
     'maintenance/updateMaintenanceStatus',
-    async ({ id, status }, { rejectWithValue }) => {
+    async ({ id, status, date, priority, technician  }, { rejectWithValue }) => {
       try {
-        const response = await axios.put(`/api/maintenance/${id}`, { status });
+        const response = await axios.put(`/api/maintenance/${id}`, { status, date, priority, technician });
         return response.data.data; // Assuming the response contains the updated record
       } catch (error) {
         return rejectWithValue(error.response.data);

@@ -26,11 +26,13 @@ const orderSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
     }, // For Admin Approval
-    subscriptionPlan: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubscriptionPlan",
-      required: false, // Optional, only required if this is a package order
-    }, // Reference to subscription plan
+    subscriptionPlan: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SubscriptionPlan",
+        required: false, // Optional, only required if this is a package order
+      }, // Reference to subscription plan
+    ],
   },
   { timestamps: true }
 );

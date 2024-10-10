@@ -12,7 +12,7 @@ const ProductModal = ({ product, isOpen, onClose, singleProduct }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[800px] h-[400px] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[800px] min-h-[200px] max-h-[500px] overflow-y-auto">
         <section className="relative">
           <button
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"

@@ -3,7 +3,6 @@ import employeeReducer from "../features/employee/employeeSlice";
 import productsReducer from "../features/products/productsSlice";
 import cartReducer from "../features/products/cartSlice";
 import paymentReducer from "../features/payment/paymentSlice";
-import subscriptionCartReducer from "../features/subscription/subscriptionCartSlice"; // Import subscriptionCartReducer 
 
 // Load cart and subscription cart state from localStorage
 const loadState = () => {
@@ -51,7 +50,6 @@ const store = configureStore({
     employees: employeeReducer,
     products: productsReducer,
     cart: cartReducer,
-    subscriptionCart: subscriptionCartReducer,
     payment: paymentReducer,
   },
   preloadedState,

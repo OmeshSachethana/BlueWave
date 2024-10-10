@@ -7,6 +7,7 @@ import {
 } from "../../services/subscriptionPlanService";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from "../../assets/bluewave_logo.png";
 
 const AdminSubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -26,6 +27,8 @@ const AdminSubscriptionPlans = () => {
     pricing: "",
     deliveryFrequency: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const maxWords = 50;
 
@@ -117,6 +120,13 @@ const AdminSubscriptionPlans = () => {
           pricing: formData.pricing,
           deliveryFrequency: formData.deliveryFrequency,
         });
+        setSuccessMessage("Plan updated successfully!");
+        setIsModalOpen(true);
+
+        setTimeout(() => {
+          setIsModalOpen(false);
+        }, 3000);
+
         setIsEditing(false);
       } else {
         await addPlan({
@@ -126,6 +136,12 @@ const AdminSubscriptionPlans = () => {
           pricing: formData.pricing,
           deliveryFrequency: formData.deliveryFrequency,
         });
+        setSuccessMessage("Plan added successfully!");
+        setIsModalOpen(true);
+
+        setTimeout(() => {
+          setIsModalOpen(false);
+        }, 3000);
       }
       setFormData({
         name: "",
@@ -144,6 +160,7 @@ const AdminSubscriptionPlans = () => {
       });
       const updatedPlans = await getPlans();
       setPlans(updatedPlans);
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       console.error("Error submitting form", error);
     }
@@ -173,8 +190,31 @@ const AdminSubscriptionPlans = () => {
 
   const generateReport = () => {
     const doc = new jsPDF();
-    doc.setFontSize(20);
-    doc.text("Subscription Plans Report", 14, 22);
+
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, "PNG", logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
+    // Add title
+    doc.setFontSize(16);
+    doc.text("Subscription Plans Report", 14, 40);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
+
+    // Add table with subscription plans data
     doc.autoTable({
       head: [
         ["Name", "Description", "Duration", "Pricing", "Delivery Frequency"],
@@ -186,8 +226,9 @@ const AdminSubscriptionPlans = () => {
         plan.pricing,
         plan.deliveryFrequency,
       ]),
-      startY: 30,
+      startY: 60, // Start table below title and date
     });
+
     doc.save("subscription-plans-report.pdf");
   };
 
@@ -203,8 +244,20 @@ const AdminSubscriptionPlans = () => {
         </button>
       </div>
 
+      {/* Success Message */}
+      {isModalOpen && (
+        <Modal
+          message={successMessage}
+          onClose={() => setIsModalOpen(false)} // Close modal function
+        />
+      )}
+
       <div className="max-w-md mx-auto bg-blue-100 p-8 rounded shadow-md">
-        <form className="max-w-sm mx-auto mb-8" onSubmit={handleSubmit} noValidate>
+        <form
+          className="max-w-sm mx-auto mb-8"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <div className="mb-5">
             <label
               htmlFor="name"
@@ -250,11 +303,13 @@ const AdminSubscriptionPlans = () => {
               placeholder="Enter plan description"
               required
             />
+            <p className="text-sm text-gray-500 mb-2">
+              {maxWords - countWords(formData.description)} words remaining
+            </p>
             {errors.description && (
               <p className="text-red-500 text-xs">{errors.description}</p>
             )}
           </div>
-
           <div className="mb-5">
             <label
               htmlFor="duration"
@@ -267,6 +322,13 @@ const AdminSubscriptionPlans = () => {
               id="duration"
               value={formData.duration}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                const invalidChars =
+                  /^[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+                if (invalidChars.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
               className={`bg-gray-50 border ${
                 errors.duration ? "border-red-500" : "border-gray-300"
               } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`}
@@ -277,7 +339,6 @@ const AdminSubscriptionPlans = () => {
               <p className="text-red-500 text-xs">{errors.duration}</p>
             )}
           </div>
-
           <div className="mb-5">
             <label
               htmlFor="pricing"
@@ -381,3 +442,14 @@ const AdminSubscriptionPlans = () => {
 };
 
 export default AdminSubscriptionPlans;
+
+const Modal = ({ message, onClose }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
+        <h2 className="text-lg font-bold">Success</h2>
+        <p className="mt-2">{message}</p>
+      </div>
+    </div>
+  );
+};

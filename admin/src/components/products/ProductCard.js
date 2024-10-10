@@ -13,6 +13,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
+  const maxWords = 50;
+
+  // Function to count words
+  const countWords = (text) => {
+    return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  };
+
   useEffect(() => {
     setEditedProduct(product);
     setInitialProduct(product);
@@ -34,19 +41,29 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Convert price and quantity to numbers
-    const updatedValue =
-      name === "price" || name === "quantity" ? parseFloat(value) : value;
+    if (name === "description") {
+      const wordsUsed = countWords(value);
 
-    // Prevent quantity from going negative
-    if (name === "quantity" && value < 0) {
-      return;
+      // Only update if words used are within the limit
+      if (wordsUsed <= maxWords) {
+        setEditedProduct((prevProduct) => ({
+          ...prevProduct,
+          [name]: value,
+        }));
+      }
+      // If words exceed limit, do not update the state
+    } else {
+      // For other fields, handle as usual
+      const updatedValue =
+        name === "price" || name === "quantity" ? parseFloat(value) : value;
+
+      if (name === "quantity" && value < 0) return; // Prevent negative quantity
+
+      setEditedProduct((prevProduct) => ({
+        ...prevProduct,
+        [name]: updatedValue,
+      }));
     }
-
-    setEditedProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: updatedValue,
-    }));
 
     // Clear errors for the field
     setErrors((prevErrors) => ({
@@ -84,8 +101,8 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
   const validateInputs = () => {
     const newErrors = {};
 
-    // Check if image file is valid
-    if (!selectedFile) {
+    // Only validate image if neither a new file is selected nor an existing image is present
+    if (!selectedFile && !editedProduct.image) {
       newErrors.image = "Image file is required.";
     }
 
@@ -287,8 +304,13 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
                 onChange={handleInputChange}
                 className="mb-2 text-sm text-gray-700 bg-gray-100 rounded p-2 w-full"
                 placeholder="Product Description"
+                maxLength={500} // Max length of 500 characters
                 required
               />
+              <p className="text-sm text-gray-500 mb-2">
+                {maxWords - countWords(editedProduct.description)} words
+                remaining
+              </p>
               {errors.description && (
                 <p className="text-red-500 text-sm">{errors.description}</p>
               )}
@@ -329,9 +351,9 @@ const ProductCard = ({ product, fetchProducts, setDeleteSuccess }) => {
               <p className="mb-1 text-lg font-semibold text-gray-600">
                 Category: {editedProduct.category}
               </p>
-              <p className="mb-3 font-normal text-gray-700">
+              {/* <p className="mb-3 font-normal text-gray-700">
                 {editedProduct.description}
-              </p>
+              </p> */}
               <p className="mb-1 text-sm font-semibold text-gray-600">
                 Quantity: {editedProduct.quantity}
               </p>

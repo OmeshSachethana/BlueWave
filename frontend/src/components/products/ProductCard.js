@@ -9,7 +9,7 @@ const ProductCard = ({ product }) => {
   const [singleProduct, setProduct] = useState({}); // State for storing the product details
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    dispatch(addToCart({ ...product, type: "product" }));
   };
 
   const openModal = (e) => {
@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
         className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100"
       >
         <img
-          className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
+          className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-40 md:rounded-none md:rounded-s-lg"
           src={imageSrc}
           alt={product.name}
           onError={(e) => {
@@ -75,7 +75,6 @@ const ProductCard = ({ product }) => {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5H3m4 8v6m10-6v6m-6-6v6"
               />
             </svg>
-            &nbsp; Add to Cart
           </button>
         </div>
       </a>

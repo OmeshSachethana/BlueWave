@@ -8,6 +8,7 @@ import {
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import LoadingSpinner from "../LoadingSpinner";
+import logo from '../../assets/bluewave_logo.png'; 
 
 const OrderList = () => {
   const dispatch = useDispatch();
@@ -105,8 +106,28 @@ const OrderList = () => {
     // Initialize jsPDF in landscape mode
     const doc = new jsPDF({ orientation: "landscape" });
 
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, "PNG", logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
     // Add title to the document
-    doc.text("Customer Orders Report", 14, 16);
+    doc.setFontSize(16);
+    doc.text("Customer Orders Report", 14, 40);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
 
     // Prepare the data for the table, filtering out incomplete orders
     const orderData = filteredOrders
@@ -177,7 +198,7 @@ const OrderList = () => {
         item.approvalStatus,
         item.products,
       ]),
-      startY: 30,
+      startY: 60, // Start the table below the title and date
     });
 
     // Save the PDF
@@ -188,7 +209,7 @@ const OrderList = () => {
   const sortedOrders = filteredOrders.sort((a, b) => {
     return new Date(b.updatedAt) - new Date(a.updatedAt); // Sort by updatedAt in descending order
   });
-  
+
   if (error) return <p>Error loading orders: {error.message}</p>;
 
   return (
@@ -495,6 +516,88 @@ const OrderList = () => {
                                   {order.delivery.deliveryStatus}
                                 </p>
                               </div>
+                              <div className="flex gap-3 lg:block ml-6">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Approval Status
+                                </p>
+                                <p
+                                  className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 ${
+                                    order.approvalStatus === "Approved"
+                                      ? "bg-emerald-50 text-emerald-600"
+                                      : order.approvalStatus === "Pending"
+                                      ? "bg-amber-50 text-amber-600"
+                                      : "bg-red-50 text-red-600"
+                                  }`}
+                                >
+                                  {order.approvalStatus}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Display for subscriptionPlan if exists */}
+                    {order.subscriptionPlan.map((sp, value) => (
+                      <div className="w-full px-3 min-[400px]:px-6 py-6 border-b border-gray-200 gap-6 flex flex-col lg:flex-row items-center">
+                        <div className="flex flex-row items-center w-full">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
+                            <div className="flex items-center">
+                              <div>
+                                {/* Subscription Name */}
+                                <h2 className="font-semibold text-xl leading-8 mb-3">
+                                  <span style={{ color: "grey" }}>
+                                    Subscription Selected |{" "}
+                                  </span>
+                                  {sp.name ||
+                                    "Subscription Unavailable"}
+                                </h2>
+                                {/* Subscription Duration & Delivery Frequency */}
+                                <div className="flex items-center">
+                                  <p className="font-medium text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
+                                    Duration:{" "}
+                                    <span className="text-gray-500">
+                                      {sp.duration || "N/A"}
+                                    </span>
+                                  </p>
+                                  <p className="font-medium text-base leading-7 text-black pr-4 mr-4">
+                                    Delivery Frequency:{" "}
+                                    <span className="text-gray-500">
+                                      {sp.deliveryFrequency || "N/A"}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex justify-end items-center w-full">
+                              {/* Subscription Price */}
+                              <div className="flex gap-3 lg:block">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Price
+                                </p>
+                                <p className="lg:mt-4 font-medium text-sm leading-7 text-indigo-600">
+                                  Rs. {sp.pricing || 0}
+                                </p>
+                              </div>
+
+                              {/* Delivery Status */}
+                              <div className="flex gap-3 lg:block ml-6">
+                                <p className="font-medium text-sm leading-7 text-black">
+                                  Delivery Status
+                                </p>
+                                <p
+                                  className={`font-medium text-sm leading-6 whitespace-nowrap py-0.5 px-3 rounded-full lg:mt-3 ${
+                                    order.delivery.deliveryStatus === "Shipped"
+                                      ? "bg-emerald-50 text-emerald-600"
+                                      : "bg-red-50 text-red-600"
+                                  }`}
+                                >
+                                  {order.delivery.deliveryStatus}
+                                </p>
+                              </div>
+
+                              {/* Approval Status */}
                               <div className="flex gap-3 lg:block ml-6">
                                 <p className="font-medium text-sm leading-7 text-black">
                                   Approval Status

@@ -5,6 +5,7 @@ import AddProductModal from "./modals/AddProductModal";
 import { getAllProducts } from "../services/productService";
 import { setProducts } from "../features/products/productsSlice";
 import { useDispatch } from "react-redux";
+import logo from "../assets/bluewave_logo.png";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -33,8 +34,16 @@ const Navbar = () => {
       <nav className="bg-blue-600 p-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo Section */}
-          <div className="text-white font-bold text-lg">
-            <Link to="/">BlueWave</Link>
+          <div className="flex items-center">
+            {/* Logo Image */}
+            <Link to="/" className="flex items-center space-x-2">
+              <img
+                src={logo} // Update the path to your logo
+                alt="BlueWave Logo"
+                className="h-20 w-26" // Adjust size as needed
+              />
+              <span className="text-white font-bold text-lg"></span>
+            </Link>
           </div>
 
           {/* Buttons Section */}
@@ -118,6 +127,16 @@ const Navbar = () => {
               }`}
             >
               Income & Expenditure
+            </Link>
+            <Link
+              to="/pettycash-form"
+              className={`px-4 py-2 rounded ${
+                isActive("/pettycash-form")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Petty Cash
             </Link>
           </div>
 

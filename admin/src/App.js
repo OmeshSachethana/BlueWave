@@ -10,6 +10,10 @@ import MaintenanceList from "./components/maintenance/maintenanceList";
 import AdminSubscriptionPlans from "./components/subcriptionPlans/AdminSubscriptionPlans";
 import SchedulePage from "./pages/Schedule/SchedulePage";
 import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePage";
+import ScheduleTable from "./components/schedule/ScheduleTable";
+import PettyCashForm from "./components/pettyCash/PettyCashForm";
+import PettyCashView from "./components/pettyCash/PettyCashView";
+import IncomeExpenditureTable from "./components/incomeExpenditure/IncomeExpenditureTable";
 
 function Footer() {
   const links = [
@@ -80,6 +84,10 @@ function App() {
             <Route path="/subscription-plans" element={<AdminSubscriptionPlans />} />
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/income-expenditure" element={<IncomeExpenditurePage />} />
+            <Route path="/schedulelist" element={<ScheduleTable />} />
+            <Route path="/pettycash-form" element={<PettyCashForm />} />
+            <Route path="/pettycash-view" element={<PettyCashView />} />
+            <Route path="/in-exp-table" element={<IncomeExpenditureTable />} />
           </Routes>
         </main>
         <Footer />

@@ -7,6 +7,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import ProductCard from "./ProductCard";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import logo from '../../assets/bluewave_logo.png'; 
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,13 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       const productsData = await getAllProducts();
-      dispatch(setProducts(productsData));
+
+      // Sort products by updatedAt in descending order
+      const sortedProducts = productsData.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+
+      dispatch(setProducts(sortedProducts));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -30,17 +37,43 @@ const ProductList = () => {
     try {
       const ordersData = await getAllOrders();
       setOrders(ordersData);
+      return ordersData;
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
 
-  const generateReport = () => {
+  const generateReport = async () => {
+    // Fetch the latest orders before generating the PDF
+    const latestOrders = await fetchOrders();
+
     const doc = new jsPDF();
 
-    // Aggregate order data
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+
+    // Add logo
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
+
+    // Add title
+    doc.setFontSize(16);
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50);
+
+    // Aggregate order data using latestOrders (instead of state orders)
     const orderSummary = products.map((product) => {
-      const orderCount = orders.reduce((count, order) => {
+      const orderCount = latestOrders.reduce((count, order) => {
         return (
           count +
           order.orderDetails.filter(
@@ -60,7 +93,7 @@ const ProductList = () => {
     });
 
     // Handle cases where a product is in an order but not in the products list (deleted product)
-    orders.forEach((order) => {
+    latestOrders.forEach((order) => {
       order.orderDetails.forEach((item) => {
         const productExists = products.some(
           (product) => product._id.toString() === item.product?._id?.toString()
@@ -78,7 +111,8 @@ const ProductList = () => {
     });
 
     // Add title to the document
-    doc.text("Products Report", 14, 16);
+    doc.setFontSize(16);
+    doc.text('Products Report', 14, 40);
     doc.autoTable({
       head: [
         ["Product Name", "Category", "Quantity", "Description", "Order Count"],
@@ -90,7 +124,7 @@ const ProductList = () => {
         item.description,
         item.orderCount,
       ]),
-      startY: 20,
+      startY: 60,
     });
 
     // Save the PDF

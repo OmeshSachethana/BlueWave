@@ -15,6 +15,7 @@ const discountRoutes = require("./routes/discountRoutes.js");
 const packageRoutes = require("./routes/packageRoutes.js");
 const paymentRoutes = require("./routes/paymentRoutes.js");
 const incomeExpenditureRoutes = require("./routes/incomeExpenditureRoutes.js");
+const pettyCashRoutes = require("./routes/pettyCashRoutes.js");
 require("dotenv").config();
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/api/discounts", discountRoutes);
 app.use("/api/packages", packageRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/incomeExpenditure", incomeExpenditureRoutes);
+app.use("/api/pettyCash", pettyCashRoutes);
 
 const PORT = process.env.PORT || 5002;
 const MONGODB_URI = process.env.MONGODB_URI;

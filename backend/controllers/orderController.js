@@ -5,13 +5,12 @@ const SubscriptionPlan = require("../models/SubscriptionPlan");
 // User places an order
 exports.placeOrder = async (req, res) => {
   try {
-    const { user, orderDetails, paymentMethod, delivery, subscriptionPlanId } =
-      req.body;
-
+    const { user, orderDetails, paymentMethod, delivery, subscriptionPlanIds } =
+      req.body; // `subscriptionPlanIds` as an array of IDs or objects
     let totalPrice = 0;
     const orderItems = [];
 
-    // Check if the order is for products
+    // Handle product items in the order
     if (orderDetails && orderDetails.length > 0) {
       for (const item of orderDetails) {
         const product = await Product.findById(item.product);
@@ -23,16 +22,23 @@ exports.placeOrder = async (req, res) => {
       }
     }
 
-    // Check if the order is a subscription package
-    let subscriptionPlan;
-    if (subscriptionPlanId) {
-      subscriptionPlan = await SubscriptionPlan.findById(subscriptionPlanId);
-      if (!subscriptionPlan) {
-        return res.status(404).json({ message: "Subscription plan not found" });
+    // Handle subscription plans
+    let subscriptionPlans = [];
+    if (subscriptionPlanIds && subscriptionPlanIds.length > 0) {
+      for (const plan of subscriptionPlanIds) {
+        const planId = plan.subscriptionPlanId || plan; // Extract the subscriptionPlanId if it's an object
+        const subscriptionPlan = await SubscriptionPlan.findById(planId);
+        if (!subscriptionPlan) {
+          return res
+            .status(404)
+            .json({ message: `Subscription plan ${planId} not found` });
+        }
+        totalPrice += subscriptionPlan.pricing; // Add subscription pricing to total
+        subscriptionPlans.push(subscriptionPlan._id); // Add the plan ID to the array
       }
-      totalPrice += subscriptionPlan.pricing;
     }
 
+    // Create the new order
     const newOrder = new Order({
       user,
       orderDetails: orderItems,
@@ -40,7 +46,7 @@ exports.placeOrder = async (req, res) => {
       paymentMethod,
       delivery,
       approvalStatus: "Pending",
-      subscriptionPlan: subscriptionPlan ? subscriptionPlan._id : null, // Attach subscription plan if applicable
+      subscriptionPlan: subscriptionPlans.length > 0 ? subscriptionPlans : [], // Attach subscription plans array
     });
 
     const savedOrder = await newOrder.save();
@@ -48,6 +54,7 @@ exports.placeOrder = async (req, res) => {
       .status(201)
       .json({ message: "Order placed successfully", order: savedOrder });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error placing order", details: error });
   }
 };
@@ -81,7 +88,9 @@ exports.approveOrder = async (req, res) => {
 // Get all orders (for admin view)
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("orderDetails.product");
+    const orders = await Order.find()
+      .populate("orderDetails.product")
+      .populate("subscriptionPlan");
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({ error: "Error fetching orders" });
