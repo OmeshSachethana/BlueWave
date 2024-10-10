@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
 import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
 import jsPDF from 'jspdf';
+import logo from '../../assets/bluewave_logo.png';
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
@@ -81,10 +82,28 @@ const PettyCashView = () => {
   // Function to generate PDF report
   const generatePDF = () => {
     const doc = new jsPDF();
+
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+  
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+  
+    // Add logo
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
+    
     doc.setFontSize(18);
-    doc.text("Petty Cash Book", 14, 22);
+    doc.text("Petty Cash Book", 14, 40); // Align title to the left
+    
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString(); // Format date and time
+  
+    // Add date of report generation
     doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Align date to the left
     
     const tableColumn = ["Receipt", "Date", "Details", "Voucher Number", "Total", "Office Expense", "Travelling Expense", "Cleaning Expense", "Sundry Expense"];
     const tableRows = [];
@@ -104,15 +123,17 @@ const PettyCashView = () => {
       tableRows.push(entryData);
     });
 
-    doc.autoTable(tableColumn, tableRows, { startY: 40 });
+    // Positioning the table lower in the document
+    doc.autoTable(tableColumn, tableRows, { startY: 60 }); // Adjust startY to 60 for more space above the table
     
     // Calculate totals
-    doc.text(`Total: ${totalSum}`, 14, doc.autoTable.previous.finalY + 10);
-    doc.text(`Balance c/d: ${balanceCD}`, 14, doc.autoTable.previous.finalY + 20);
-    doc.text(`Grand Total: ${grandTotal}`, 14, doc.autoTable.previous.finalY + 30);
+    const finalY = doc.autoTable.previous.finalY; // Get the Y position after the table
+    doc.text(`Total: ${totalSum}`, 14, finalY + 10);
+    doc.text(`Balance c/d: ${balanceCD}`, 14, finalY + 20);
+    doc.text(`Grand Total: ${grandTotal}`, 14, finalY + 30);
     
     doc.save('petty_cash_report.pdf');
-  };
+};
 
   return (
     <div className="p-5">
