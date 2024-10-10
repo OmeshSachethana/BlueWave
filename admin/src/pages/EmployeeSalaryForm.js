@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmployeeSalary, updateEmployeeSalary, deleteEmployeeSalary, fetchEmployeeSalaries } from '../features/employee/salarySlice';
 import { convertToCSV, downloadCSV } from '../utils/salaryUtils';
+import jsPDF from 'jspdf'; // Import jsPDF
+import 'jspdf-autotable'; // Import autoTable for table support
 
 const EmployeeSalaryForm = () => {
   const dispatch = useDispatch();
@@ -208,6 +210,36 @@ const EmployeeSalaryForm = () => {
     downloadCSV(csvContent, 'employee_salary_report.csv');
   };
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Employee Salary Report", 20, 10);
+
+    const tableColumn = ["Employee ID", "Basic Salary", "Allowances", "Overtime Hours", "Overtime Rate", "Deductions", "EPF Rate", "Net Salary"];
+    const tableRows = [];
+
+    salaryList.forEach(employee => {
+      const employeeData = [
+        employee.employeeID,
+        employee.basicSalary,
+        employee.allowances,
+        employee.overtimeHours,
+        employee.overtimeRate,
+        employee.deductions,
+        employee.epfRate,
+        employee.netSalary,
+      ];
+      tableRows.push(employeeData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.save("employee_salary_report.pdf");
+  };
+
   const filteredSalaryList = salaryList.filter(employee =>
     employee.employeeID.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -337,6 +369,9 @@ const EmployeeSalaryForm = () => {
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
             Download Salary Report as CSV
+          </button> <br />
+          <button onClick={handleDownloadPDF} className="p-2 bg-green-500 text-white rounded">
+            Download PDF
           </button>
         </div>
       </div>
