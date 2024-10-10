@@ -10,7 +10,7 @@ const EmployeeList = ({ onEdit }) => {
   const employees = useSelector((state) => state.employees.employees);
   const status = useSelector((state) => state.employees.status);
   const [filter, setFilter] = useState('All');
-  const [searchTerm, setSearchTerm] = useState(''); // Added search term state
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (status === 'idle') {
@@ -113,6 +113,7 @@ const EmployeeList = ({ onEdit }) => {
             <th className="p-2 border border-gray-300">Gender</th>
             <th className="p-2 border border-gray-300">NIC</th>
             <th className="p-2 border border-gray-300">Email</th>
+            <th className="p-2 border border-gray-300">Basic Salary</th> {/* Added Basic Salary */}
             <th className="p-2 border border-gray-300">Actions</th>
           </tr>
         </thead>
