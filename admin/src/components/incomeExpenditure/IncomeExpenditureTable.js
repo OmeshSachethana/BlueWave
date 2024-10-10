@@ -14,6 +14,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [editableRow, setEditableRow] = useState(null);
     const [editableData, setEditableData] = useState({});
+    const [filter, setFilter] = useState('all'); // State for filter selection
 
     useEffect(() => {
         dispatch(fetchRecords());
@@ -32,9 +33,15 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
     }, [records]);
 
-    const filteredRecords = records.filter(record =>
-        record.details.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filtered records based on search term and filter selection
+    const filteredRecords = records.filter(record => {
+        const matchesSearch = record.details.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter =
+            filter === 'all' ||
+            (filter === 'income' && record.income > 0) ||
+            (filter === 'expenses' && record.expenses > 0);
+        return matchesSearch && matchesFilter;
+    });
 
     const handleEditClick = (record) => {
         setEditableRow(record._id);
@@ -95,10 +102,23 @@ const IncomeExpenditureTable = ({ onEdit }) => {
 
             <h2 className="text-2xl font-bold mb-6">Income & Expenditure Statement</h2>
 
-
-            {/* Bar Chart for Total Income and Total Expenses with smaller dimensions */}
+            {/* Bar Chart for Total Income and Total Expenses */}
             <div className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
                 <Bar data={chartData} options={chartOptions} />
+            </div>
+
+            {/* Filter dropdown */}
+            <div className="mb-4">
+                <label className="mr-2">Filter:</label>
+                <select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    className="p-2 border border-gray-300 rounded"
+                >
+                    <option value="all">All</option>
+                    <option value="income">Income Only</option>
+                    <option value="expenses">Expenses Only</option>
+                </select>
             </div>
 
             <div className="mb-4">
@@ -111,7 +131,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                 />
             </div>
 
-            <table className="table-auto w-full text-left table-center">
+            <table className="table-auto w-full text-left">
                 <thead>
                     <tr className="bg-gray-100">
                         <th className="px-4 py-2">NO</th>
