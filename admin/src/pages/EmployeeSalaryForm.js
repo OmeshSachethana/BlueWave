@@ -159,6 +159,9 @@ const EmployeeSalaryForm = () => {
   
     // Clear form errors after successful submission
     setFormErrors({});
+
+    // Clear duplicate error message
+    setDuplicateError('');
   };
   
 
