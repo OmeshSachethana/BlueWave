@@ -1,11 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Bar } from 'react-chartjs-2'; // Import the Bar chart component
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { fetchRecords, deleteRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 import { useNavigate } from 'react-router-dom';
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend); // Register required chart components
+
 const IncomeExpenditureTable = ({ onEdit }) => {
     const dispatch = useDispatch();
-    const navigate = useNavigate(); // Add useNavigate hook
+    const navigate = useNavigate();
     const records = useSelector((state) => state.incomeExpenditure.records);
     const [searchTerm, setSearchTerm] = useState('');
     const [editableRow, setEditableRow] = useState(null);
@@ -14,10 +18,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     useEffect(() => {
         dispatch(fetchRecords());
     }, [dispatch]);
-
-    const handleDelete = (id) => {
-        dispatch(deleteRecord(id));
-    };
 
     const { totalIncome, totalExpenses, totalProfit } = useMemo(() => {
         return records.reduce((totals, record) => {
@@ -55,6 +55,35 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         setEditableRow(null); // Exit edit mode
     };
 
+    const handleDelete = (id) => {
+        dispatch(deleteRecord(id));
+    };
+
+    // Chart data for total income and total expenses
+    const chartData = {
+        labels: ['Total Income', 'Total Expenses'],
+        datasets: [
+            {
+                label: 'Amount',
+                data: [totalIncome, totalExpenses], // Total income and total expenses as data
+                backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'], // Bar colors
+            },
+        ],
+    };
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Total Income vs Total Expenses',
+            },
+        },
+    };
+
     return (
         <div className="container mx-auto mt-8">
             {/* Back Button */}
@@ -75,6 +104,11 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-1/2 p-2 border border-gray-300 rounded"
                 />
+            </div>
+
+            {/* Bar Chart for Total Income and Total Expenses */}
+            <div className="mb-8">
+                <Bar data={chartData} options={chartOptions} />
             </div>
 
             <table className="table-auto w-full text-left">
