@@ -4,6 +4,8 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { fetchRecords, deleteRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 import { useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; // for tables
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -14,7 +16,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [editableRow, setEditableRow] = useState(null);
     const [editableData, setEditableData] = useState({});
-    const [filter, setFilter] = useState('all'); // State for filter selection
+    const [filter, setFilter] = useState('all');
 
     useEffect(() => {
         dispatch(fetchRecords());
@@ -33,7 +35,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         }, { totalIncome: 0, totalExpenses: 0, totalProfit: 0 });
     }, [records]);
 
-    // Filtered records based on search term and filter selection
     const filteredRecords = records.filter(record => {
         const matchesSearch = record.details.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter =
@@ -66,7 +67,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         dispatch(deleteRecord(id));
     };
 
-    // Chart data for total income and total expenses
     const chartData = {
         labels: ['Total Income', 'Total Expenses'],
         datasets: [
@@ -91,6 +91,33 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         },
     };
 
+    // Function to generate PDF
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(20);
+        doc.text('Income & Expenditure Report', 14, 22);
+        
+        // Adding table
+        const tableColumn = ['Date', 'Details', 'Income', 'Expenses', 'Profit/Loss'];
+        const tableRows = filteredRecords.map(record => [
+            new Date(record.date).toLocaleDateString(),
+            record.details,
+            record.income,
+            record.expenses,
+            record.profit
+        ]);
+
+        doc.autoTable(tableColumn, tableRows, { startY: 30 });
+        
+        // Adding totals
+        doc.setFontSize(10);
+        doc.text(`Total Income: ${totalIncome}`, 14, doc.autoTable.previous.finalY + 10);
+        doc.text(`Total Expenses: ${totalExpenses}`, 14, doc.autoTable.previous.finalY + 20);
+        doc.text(`Total Profit/Loss: ${totalProfit}`, 14, doc.autoTable.previous.finalY + 30);
+        
+        doc.save('income_expenditure_report.pdf');
+    };
+
     return (
         <div className="container mx-auto mt-8">
             <button
@@ -101,6 +128,14 @@ const IncomeExpenditureTable = ({ onEdit }) => {
             </button>
 
             <h2 className="text-2xl font-bold mb-6">Income & Expenditure Statement</h2>
+
+            {/* Button to generate PDF */}
+            <button
+                onClick={generatePDF}
+                className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+            >
+                Generate PDF
+            </button>
 
             {/* Bar Chart for Total Income and Total Expenses */}
             <div className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
