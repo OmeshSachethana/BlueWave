@@ -6,6 +6,7 @@ import { fetchRecords, deleteRecord, updateRecord } from '../../features/incomeE
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // for tables
+import html2canvas from 'html2canvas';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -97,26 +98,31 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         doc.setFontSize(20);
         doc.text('Income & Expenditure Report', 14, 22);
         
-        // Adding table
-        const tableColumn = ['Date', 'Details', 'Income', 'Expenses', 'Profit/Loss'];
-        const tableRows = filteredRecords.map(record => [
-            new Date(record.date).toLocaleDateString(),
-            record.details,
-            record.income,
-            record.expenses,
-            record.profit
-        ]);
-
-        doc.autoTable(tableColumn, tableRows, { startY: 30 });
-        
-        // Adding totals
-        doc.setFontSize(10);
-        doc.text(`Total Income: ${totalIncome}`, 14, doc.autoTable.previous.finalY + 10);
-        doc.text(`Total Expenses: ${totalExpenses}`, 14, doc.autoTable.previous.finalY + 20);
-        doc.text(`Total Profit/Loss: ${totalProfit}`, 14, doc.autoTable.previous.finalY + 30);
-        
-        doc.save('income_expenditure_report.pdf');
+        const chartElement = document.getElementById('chart-container');
+        html2canvas(chartElement, { scale: 2 }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            doc.addImage(imgData, 'PNG', 14, 30, 180, 100); // Adjust the position and size as needed
+            
+            const tableColumn = ['Date', 'Details', 'Income', 'Expenses', 'Profit/Loss'];
+            const tableRows = filteredRecords.map(record => [
+                new Date(record.date).toLocaleDateString(),
+                record.details,
+                record.income,
+                record.expenses,
+                record.profit
+            ]);
+    
+            doc.autoTable(tableColumn, tableRows, { startY: 150 });
+            
+            doc.setFontSize(10); // Set smaller font size for totals
+            doc.text(`Total Income: ${totalIncome}`, 14, doc.autoTable.previous.finalY + 10);
+            doc.text(`Total Expenses: ${totalExpenses}`, 14, doc.autoTable.previous.finalY + 20);
+            doc.text(`Total Profit/Loss: ${totalProfit}`, 14, doc.autoTable.previous.finalY + 30);
+            
+            doc.save('income_expenditure_report.pdf');
+        });
     };
+    
 
     return (
         <div className="container mx-auto mt-8">
@@ -138,9 +144,10 @@ const IncomeExpenditureTable = ({ onEdit }) => {
             </button>
 
             {/* Bar Chart for Total Income and Total Expenses */}
-            <div className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
-                <Bar data={chartData} options={chartOptions} />
-            </div>
+            <div id="chart-container" className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
+    <Bar data={chartData} options={{ ...chartOptions, responsive: true, maintainAspectRatio: false }} height={400} width={600} />
+</div>
+
 
             {/* Filter dropdown */}
             <div className="mb-4">
