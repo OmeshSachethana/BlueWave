@@ -13,6 +13,7 @@ import IncomeExpenditurePage from "./pages/IncomeExpenditure/IncomeExpenditurePa
 import ScheduleTable from "./components/schedule/ScheduleTable";
 import PettyCashForm from "./components/pettyCash/PettyCashForm";
 import PettyCashView from "./components/pettyCash/PettyCashView";
+import IncomeExpenditureTable from "./components/incomeExpenditure/IncomeExpenditureTable";
 
 function Footer() {
   const links = [
@@ -86,7 +87,7 @@ function App() {
             <Route path="/schedulelist" element={<ScheduleTable />} />
             <Route path="/pettycash-form" element={<PettyCashForm />} />
             <Route path="/pettycash-view" element={<PettyCashView />} />
-            
+            <Route path="/in-exp-table" element={<IncomeExpenditureTable />} />
           </Routes>
         </main>
         <Footer />

@@ -25,6 +25,13 @@ export const deleteEntry = createAsyncThunk('pettyCash/deleteEntry', async (id) 
   return id;
 });
 
+// Update an entry in the backend
+export const updateEntry = createAsyncThunk('pettyCash/updateEntry', async ({ id, updatedEntry }) => {
+  const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/pettyCash/${id}`, updatedEntry);
+  return response.data;
+});
+
+
 const pettyCashSlice = createSlice({
   name: 'pettyCash',
   initialState,
@@ -50,6 +57,12 @@ const pettyCashSlice = createSlice({
       .addCase(deleteEntry.fulfilled, (state, action) => {
         // Remove deleted entry from the state
         state.entries = state.entries.filter((entry) => entry._id !== action.payload);
+      })
+      .addCase(updateEntry.fulfilled, (state, action) => {
+        const index = state.entries.findIndex((entry) => entry._id === action.payload._id);
+        if (index !== -1) {
+          state.entries[index] = action.payload;
+        }
       });
   },
 });
