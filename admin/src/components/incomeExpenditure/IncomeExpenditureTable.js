@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Bar } from 'react-chartjs-2'; // Import the Bar chart component
+import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { fetchRecords, deleteRecord, updateRecord } from '../../features/incomeExpenditure/incomeExpenditureSlice';
 import { useNavigate } from 'react-router-dom';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend); // Register required chart components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const IncomeExpenditureTable = ({ onEdit }) => {
     const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     const handleUpdate = () => {
         const profit = editableData.income - editableData.expenses;
         dispatch(updateRecord({ id: editableData._id, updatedRecord: { ...editableData, profit } }));
-        setEditableRow(null); // Exit edit mode
+        setEditableRow(null);
     };
 
     const handleDelete = (id) => {
@@ -65,8 +65,8 @@ const IncomeExpenditureTable = ({ onEdit }) => {
         datasets: [
             {
                 label: 'Amount',
-                data: [totalIncome, totalExpenses], // Total income and total expenses as data
-                backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'], // Bar colors
+                data: [totalIncome, totalExpenses],
+                backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
             },
         ],
     };
@@ -86,7 +86,6 @@ const IncomeExpenditureTable = ({ onEdit }) => {
 
     return (
         <div className="container mx-auto mt-8">
-            {/* Back Button */}
             <button
                 onClick={() => navigate('/income-expenditure')}
                 className="bg-gray-500 text-white px-3 py-2 rounded mb-4"
@@ -95,6 +94,12 @@ const IncomeExpenditureTable = ({ onEdit }) => {
             </button>
 
             <h2 className="text-2xl font-bold mb-6">Income & Expenditure Statement</h2>
+
+
+            {/* Bar Chart for Total Income and Total Expenses with smaller dimensions */}
+            <div className="mb-8 w-2/3 h-64 mx-auto flex justify-center items-center">
+                <Bar data={chartData} options={chartOptions} />
+            </div>
 
             <div className="mb-4">
                 <input
@@ -106,12 +111,7 @@ const IncomeExpenditureTable = ({ onEdit }) => {
                 />
             </div>
 
-            {/* Bar Chart for Total Income and Total Expenses */}
-            <div className="mb-8">
-                <Bar data={chartData} options={chartOptions} />
-            </div>
-
-            <table className="table-auto w-full text-left">
+            <table className="table-auto w-full text-left table-center">
                 <thead>
                     <tr className="bg-gray-100">
                         <th className="px-4 py-2">NO</th>
