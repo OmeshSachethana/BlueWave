@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
 import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
+import jsPDF from 'jspdf';
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
@@ -77,6 +78,42 @@ const PettyCashView = () => {
   const balanceCD = receiptTotal - totalSum;
   const grandTotal = totalSum + balanceCD;
 
+  // Function to generate PDF report
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Petty Cash Book", 14, 22);
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+    
+    const tableColumn = ["Receipt", "Date", "Details", "Voucher Number", "Total", "Office Expense", "Travelling Expense", "Cleaning Expense", "Sundry Expense"];
+    const tableRows = [];
+
+    filteredEntries.forEach(entry => {
+      const entryData = [
+        entry.receipt,
+        new Date(entry.date).toLocaleDateString(),
+        entry.details,
+        entry.voucherNumber,
+        entry.total,
+        entry.officeExpense,
+        entry.vanExpense,
+        entry.cleaningExpense,
+        entry.sundryExpense,
+      ];
+      tableRows.push(entryData);
+    });
+
+    doc.autoTable(tableColumn, tableRows, { startY: 40 });
+    
+    // Calculate totals
+    doc.text(`Total: ${totalSum}`, 14, doc.autoTable.previous.finalY + 10);
+    doc.text(`Balance c/d: ${balanceCD}`, 14, doc.autoTable.previous.finalY + 20);
+    doc.text(`Grand Total: ${grandTotal}`, 14, doc.autoTable.previous.finalY + 30);
+    
+    doc.save('petty_cash_report.pdf');
+  };
+
   return (
     <div className="p-5">
       <button 
@@ -84,6 +121,12 @@ const PettyCashView = () => {
         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Back
+      </button>
+      <button 
+        onClick={generatePDF}
+        className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+      >
+        Generate PDF
       </button>
       <h2 className="text-2xl font-bold mb-4 text-center">Petty Cash Book</h2>
       <input
