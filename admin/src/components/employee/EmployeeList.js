@@ -58,7 +58,7 @@ const EmployeeList = ({ onEdit }) => {
       body: tableRows,
       startY: 30,
       styles: { fontSize: 8 },  // Set table font size to 10
-      headStyles: { fontSize: 11 }  // Optionally, you can set the header font size slightly larger
+      headStyles: { fontSize: 10 }  // Optionally, you can set the header font size slightly larger
     });
 
     doc.save('employee-list.pdf');
