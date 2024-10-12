@@ -4,6 +4,7 @@ import { createEmployeeSalary, updateEmployeeSalary, deleteEmployeeSalary, fetch
 import { convertToCSV, downloadCSV } from '../utils/salaryUtils';
 import jsPDF from 'jspdf'; // Import jsPDF
 import 'jspdf-autotable'; // Import autoTable for table support
+import logo from '../assets/bluewave_logo.png'; // Adjust the path to your logo image
 
 const EmployeeSalaryForm = () => {
   const dispatch = useDispatch();
@@ -215,33 +216,67 @@ const EmployeeSalaryForm = () => {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    doc.text("Employee Salary Report", 20, 10);
-
-    const tableColumn = ["Employee ID", "Basic Salary", "Allowances", "Overtime Hours", "Overtime Rate", "Deductions", "EPF Rate", "Net Salary"];
-    const tableRows = [];
-
-    salaryList.forEach(employee => {
-      const employeeData = [
-        employee.employeeID,
-        employee.basicSalary,
-        employee.allowances,
-        employee.overtimeHours,
-        employee.overtimeRate,
-        employee.deductions,
-        employee.epfRate,
-        employee.netSalary,
-      ];
-      tableRows.push(employeeData);
-    });
-
+  
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+  
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+  
+    // Add logo at the top
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+    // Add title below the logo, centered
+    doc.setFontSize(18);
+    doc.text('Employee Salary Report', pageWidth / 2, 40, { align: 'center' });
+  
+    // Get the current date and time for the report generation date
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString(); // Format date and time
+  
+    // Add date of report generation below the title
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Adjust X and Y position as needed
+  
+    // Define the table columns
+    const tableColumn = [
+      'Employee ID',
+      'Basic Salary',
+      'Allowances',
+      'Overtime Hours',
+      'Overtime Rate',
+      'Deductions',
+      'EPF Rate',
+      'Net Salary'
+    ];
+  
+    // Map through the salary list to populate the table rows
+    const tableRows = salaryList.map((employee) => [
+      employee.employeeID,
+      employee.basicSalary,
+      employee.allowances,
+      employee.overtimeHours,
+      employee.overtimeRate,
+      employee.deductions,
+      employee.epfRate,
+      employee.netSalary,
+    ]);
+  
+    // Add the table to the PDF
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
+      startY: 60, // Adjust startY to avoid overlapping with title and date
+      styles: { fontSize: 9 }, // Set the font size of the table content to 9
+      headStyles: { fontSize: 10 } // Set the header font size to 10
     });
-
-    doc.save("employee_salary_report.pdf");
+  
+    // Save the generated PDF
+    doc.save('employee_salary_report.pdf');
   };
+  
 
   const filteredSalaryList = salaryList.filter(employee =>
     employee.employeeID.toLowerCase().includes(searchTerm.toLowerCase())
