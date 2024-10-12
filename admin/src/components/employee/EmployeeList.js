@@ -4,6 +4,7 @@ import { fetchEmployees } from '../../features/employee/employeeSlice';
 import EmployeeItem from './EmployeeItem';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import logo from '../../assets/bluewave_logo.png'; // Adjust the path to your logo image
 
 const EmployeeList = ({ onEdit }) => {
   const dispatch = useDispatch();
@@ -36,10 +37,31 @@ const EmployeeList = ({ onEdit }) => {
   // Generate PDF using jsPDF and autoTable
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-
+  
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+  
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+  
+    // Add logo
+    doc.addImage(logo, 'PNG', logoX, 10, logoWidth, logoHeight); // Use calculated x position
+  
+    // Add title
     doc.setFontSize(18);
-    doc.text('Employee List', 105, 20, { align: 'center' });
-
+    doc.text('Employee List', pageWidth / 2, 40, { align: 'center' });
+  
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString(); // Format date and time
+  
+    // Add date of report generation
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 50); // Adjust position as needed
+  
+    // Define the table columns and rows
     const tableColumn = ['EID', 'First Name', 'Last Name', 'Position', 'Department', 'Gender', 'NIC', 'Email', 'Basic Salary'];
     const tableRows = filteredEmployees.map((employee) => [
       employee.employeeID || employee._id, // If 'eid' does not exist, use '_id' instead
@@ -52,17 +74,20 @@ const EmployeeList = ({ onEdit }) => {
       employee.email, 
       employee.basicSalary
     ]);
-
+  
+    // Adjust startY to avoid overlapping with logo and title
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 30,
-      styles: { fontSize: 8 },  // Set table font size to 10
-      headStyles: { fontSize: 10 }  // Optionally, you can set the header font size slightly larger
+      startY: 60, // Adjusted to provide space for logo and title
+      styles: { fontSize: 8 },  // Set table font size to 8
+      headStyles: { fontSize: 10 }  // Header font size slightly larger
     });
-
+  
+    // Save the PDF
     doc.save('employee-list.pdf');
   };
+  
 
   return (
     <div className="p-6">
