@@ -42,6 +42,16 @@ const Navbar = ({ onSearch }) => {
 
           {/* Buttons Section */}
           <div className="flex space-x-4">
+          <Link
+              to="/home"
+              className={`px-4 py-2 rounded ${
+                isActive("/home")
+                  ? "bg-white text-blue-600"
+                  : "text-white bg-blue-500 hover:bg-blue-400"
+              }`}
+            >
+              Home
+            </Link>
             <Link
               to="/"
               className={`px-4 py-2 rounded ${
@@ -50,7 +60,7 @@ const Navbar = ({ onSearch }) => {
                   : "text-white bg-blue-500 hover:bg-blue-400"
               }`}
             >
-              Home
+              Products
             </Link>
             <Link
               to="/subscription-plans"
