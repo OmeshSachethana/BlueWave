@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchEmployees } from '../../features/employee/employeeSlice';
 import EmployeeItem from './EmployeeItem';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import 'jspdf-autotable';
 
 const EmployeeList = ({ onEdit }) => {
   const dispatch = useDispatch();
@@ -33,41 +33,35 @@ const EmployeeList = ({ onEdit }) => {
     return matchesFilter && matchesSearch;
   });
 
-  // pdf handling
+  // Generate PDF using jsPDF and autoTable
   const handleDownloadPDF = () => {
-    const input = document.getElementById('employee-table');
-    const actionCells = document.querySelectorAll('#employee-table th:last-child, #employee-table td:last-child');
-    actionCells.forEach(cell => cell.style.display = 'none');
+    const doc = new jsPDF();
 
-    html2canvas(input)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        const imgWidth = 190;
-        const pageHeight = 290;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 30;
+    doc.setFontSize(18);
+    doc.text('Employee List', 105, 20, { align: 'center' });
 
-        pdf.setFontSize(18);
-        pdf.text('Employee List', 105, 20, { align: 'center' });
+    const tableColumn = ['EID', 'First Name', 'Last Name', 'Position', 'Department', 'Gender', 'NIC', 'Email', 'Basic Salary'];
+    const tableRows = filteredEmployees.map((employee) => [
+      employee.employeeID || employee._id, // If 'eid' does not exist, use '_id' instead
+      employee.firstName, 
+      employee.lastName, 
+      employee.position, 
+      employee.department, 
+      employee.gender, 
+      employee.nic, 
+      employee.email, 
+      employee.basicSalary
+    ]);
 
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      styles: { fontSize: 8 },  // Set table font size to 10
+      headStyles: { fontSize: 11 }  // Optionally, you can set the header font size slightly larger
+    });
 
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
-        pdf.save('employee-list.pdf');
-      })
-      .finally(() => {
-        actionCells.forEach(cell => cell.style.display = '');
-      })
-      .catch((err) => console.error('Failed to download PDF', err));
+    doc.save('employee-list.pdf');
   };
 
   return (
@@ -113,7 +107,7 @@ const EmployeeList = ({ onEdit }) => {
             <th className="p-2 border border-gray-300">Gender</th>
             <th className="p-2 border border-gray-300">NIC</th>
             <th className="p-2 border border-gray-300">Email</th>
-            <th className="p-2 border border-gray-300">Basic Salary</th> {/* Added Basic Salary */}
+            <th className="p-2 border border-gray-300">Basic Salary</th>
             <th className="p-2 border border-gray-300">Actions</th>
           </tr>
         </thead>
