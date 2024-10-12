@@ -36,6 +36,25 @@ const EmployeeForm = ({ employeeToEdit }) => {
   }, [employeeToEdit]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Allow only letters in firstName, lastName, and position fields
+    if ((name === 'firstName' || name === 'lastName' || name === 'position') && /[^a-zA-Z\s]/.test(value)) {
+      return; // Prevent updating the state if value contains non-letter characters
+    }
+    // Limit NIC to 12 characters
+    if (name === 'nic' && value.length > 12) {
+      return; // Prevent updating if length exceeds 12
+    }
+    // Limit NIC to 12 characters
+    if (name === 'employeeID' && value.length > 6) {
+      return; // Prevent updating if length exceeds 12
+    }
+
+    // Limit basicSalary to numeric values
+    if (name === 'basicSalary' && !/^\d*\.?\d*$/.test(value)) {
+      return; // Prevent updating the state if the value is not numeric
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -53,8 +72,9 @@ const EmployeeForm = ({ employeeToEdit }) => {
     }
 
     // Validate Email
-    if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
-      errors.email = 'Please enter a valid email address.';
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+        errors.email = 'Please enter a valid email address.';
     }
 
     // Validate First Name (only letters, between 2-50 characters)
