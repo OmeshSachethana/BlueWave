@@ -43,8 +43,13 @@ const EmployeeForm = ({ employeeToEdit }) => {
       return; // Prevent updating the state if value contains non-letter characters
     }
     // Limit NIC to 12 characters
-    if (name === 'nic' && value.length > 12) {
-      return; // Prevent updating if length exceeds 12
+    if (name === 'nic') {
+      if (/[^0-9vV]/.test(value)) {
+        return; // Prevent updating if non-digit and non-allowed characters are entered
+      }
+      if (value.length > 12) {
+        return; // Prevent updating if length exceeds 12
+      }
     }
     // Limit NIC to 12 characters
     if (name === 'employeeID' && value.length > 6) {
@@ -67,8 +72,8 @@ const EmployeeForm = ({ employeeToEdit }) => {
     }
 
     // Validate NIC
-    if (!/^\d{9}[Vv]|\d{12}$/.test(formData.nic)) {
-      errors.nic = 'NIC must be either 12 digits or 9 digits followed by "v" or "V".';
+    if (!/^\d{9}[Vv]$|^\d{12}$/.test(formData.nic)) {
+      errors.nic = 'NIC must be either 9 digits followed by "v" or "V", or 12 digits.';
     }
 
     // Validate Email

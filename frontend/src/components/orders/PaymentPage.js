@@ -258,18 +258,18 @@ const PaymentPage = () => {
               </div>
 
               <button
-                type="submit"
-                className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
-              >
-                Pay now
-              </button>
-              <div className="mt-6 grow">
-                <button
                   onClick={handleViewCards}
                   className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
                 >
                   View Saved Cards
                 </button>
+              <div className="mt-6 grow">
+              <button
+                type="submit"
+                className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+              >
+                Pay now
+              </button>
               </div>
             </form>
             {/* View Cards Button */}

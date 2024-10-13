@@ -17,7 +17,7 @@ const EmployeeSalaryForm = () => {
     overtimeHours: '',
     overtimeRate: '',
     deductions: '',
-    epfRate: '',
+    epfRate: '9', //default
   });
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState(''); // Added search term state
