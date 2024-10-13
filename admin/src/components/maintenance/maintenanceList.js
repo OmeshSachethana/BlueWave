@@ -254,8 +254,12 @@ const MaintenanceList = () => {
                   type="text"
                   className="px-4 py-2 border border-gray-300 rounded-lg"
                   value={selectedTechnician}
-                  onChange={(e) => setSelectedTechnician(e.target.value)} />
-
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const lettersOnly = inputValue.replace(/[^a-zA-Z\s]/g, ''); // Allow only letters and spaces
+                    setSelectedTechnician(lettersOnly);
+                  }}
+                />
                 <button
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   onClick={() => handleStatusUpdate(maintenance._id)}
