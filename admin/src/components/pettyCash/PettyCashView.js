@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
 import jsPDF from 'jspdf';
 import logo from '../../assets/bluewave_logo.png';
+import { downloadCSV } from '../../utils/csvDownloader';
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
@@ -134,6 +135,9 @@ const PettyCashView = () => {
     
     doc.save('petty_cash_report.pdf');
 };
+  const handleCSVDownload = () => {
+    downloadCSV(filteredEntries); // Call the CSV downloader utility with the filtered entries
+  };
 
   return (
     <div className="p-5">
@@ -148,6 +152,12 @@ const PettyCashView = () => {
         className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Generate PDF
+      </button> <br />
+      <button 
+        onClick={handleCSVDownload}
+        className="mb-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+      >
+        Download CSV
       </button>
       <h2 className="text-2xl font-bold mb-4 text-center">Petty Cash Book</h2>
       <input
