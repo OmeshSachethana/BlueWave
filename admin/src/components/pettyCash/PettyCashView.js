@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash/pettyCashSlice';
 import jsPDF from 'jspdf';
 import logo from '../../assets/bluewave_logo.png';
+import { downloadCSV } from '../../utils/csvDownloader';
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const PettyCashView = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [categoryFilter, setCategoryFilter] = useState('All'); // State for category filter
   const entries = useSelector((state) => state.pettyCash.entries);
   const entryStatus = useSelector((state) => state.pettyCash.status);
   const error = useSelector((state) => state.pettyCash.error);
@@ -64,10 +66,18 @@ const PettyCashView = () => {
     }
   };
 
-  // Filter entries based on the search query
-  const filteredEntries = entries.filter((entry) =>
-    entry.details.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter entries based on search query and category
+  const filteredEntries = entries.filter((entry) => {
+    const matchesSearch = entry.details.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = 
+      categoryFilter === 'All' || 
+      (categoryFilter === 'Office Expense' && entry.officeExpense > 0) ||
+      (categoryFilter === 'Van Expense' && entry.vanExpense > 0) ||
+      (categoryFilter === 'Cleaning Expense' && entry.cleaningExpense > 0) ||
+      (categoryFilter === 'Sundry Expense' && entry.sundryExpense > 0);
+      
+    return matchesSearch && matchesCategory;
+  });
 
   const receiptTotal = filteredEntries.reduce((acc, entry) => acc + (entry.receipt || 0), 0);
   const totalSum = filteredEntries.reduce((acc, entry) => acc + (entry.total || 0), 0);
@@ -134,6 +144,9 @@ const PettyCashView = () => {
     
     doc.save('petty_cash_report.pdf');
 };
+  const handleCSVDownload = () => {
+    downloadCSV(filteredEntries); // Call the CSV downloader utility with the filtered entries
+  };
 
   return (
     <div className="p-5">
@@ -148,8 +161,15 @@ const PettyCashView = () => {
         className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Generate PDF
+      </button> <br />
+      <button 
+        onClick={handleCSVDownload}
+        className="mb-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+      >
+        Download CSV
       </button>
       <h2 className="text-2xl font-bold mb-4 text-center">Petty Cash Book</h2>
+      
       <input
         type="text"
         placeholder="Search by details..."
@@ -157,6 +177,19 @@ const PettyCashView = () => {
         onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
         className="mb-4 p-2 border border-gray-300 rounded"
       />
+
+      <select
+        value={categoryFilter}
+        onChange={(e) => setCategoryFilter(e.target.value)}
+        className="mb-4 p-2 border border-gray-300 rounded"
+      >
+        <option value="All">All Categories</option>
+        <option value="Office Expense">Office Expense</option>
+        <option value="Van Expense">Travelling Expense</option>
+        <option value="Cleaning Expense">Cleaning Expense</option>
+        <option value="Sundry Expense">Sundry Expense</option>
+      </select>
+
       {entryStatus === 'loading' && <p>Loading entries...</p>}
       {entryStatus === 'failed' && <p>Error: {error}</p>}
       {filteredEntries.length === 0 ? (
@@ -272,16 +305,16 @@ const PettyCashView = () => {
                   </>
                 ) : (
                   <>
-                    <td className="py-2 px-4 border">{entry.receipt}</td>
-                    <td className="py-2 px-4 border">{new Date(entry.date).toLocaleDateString()}</td>
-                    <td className="py-2 px-4 border">{entry.details}</td>
-                    <td className="py-2 px-4 border">{entry.voucherNumber}</td>
-                    <td className="py-2 px-4 border">{entry.total}</td>
-                    <td className="py-2 px-4 border">{entry.officeExpense}</td>
-                    <td className="py-2 px-4 border">{entry.vanExpense}</td>
-                    <td className="py-2 px-4 border">{entry.cleaningExpense}</td>
-                    <td className="py-2 px-4 border">{entry.sundryExpense}</td>
-                    <td className="py-2 px-4 border flex space-x-2">
+                <td className="py-2 px-4 border">{entry.receipt}</td>
+                <td className="py-2 px-4 border">{new Date(entry.date).toLocaleDateString()}</td>
+                <td className="py-2 px-4 border">{entry.details}</td>
+                <td className="py-2 px-4 border">{entry.voucherNumber}</td>
+                <td className="py-2 px-4 border">{entry.total}</td>
+                <td className="py-2 px-4 border">{entry.officeExpense}</td>
+                <td className="py-2 px-4 border">{entry.vanExpense}</td>
+                <td className="py-2 px-4 border">{entry.cleaningExpense}</td>
+                <td className="py-2 px-4 border">{entry.sundryExpense}</td>
+                <td className="py-2 px-4 border flex space-x-2">
                       <button
                         onClick={() => handleEditClick(entry)}
                         className="px-4 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"

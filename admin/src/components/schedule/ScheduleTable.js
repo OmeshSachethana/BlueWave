@@ -55,6 +55,12 @@ const ScheduleTable = () => {
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Allow only letters and spaces for name and driver fields
+    if ((name === 'name' || name === 'driver') && !/^[a-zA-Z\s]*$/.test(value)) {
+      return; // Exit if the input contains invalid characters
+    }
     setEditData({
       ...editData,
       [e.target.name]: e.target.value,

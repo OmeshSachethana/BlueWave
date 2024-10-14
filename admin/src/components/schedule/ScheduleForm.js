@@ -22,10 +22,23 @@ const ScheduleForm = () => {
   }, [dispatch]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    // Restrict input for name and driver fields to letters only
+    if (name === 'name' || name === 'driver') {
+      const lettersOnly = /^[A-Za-z]*$/; // Regular expression to allow only letters
+      if (value === '' || lettersOnly.test(value)) {
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   const validateForm = () => {
