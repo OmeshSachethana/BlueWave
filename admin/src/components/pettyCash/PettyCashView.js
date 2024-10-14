@@ -5,6 +5,12 @@ import { fetchEntries, updateEntry, deleteEntry } from '../../features/pettyCash
 import jsPDF from 'jspdf';
 import logo from '../../assets/bluewave_logo.png';
 import { downloadCSV } from '../../utils/csvDownloader';
+import { Bar } from 'react-chartjs-2'; // Import Bar chart component
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register required components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 
 const PettyCashView = () => {
   const dispatch = useDispatch();
@@ -148,6 +154,31 @@ const PettyCashView = () => {
     downloadCSV(filteredEntries); // Call the CSV downloader utility with the filtered entries
   };
 
+  const data = {
+    labels: ['Office Expense', 'Van Expense', 'Cleaning Expense', 'Sundry Expense'],
+    datasets: [
+      {
+        label: 'Expenses',
+        data: [officeExpenseSum, vanExpenseSum, cleaningExpenseSum, sundryExpenseSum],
+        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(54, 162, 235, 0.6)'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Expense Distribution',
+      },
+    },
+  };
+
   return (
     <div className="p-5">
       <button 
@@ -169,7 +200,10 @@ const PettyCashView = () => {
         Download CSV
       </button>
       <h2 className="text-2xl font-bold mb-4 text-center">Petty Cash Book</h2>
-      
+      {/* Render the bar chart */}
+      <div style={{ height: '300px', width: '100%', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+        <Bar data={data} options={options} />
+      </div>
       <input
         type="text"
         placeholder="Search by details..."
