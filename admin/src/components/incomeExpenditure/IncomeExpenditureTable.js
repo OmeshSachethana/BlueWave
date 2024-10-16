@@ -8,6 +8,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // for tables
 import html2canvas from 'html2canvas';
 import { downloadCSV } from '../../utils/downloadUtils'; // Adjust the path based on your project structure
+import logo from '../../assets/bluewave_logo.png'; // Adjust the path to your logo image
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -94,35 +96,67 @@ const IncomeExpenditureTable = ({ onEdit }) => {
     };
 
     // Function to generate PDF
-    const generatePDF = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(14);
-        doc.text('Income & Expenditure Report', 14, 22);
-        
-        const chartElement = document.getElementById('chart-container');
-        html2canvas(chartElement, { scale: 2 }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            doc.addImage(imgData, 'PNG', 14, 30, 180, 100); // Adjust the position and size as needed
-            
-            const tableColumn = ['Date', 'Details', 'Income', 'Expenses', 'Profit/Loss'];
-            const tableRows = filteredRecords.map(record => [
-                new Date(record.date).toLocaleDateString(),
-                record.details,
-                record.income,
-                record.expenses,
-                record.profit
-            ]);
-    
-            doc.autoTable(tableColumn, tableRows, { startY: 150 });
-            
-            doc.setFontSize(10); // Set smaller font size for totals
-            doc.text(`Total Income: ${totalIncome}`, 14, doc.autoTable.previous.finalY + 10);
-            doc.text(`Total Expenses: ${totalExpenses}`, 14, doc.autoTable.previous.finalY + 20);
-            doc.text(`Total Profit/Loss: ${totalProfit}`, 14, doc.autoTable.previous.finalY + 30);
-            
-            doc.save('income_expenditure_report.pdf');
-        });
-    };
+const generatePDF = () => {
+    const doc = new jsPDF();
+  
+    // Logo properties
+    const logoWidth = 50; // Width of the logo
+    const logoHeight = 20; // Height of the logo
+  
+    // Centering the logo
+    const pageWidth = doc.internal.pageSize.getWidth(); // Get PDF page width
+    const logoX = (pageWidth - logoWidth) / 2; // Calculate x position for centering
+  
+    // Add logo at the top
+    doc.addImage(logo, 'PNG', logoX, 2, logoWidth, logoHeight); // Use calculated x position
+  
+    // Add title below the logo, left-aligned
+    doc.setFontSize(14);
+    doc.text('Income & Expenditure Report', 14, 30); // Set X to 14 for left alignment, Y to 30 for positioning
+  
+    // Get the current date and time for the report generation date
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString(); // Format date and time
+  
+    // Add date of report generation below the title
+    doc.setFontSize(12);
+    doc.text(`Report generated on: ${formattedDate}`, 14, 38); // Reduced Y to 38 for less spacing
+  
+    const chartElement = document.getElementById('chart-container');
+    html2canvas(chartElement, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      doc.addImage(imgData, 'PNG', 14, 50, 180, 100); // Adjust the position and size as needed
+  
+      const tableColumn = ['Date', 'Details', 'Income', 'Expenses', 'Profit/Loss'];
+      const tableRows = filteredRecords.map(record => [
+        new Date(record.date).toLocaleDateString(),
+        record.details,
+        record.income,
+        record.expenses,
+        record.profit
+      ]);
+  
+      // Add the table to the PDF
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 160, // Start table below chart
+        styles: { fontSize: 9 }, // Smaller font size for table content
+        headStyles: { fontSize: 10 } // Header font size
+      });
+  
+      // Set font size for totals
+      doc.setFontSize(10); // Set smaller font size for totals
+      doc.text(`Total Income: ${totalIncome}`, 14, doc.autoTable.previous.finalY + 10);
+      doc.text(`Total Expenses: ${totalExpenses}`, 14, doc.autoTable.previous.finalY + 20);
+      doc.text(`Total Profit/Loss: ${totalProfit}`, 14, doc.autoTable.previous.finalY + 30);
+  
+      // Save the generated PDF
+      doc.save('income_expenditure_report.pdf');
+    });
+  };
+  
+      
 
     return (
         <div className="container mx-auto mt-8">

@@ -11,6 +11,7 @@ import OrderList from "./components/orders/OrderList";
 import PaymentPage from "./components/orders/PaymentPage";
 import SubPaymentPage from "./components/subcriptionPlans/PaymentPage";
 import SubscriptionPlans from "./components/subcriptionPlans/SubscriptionPlans";
+import Home from "./pages/Home";
 import Carousel from "./components/Carousel";
 import CardListPage from "./components/orders/CardListPage";
 import { getAllProducts, searchProducts } from "./services/productService";
@@ -123,6 +124,7 @@ function MainContent({ searchTerm, filteredProducts }) {
                 />
               }
             />
+            <Route path="/home" element={<Home />} />
             <Route path="/orders" element={<OrderList />} />
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/payment-subscriptions" element={<SubPaymentPage />} />

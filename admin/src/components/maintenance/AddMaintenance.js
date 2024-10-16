@@ -22,13 +22,29 @@ const AddMaintenance = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Restrict to only letters for name and technician fields
+  const handleKeyPress = (e) => {
+    const charCode = e.keyCode || e.which;
+    const char = String.fromCharCode(charCode);
+    const regex = /^[A-Za-z\s]*$/;  // Only allows letters and spaces
+
+    if (!regex.test(char)) {
+      e.preventDefault();
+    }
+  };
+
   // Validation function
   const validate = () => {
     const newErrors = {};
+    const namePattern = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
 
-    // Name validation
+    // Name validation (only letters)
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
+    } else if (!namePattern.test(formData.name)) {
+      newErrors.name = 'Name can only contain letters';
+    } else if (formData.name.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
     }
 
     // Date validation (must be a valid date in the future or today)
@@ -45,7 +61,6 @@ const AddMaintenance = () => {
     }
 
     // Technician validation (only letters)
-    const namePattern = /^[A-Za-z\s]+$/; // Regex to allow only letters and spaces
     if (!formData.technician.trim()) {
       newErrors.technician = 'Technician name is required';
     } else if (!namePattern.test(formData.technician)) {
@@ -93,6 +108,7 @@ const AddMaintenance = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
+            onKeyPress={handleKeyPress}  // Restrict to only letters
             placeholder="Enter maintenance name"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             required
@@ -158,6 +174,7 @@ const AddMaintenance = () => {
             name="technician"
             value={formData.technician}
             onChange={handleChange}
+            onKeyPress={handleKeyPress}  // Restrict to only letters
             placeholder="Enter technician's name"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             required

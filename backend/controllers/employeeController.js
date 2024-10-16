@@ -52,6 +52,16 @@ exports.getEmployeeById = async (req, res) => {
   }
 };
 
+// Fetch all employees (for dropdown)
+exports.getSalaryEmployees = async (req, res) => {
+  try {
+    const employees = await Employee.find({}, 'employeeID basicSalary');
+    res.json(employees);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching employees' });
+  }
+};
+
 // Update an employee by ID
 exports.updateEmployee = async (req, res) => {
   try {

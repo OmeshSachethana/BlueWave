@@ -4,7 +4,7 @@ import { addEmployee, updateEmployee } from '../../features/employee/employeeSli
 
 const EmployeeForm = ({ employeeToEdit }) => {
   const dispatch = useDispatch();
-  
+
   const [formData, setFormData] = useState({
     employeeID: '',
     firstName: '',
@@ -14,6 +14,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
     gender: '',
     nic: '',
     email: '',
+    basicSalary: '', // Added Basic Salary
   });
 
   const [errors, setErrors] = useState({});
@@ -29,11 +30,36 @@ const EmployeeForm = ({ employeeToEdit }) => {
         gender: employeeToEdit.gender || '',
         nic: employeeToEdit.nic || '',
         email: employeeToEdit.email || '',
+        basicSalary: employeeToEdit.basicSalary || '', // Added Basic Salary
       });
     }
   }, [employeeToEdit]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Allow only letters in firstName, lastName, and position fields
+    if ((name === 'firstName' || name === 'lastName' || name === 'position') && /[^a-zA-Z\s]/.test(value)) {
+      return; // Prevent updating the state if value contains non-letter characters
+    }
+    // Limit NIC to 12 characters
+    if (name === 'nic') {
+      if (/[^0-9vV]/.test(value)) {
+        return; // Prevent updating if non-digit and non-allowed characters are entered
+      }
+      if (value.length > 12) {
+        return; // Prevent updating if length exceeds 12
+      }
+    }
+    // Limit NIC to 12 characters
+    if (name === 'employeeID' && value.length > 6) {
+      return; // Prevent updating if length exceeds 12
+    }
+
+    // Limit basicSalary to numeric values
+    if (name === 'basicSalary' && !/^\d*\.?\d*$/.test(value)) {
+      return; // Prevent updating the state if the value is not numeric
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -46,13 +72,14 @@ const EmployeeForm = ({ employeeToEdit }) => {
     }
 
     // Validate NIC
-    if (!/^\d{9}[Vv]|\d{12}$/.test(formData.nic)) {
-      errors.nic = 'NIC must be either 12 digits or 9 digits followed by "v" or "V".';
+    if (!/^\d{9}[Vv]$|^\d{12}$/.test(formData.nic)) {
+      errors.nic = 'NIC must be either 9 digits followed by "v" or "V", or 12 digits.';
     }
 
     // Validate Email
-    if (!formData.email.match(/^\S+@\S+\.\S+$/)) {
-      errors.email = 'Please enter a valid email address.';
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+        errors.email = 'Please enter a valid email address.';
     }
 
     // Validate First Name (only letters, between 2-50 characters)
@@ -68,6 +95,11 @@ const EmployeeForm = ({ employeeToEdit }) => {
     // Validate Position (only letters)
     if (!/^[a-zA-Z\s]+$/.test(formData.position)) {
       errors.position = 'Position must only contain letters.';
+    }
+
+    // Validate Basic Salary (numeric value)
+    if (!/^\d+(\.\d{1,2})?$/.test(formData.basicSalary)) {
+      errors.basicSalary = 'Basic salary must be a valid number (up to two decimal places).';
     }
 
     return errors;
@@ -96,6 +128,7 @@ const EmployeeForm = ({ employeeToEdit }) => {
       gender: '',
       nic: '',
       email: '',
+      basicSalary: '', // Reset Basic Salary
     });
     setErrors({});
   };
@@ -223,6 +256,20 @@ const EmployeeForm = ({ employeeToEdit }) => {
             placeholder="example@mail.com"
           />
           {errors.email && <p className="text-red-500">{errors.email}</p>}
+        </div>
+
+        <div className="mb-3">
+          <label className="block text-gray-700">Basic Salary:</label>
+          <input
+            type="text"
+            name="basicSalary"
+            className="w-full px-2 py-1 border rounded-md"
+            value={formData.basicSalary}
+            onChange={handleChange}
+            required
+            placeholder="Enter basic salary"
+          />
+          {errors.basicSalary && <p className="text-red-500">{errors.basicSalary}</p>}
         </div>
 
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
