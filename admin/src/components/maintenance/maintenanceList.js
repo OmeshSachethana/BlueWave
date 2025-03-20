@@ -4,6 +4,7 @@ import { Bar } from 'react-chartjs-2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import { useNavigate } from 'react-router-dom';
 import { fetchAllMaintenance, deleteMaintenance, updateMaintenanceStatus } from '../../features/maintenance/maintenanceSlice';
 import { Chart, registerables } from 'chart.js';
 import logo from '../../assets/bluewave_logo.png'; // Adjust the path to your logo image
@@ -12,6 +13,7 @@ Chart.register(...registerables); // Register necessary chart.js components
 
 const MaintenanceList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { maintenanceList, error } = useSelector((state) => state.maintenance);
 
   const [editingId, setEditingId] = useState(null);
@@ -155,7 +157,14 @@ const MaintenanceList = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
+    <><br /><div className="max-w-5xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg">
+      {/* Back Button */}
+      <button
+        className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+        onClick={() => navigate('/maintenance')}
+      >
+        Back
+      </button>
       <h2 className="text-xl font-bold mb-4 text-blue-600">Maintenance List</h2>
 
       {/* Bar Chart */}
@@ -170,8 +179,7 @@ const MaintenanceList = () => {
           placeholder="Search by Name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-1/2 p-2 border border-gray-300 rounded"
-        />
+          className="w-1/2 p-2 border border-gray-300 rounded" />
       </div>
 
       {/* Filter Dropdown */}
@@ -228,8 +236,7 @@ const MaintenanceList = () => {
                   type="date"
                   className="px-4 py-2 border border-gray-300 rounded-lg"
                   value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
+                  onChange={(e) => setSelectedDate(e.target.value)} />
 
                 <label>Priority:</label>
                 <select
@@ -241,15 +248,18 @@ const MaintenanceList = () => {
                   <option value="Medium">Medium</option>
                   <option value="Low">Low</option>
                 </select>
-                <br/>
+                <br />
                 <label>Technician:</label>
                 <input
                   type="text"
                   className="px-4 py-2 border border-gray-300 rounded-lg"
                   value={selectedTechnician}
-                  onChange={(e) => setSelectedTechnician(e.target.value)}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const lettersOnly = inputValue.replace(/[^a-zA-Z\s]/g, ''); // Allow only letters and spaces
+                    setSelectedTechnician(lettersOnly);
+                  }}
                 />
-
                 <button
                   className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   onClick={() => handleStatusUpdate(maintenance._id)}
@@ -284,7 +294,7 @@ const MaintenanceList = () => {
       ) : (
         <p className="text-gray-500">No maintenance records found.</p>
       )}
-    </div>
+    </div></>
   );
 };
 

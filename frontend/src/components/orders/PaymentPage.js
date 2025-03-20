@@ -21,16 +21,71 @@ const PaymentPage = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  
+    if (id === "cardNumber") {
+      // Remove non-digit characters
+      let formattedValue = value.replace(/\D/g, "");
+      // Limit to 16 digits
+      if (formattedValue.length > 16) {
+        formattedValue = formattedValue.slice(0, 16);
+      }
+      // Add dashes every 4 digits
+      formattedValue = formattedValue
+        .replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, "$1-$2-$3-$4");
+  
+      setFormData((prevData) => ({ ...prevData, [id]: formattedValue }));
+    } else if (id === "expiryDate") {
+      // Remove non-digit characters
+      let formattedValue = value.replace(/\D/g, "");
+      // Limit to 4 digits (MMYY)
+      if (formattedValue.length > 4) {
+        formattedValue = formattedValue.slice(0, 4);
+      }
+      // Format as MM/YY
+      if (formattedValue.length >= 3) {
+        formattedValue = formattedValue.replace(/(\d{2})(\d{2})/, "$1/$2");
+      }
+  
+      setFormData((prevData) => ({ ...prevData, [id]: formattedValue }));
+    } else {
+      setFormData((prevData) => ({ ...prevData, [id]: value }));
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Remove dashes from the card number before submitting
+    const cardNumberWithoutDashes = formData.cardNumber.replace(/-/g, "");
+  
+    // Validate the expiry date
+    const currentDate = new Date();
+    const [month, year] = formData.expiryDate.split("/").map(Number);
+  
+    if (month < 1 || month > 12) {
+      alert("Invalid expiration month.");
+      return;
+    }
+  
+    const fullYear = year + 2000; // Convert to 4-digit year
+    const expiryDate = new Date(fullYear, month - 1);
+  
+    if (expiryDate < currentDate) {
+      alert("The card expiration date is in the past.");
+      return;
+    }
+  
     try {
+      // Prepare data with card number without dashes
+      const paymentData = {
+        ...formData,
+        cardNumber: cardNumberWithoutDashes,  // Replace card number without dashes
+      };
+  
       // Dispatch the createPayment action
-      await dispatch(createPayment(formData)).unwrap();
-
+      await dispatch(createPayment(paymentData)).unwrap();
+  
       // Update payment status to "Completed"
       await updatePaymentStatus(orderId, "Completed");
       alert(`Payment of Rs.${orderAmount} for Order #${orderId} completed!`);
@@ -42,6 +97,8 @@ const PaymentPage = () => {
       alert("Error processing payment. Please try again.");
     }
   };
+  
+  
 
   const handleViewCards = () => {
     navigate("/cards", { state: { orderId, orderAmount } }); // Navigate to the CardListPage
@@ -201,18 +258,18 @@ const PaymentPage = () => {
               </div>
 
               <button
-                type="submit"
-                className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
-              >
-                Pay now
-              </button>
-              <div className="mt-6 grow">
-                <button
                   onClick={handleViewCards}
                   className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
                 >
                   View Saved Cards
                 </button>
+              <div className="mt-6 grow">
+              <button
+                type="submit"
+                className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+              >
+                Pay now
+              </button>
               </div>
             </form>
             {/* View Cards Button */}

@@ -19,6 +19,7 @@ const EmployeeItem = ({ employee, onEdit }) => {
       <td className="p-2 border border-gray-300">{employee.gender}</td>
       <td className="p-2 border border-gray-300">{employee.nic}</td>
       <td className="p-2 border border-gray-300">{employee.email}</td>
+      <td className="p-2 border border-gray-300">{employee.basicSalary}</td>
       <td className="p-2 border border-gray-300">
         <button className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600" onClick={() => onEdit(employee)}>Edit</button> 
         <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2" onClick={handleDelete}>Delete</button>

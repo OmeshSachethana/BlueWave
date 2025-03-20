@@ -45,7 +45,11 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     unique: true,
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
-  }
+  },
+  basicSalary: {
+    type: Number,
+    required: true
+  },
 }, { timestamps: true });
 
 // Create the Employee model
